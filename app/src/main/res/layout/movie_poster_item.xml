@@ -8,17 +8,21 @@
             type="com.example.tmdb.model.PopularMovieResults" />
     </data>
     
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardCornerRadius="10dp"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/posterImageView"
             android:layout_width="match_parent"
             android:layout_height="280dp"
-            app:loadImageMovie="@{movieItem.posterPath}"
-           />
-    </LinearLayout>
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:loadImageMovie="@{movieItem.posterPath}" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

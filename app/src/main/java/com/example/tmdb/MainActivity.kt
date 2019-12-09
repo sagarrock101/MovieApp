@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
                 if(response != null) {
                     Log.e(TAG, "Not null" +response.size)
 //                    binding.recyclerView.adapter = MovieAdapter(response, this)
-                   binding.recyclerView.adapter = Adapter(response)
+//                   binding.recyclerView.adapter = Adapter(response)
                     val myAdapter = object : GenericAdapter<PopularMovieResults>
                         (response) {
                         override fun getLayoutId(position: Int, obj: PopularMovieResults): Int {
