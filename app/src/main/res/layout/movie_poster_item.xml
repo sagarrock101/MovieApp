@@ -2,6 +2,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <data>
+        <variable
+            name="movieItem"
+            type="com.example.tmdb.model.PopularMovieResults" />
+    </data>
+    
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -12,6 +18,7 @@
             android:id="@+id/posterImageView"
             android:layout_width="match_parent"
             android:layout_height="280dp"
+            app:loadImageMovie="@{movieItem.posterPath}"
            />
     </LinearLayout>
 </layout>

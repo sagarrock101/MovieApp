@@ -25,17 +25,17 @@ class MovieAdapter(private val list: List<PopularMovieResults>,
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(list[position])
-//        holder.binding.setVariable(BR.movieItem, list[position])
+        holder.binding.setVariable(BR.movieItem, list[position])
 
     }
 
     class ViewHolder( val binding: MoviePosterItemBinding)
         :RecyclerView.ViewHolder(binding.root) {
         fun bind(item: PopularMovieResults) {
-            GlideApp.with(binding.posterImageView)
-                .load(AppConstants.IMAGE_URL + item.posterPath)
-                .placeholder(R.mipmap.ic_launcher_round)
-                .into(binding.posterImageView)
+//            GlideApp.with(binding.posterImageView)
+//                .load(AppConstants.IMAGE_URL + item.posterPath)
+//                .placeholder(R.mipmap.ic_launcher_round)
+//                .into(binding.posterImageView)
         }
     }
 
