@@ -40,24 +40,24 @@ class MainActivity : AppCompatActivity() {
                 binding.recyclerView.layoutManager = GridLayoutManager(baseContext,2)
                 if(response != null) {
                     Log.e(TAG, "Not null" +response.size)
-                    binding.recyclerView.adapter = MovieAdapter(response, this)
-//                   binding.recyclerView.adapter = Adapter(response)
-//                    val myAdapter = object : GenericAdapter<PopularMovieResults>
-//                        (response) {
-//                        override fun getLayoutId(position: Int, obj: PopularMovieResults): Int {
-//                            return R.layout.movie_poster_item
-//                        }
-//
-//                        override fun getViewHolder(
-//                            view: View,
-//                            viewType: Int
-//                        ): RecyclerView.ViewHolder {
-//                            val inflater = LayoutInflater.from(view.context)
-//                            val binding = MoviePosterItemBinding.inflate(inflater)
-//                            return MyViewHolder(binding)
-//                        }
-//                    }
-//                    binding.recyclerView.adapter = myAdapter
+//                    binding.recyclerView.adapter = MovieAdapter(response, this)
+                   binding.recyclerView.adapter = Adapter(response)
+                    val myAdapter = object : GenericAdapter<PopularMovieResults>
+                        (response) {
+                        override fun getLayoutId(position: Int, obj: PopularMovieResults): Int {
+                            return R.layout.movie_poster_item
+                        }
+
+                        override fun getViewHolder(
+                            view: View,
+                            viewType: Int
+                        ): RecyclerView.ViewHolder {
+                            val inflater = LayoutInflater.from(view.context)
+                            val binding = MoviePosterItemBinding.inflate(inflater)
+                            return MyViewHolder(binding)
+                        }
+                    }
+                    binding.recyclerView.adapter = myAdapter
                 }
             })
 
