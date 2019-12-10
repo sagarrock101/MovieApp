@@ -1,11 +1,13 @@
 package com.example.tmdb
 
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
@@ -13,10 +15,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.tmdb.adapter.Adapter
 import com.example.tmdb.adapter.GenericAdapter
 import com.example.tmdb.adapter.MovieAdapter
+import com.example.tmdb.adapter.PageAdapter
 import com.example.tmdb.viewmodel.PopularMoviesViewModel
 import com.example.tmdb.databinding.ActivityMainBinding
 import com.example.tmdb.databinding.MoviePosterItemBinding
 import com.example.tmdb.model.PopularMovieResults
+import javax.security.auth.login.LoginException
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewModel : PopularMoviesViewModel
 
     private lateinit var binding: ActivityMainBinding
+    var page = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,17 +38,33 @@ class MainActivity : AppCompatActivity() {
 
         viewModel = ViewModelProviders.of(this).get(PopularMoviesViewModel::class.java)
 
-        viewModel.fetchMovies()
+        viewModel.fetchMovies(page)
+        val layoutManager = GridLayoutManager(baseContext, 2)
+        binding.recyclerView.layoutManager = layoutManager
 
+        loadPopular()
+
+        binding.recyclerView.addOnScrollListener(object : EndlessRecyclerOnScrollListener(){
+            override fun onLoadMore() {
+
+            }
+
+        })
+
+
+
+
+    }
+    fun loadPopular() {
+        Log.e(TAG, "Not null")
         viewModel.popularMoviesLiveData.observe(this,
             Observer {response ->
-                binding.recyclerView.layoutManager = GridLayoutManager(baseContext,2)
+
                 if(response != null) {
-                    Log.e(TAG, "Not null" +response.size)
-//                    binding.recyclerView.adapter = MovieAdapter(response, this)
-//                   binding.recyclerView.adapter = Adapter(response)
+//                    binding.recyclerView.adapter = PageAdapter()
+                    Log.e(TAG,"Results: " + response.results )
                     val myAdapter = object : GenericAdapter<PopularMovieResults>
-                        (response) {
+                        (response.results) {
                         override fun getLayoutId(position: Int, obj: PopularMovieResults): Int {
                             return R.layout.movie_poster_item
                         }
@@ -61,5 +82,8 @@ class MainActivity : AppCompatActivity() {
                 }
             })
 
+
     }
+
+
 }

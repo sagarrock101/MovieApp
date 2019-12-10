@@ -35,6 +35,6 @@ object ApiFactory {
         .addCallAdapterFactory(CoroutineCallAdapterFactory())
         .build()
 
-    val MovieApi: TmdbApi = retrofit().create(TmdbApi::class.java)
+    val MOVIE_SERVICE: TmdbService = retrofit().create(TmdbService::class.java)
 
 }
