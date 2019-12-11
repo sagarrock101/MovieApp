@@ -19,6 +19,9 @@ class PageAdapter : PagedListAdapter<PopularMovieResults, MyViewHolder>(diffCall
         return MyViewHolder(binding)
     }
 
+
+
+
     companion object {
         /**
          * This diff callback informs the PagedListAdapter how to compute list differences when new
@@ -40,7 +43,6 @@ class PageAdapter : PagedListAdapter<PopularMovieResults, MyViewHolder>(diffCall
              */
             override fun areContentsTheSame(oldItem: PopularMovieResults, newItem: PopularMovieResults): Boolean =
                 oldItem == newItem
-
 
         }
     }

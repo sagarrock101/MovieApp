@@ -1,7 +1,12 @@
 package com.example.tmdb.repository
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.paging.LivePagedListBuilder
+import androidx.paging.PagedList
+import com.example.tmdb.Paging.PopularMoviesDataSourceFactory
+import com.example.tmdb.api.ApiFactory
 import com.example.tmdb.api.TmdbService
 import com.example.tmdb.model.PopularMovieResponse
 import com.example.tmdb.model.PopularMovieResults
@@ -15,6 +20,13 @@ import javax.security.auth.login.LoginException
 class MovieRepository(private val service : TmdbService)  {
     val popularMovieLiveData : MutableLiveData<PopularMovieResponse> =  MutableLiveData()
     val TAG = "MovieRepository"
+    var config = PagedList.Config.Builder()
+        .setPageSize(20)
+        .setEnablePlaceholders(false)
+        .build()
+
+    lateinit var popularMoviesDataSourceFactory: PopularMoviesDataSourceFactory
+
     fun getPopularMovies(movieSearch: PopularMovieSearch) : MutableLiveData<PopularMovieResponse> {
         service.getPopularMovies(movieSearch.page)
             .enqueue(object : Callback<PopularMovieResponse>{
@@ -35,6 +47,11 @@ class MovieRepository(private val service : TmdbService)  {
 
             })
         return popularMovieLiveData
+    }
+
+    fun getPopular(): LiveData<PagedList<PopularMovieResults>> {
+        popularMoviesDataSourceFactory = PopularMoviesDataSourceFactory(ApiFactory.MOVIE_SERVICE)
+        return LivePagedListBuilder<Int, PopularMovieResults>(popularMoviesDataSourceFactory, config).build()
     }
 
 }

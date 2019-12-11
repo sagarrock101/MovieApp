@@ -1,10 +1,11 @@
 package com.example.tmdb.viewmodel
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
+import androidx.paging.ItemKeyedDataSource
+import androidx.paging.LivePagedListBuilder
+import androidx.paging.PagedList
+import com.example.tmdb.Paging.PopularMoviesDataSourceFactory
 import com.example.tmdb.api.ApiFactory
 import com.example.tmdb.model.PopularMovieResponse
 import com.example.tmdb.model.PopularMovieResults
@@ -15,7 +16,7 @@ import javax.security.auth.login.LoginException
 import kotlin.coroutines.CoroutineContext
 
 
-class PopularMoviesViewModel : ViewModel(){
+class PopularMoviesViewModel() : ViewModel() {
     val TAG = "ViewModel"
     private val parentJob = Job()
     private val coroutineContext : CoroutineContext
@@ -27,12 +28,14 @@ class PopularMoviesViewModel : ViewModel(){
 
     private var popularMoviesMutableLiveData = MutableLiveData<PopularMovieSearch>()
 
+    var popularMovies : MediatorLiveData<PagedList<PopularMovieResults>> = MediatorLiveData()
     var popularMoviesLiveData: LiveData<PopularMovieResponse>
 
     init {
         this.popularMoviesLiveData = Transformations.switchMap(popularMoviesMutableLiveData) {search ->
             repository.getPopularMovies(search)
         }
+        popularMovies.addSource(repository.getPopular(), popularMovies::setValue)
     }
 
     fun fetchMovies(page: Int){
@@ -42,6 +45,10 @@ class PopularMoviesViewModel : ViewModel(){
 
     fun cancelRequests() = coroutineContext.cancel()
 
+
+    fun getMovie() : LiveData<PagedList<PopularMovieResults>> {
+        return popularMovies
+    }
 
 
 

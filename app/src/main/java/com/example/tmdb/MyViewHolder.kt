@@ -10,7 +10,7 @@ import com.example.tmdb.model.PopularMovieResults
 class MyViewHolder(private var binding: MoviePosterItemBinding) : RecyclerView.ViewHolder(binding.root),
         GenericAdapter.Binder<PopularMovieResults> {
     override fun bind(data: PopularMovieResults) {
-      binding.setVariable(BR.movieItem, data)
+      binding.movieItem = data
     }
 
 }
