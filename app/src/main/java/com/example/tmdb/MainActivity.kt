@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.example.tmdb.adapter.PageAdapter
 import com.example.tmdb.viewmodel.PopularMoviesViewModel
 import com.example.tmdb.databinding.ActivityMainBinding
+import com.example.tmdb.model.NetworkStatus
 import com.example.tmdb.model.PopularMovieResults
 
 
@@ -51,42 +52,26 @@ class MainActivity : AppCompatActivity() {
 
     }
     fun loadPopular() {
-//        viewModel.popularMoviesLiveData.observe(this,
-//            Observer {response ->
-//
-//                if(response != null) {
-//                    binding.recyclerView.adapter = PageAdapter()
-////                    Log.e(TAG,"Results: " + response.results )
-////                    val myAdapter = object : GenericAdapter<PopularMovieResults>
-////                        (response.results) {
-////                        override fun getLayoutId(position: Int, obj: PopularMovieResults): Int {
-////                            return R.layout.movie_poster_item
-////                        }
-////
-////                        override fun getViewHolder(
-////                            view: View,
-////                            viewType: Int
-////                        ): RecyclerView.ViewHolder {
-////                            val inflater = LayoutInflater.from(view.context)
-////                            val binding = MoviePosterItemBinding.inflate(inflater)
-////                            return MyViewHolder(binding)
-////                        }
-////                    }
-////                    binding.recyclerView.adapter = myAdapter
-//                }
-//            })
-
 
         adapter = PageAdapter()
-
-//        viewModel.getMovie().observe(this, Observer {data ->
-//            adapter.submitList(data)
-//        })
 
         viewModel.popularMovies.observe(this, Observer { data ->
             adapter.submitList(data)
         })
         binding.recyclerView.adapter = adapter
+
+        viewModel.getMoviesStatus().observe(this, Observer { networkStatus ->
+            when(networkStatus) {
+                NetworkStatus.SUCCESS -> {
+                    binding.itemProgressBar.visibility = View.GONE
+                    binding.recyclerView.visibility = View.VISIBLE
+                }
+                NetworkStatus.LOADING -> {
+                    binding.recyclerView.visibility = View.INVISIBLE
+                    binding.itemProgressBar.visibility = View.VISIBLE
+                }
+            }
+        })
 
     }
 

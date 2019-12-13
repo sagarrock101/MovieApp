@@ -7,6 +7,7 @@ import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import com.example.tmdb.Paging.PopularMoviesDataSourceFactory
 import com.example.tmdb.api.ApiFactory
+import com.example.tmdb.model.NetworkStatus
 import com.example.tmdb.model.PopularMovieResponse
 import com.example.tmdb.model.PopularMovieResults
 import com.example.tmdb.model.PopularMovieSearch
@@ -48,6 +49,10 @@ class PopularMoviesViewModel() : ViewModel() {
 
     fun getMovie() : LiveData<PagedList<PopularMovieResults>> {
         return popularMovies
+    }
+
+    fun getMoviesStatus(): LiveData<NetworkStatus> {
+        return repository.getPopularMoviesStatus()
     }
 
 

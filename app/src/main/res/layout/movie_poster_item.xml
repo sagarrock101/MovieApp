@@ -20,6 +20,7 @@
             android:layout_height="280dp"
             android:scaleType="centerCrop"
             android:layout_margin="1dp"
+            app:srcCompat="@drawable/ic_launcher_foreground"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

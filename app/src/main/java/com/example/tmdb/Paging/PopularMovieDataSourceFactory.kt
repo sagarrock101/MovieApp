@@ -7,9 +7,9 @@ import com.example.tmdb.model.PopularMovieResults
 
 class PopularMoviesDataSourceFactory(movieApi: TmdbService) :
     DataSource.Factory<Int?, PopularMovieResults?>() {
-    private val movieApi: TmdbService
+    private val movieApi: TmdbService = movieApi
     private val popularMoviesDataSource: MutableLiveData<PopularMovieDataSource> =
-        MutableLiveData<PopularMovieDataSource>()
+        MutableLiveData()
 
     override fun create(): DataSource<Int?, PopularMovieResults?> {
         val dataSource = PopularMovieDataSource(movieApi)
@@ -21,7 +21,4 @@ class PopularMoviesDataSourceFactory(movieApi: TmdbService) :
         return popularMoviesDataSource
     }
 
-    init {
-        this.movieApi = movieApi
-    }
 }

@@ -55,7 +55,8 @@ class PopularMovieDataSource(private val apiService: TmdbService)
                     call: Call<PopularMovieResponse>,
                     response: Response<PopularMovieResponse>
                 ) {
-                    if(response.isSuccessful) run {
+                    if(!response.body()?.results?.isEmpty()!!) run {
+                        networkState.postValue(NetworkStatus.SUCCESS)
                         var nextPageNumber = params.key + 1
                         var totalPages = response.body()!!.totalPages
                         var key = if(totalPages > nextPageNumber) nextPageNumber else null
@@ -93,5 +94,9 @@ class PopularMovieDataSource(private val apiService: TmdbService)
         const val PAGE_SIZE = 50
         const val FIRST_PAGE = 1
 
+    }
+
+    fun getNetworkState(): MutableLiveData<NetworkStatus> {
+        return networkState
     }
 }
