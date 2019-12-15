@@ -15,7 +15,7 @@ import com.example.tmdb.databinding.FragmentMovieBinding
 import com.example.tmdb.model.NetworkStatus
 import com.example.tmdb.viewmodel.PopularMoviesViewModel
 
-class movieFragment : Fragment() {
+class MovieFragment : Fragment() {
     private lateinit var viewModel : PopularMoviesViewModel
     private lateinit var binding: FragmentMovieBinding
     private lateinit var adapter: PageAdapter
@@ -27,7 +27,7 @@ class movieFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_movie, container, false)
-        viewModel = ViewModelProviders.of(this).get(PopularMoviesViewModel::class.java)
+        viewModel = ViewModelProviders.of(activity!!).get(PopularMoviesViewModel::class.java)
         val layoutManager = GridLayoutManager(context, 2)
         viewModel.fetchMovies(page)
         binding.recyclerView.layoutManager = layoutManager

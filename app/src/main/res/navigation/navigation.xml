@@ -6,6 +6,6 @@
 
     <fragment
         android:id="@+id/movieFragment"
-        android:name="com.example.tmdb.ui.movieFragment"
+        android:name="com.example.tmdb.ui.MovieFragment"
         android:label="movieFragment" />
 </navigation>
