@@ -1,57 +1,41 @@
-package com.example.tmdb
+package com.example.tmdb.ui
 
 import android.os.Bundle
-import android.os.Handler
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
+import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
-
+import com.example.tmdb.R
 import com.example.tmdb.adapter.PageAdapter
-import com.example.tmdb.viewmodel.PopularMoviesViewModel
-import com.example.tmdb.databinding.ActivityMainBinding
+import com.example.tmdb.databinding.FragmentMovieBinding
 import com.example.tmdb.model.NetworkStatus
-import com.example.tmdb.model.PopularMovieResults
+import com.example.tmdb.viewmodel.PopularMoviesViewModel
 
-
-class MainActivity : AppCompatActivity() {
-
-    val TAG = "MainActivity"
-    private lateinit var adapter: PageAdapter
+class movieFragment : Fragment() {
     private lateinit var viewModel : PopularMoviesViewModel
-
-    private lateinit var binding: ActivityMainBinding
+    private lateinit var binding: FragmentMovieBinding
+    private lateinit var adapter: PageAdapter
     var page = 1
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_movie, container, false)
         viewModel = ViewModelProviders.of(this).get(PopularMoviesViewModel::class.java)
-
+        val layoutManager = GridLayoutManager(context, 2)
         viewModel.fetchMovies(page)
-        val layoutManager = GridLayoutManager(baseContext, 2)
         binding.recyclerView.layoutManager = layoutManager
-
         loadPopular()
-
-        binding.recyclerView.addOnScrollListener(object : EndlessRecyclerOnScrollListener(){
-            override fun onLoadMore() {
-
-            }
-
-        })
-
-
-
-
+        return binding.root
     }
-    fun loadPopular() {
+
+    private fun loadPopular() {
 
         adapter = PageAdapter()
 
