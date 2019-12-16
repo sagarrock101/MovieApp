@@ -4,31 +4,32 @@ import androidx.lifecycle.MutableLiveData
 import androidx.paging.PageKeyedDataSource
 import com.example.tmdb.api.TmdbService
 import com.example.tmdb.model.NetworkStatus
-import com.example.tmdb.model.PopularMovieResponse
-import com.example.tmdb.model.PopularMovieResults
+import com.example.tmdb.model.MovieResponse
+import com.example.tmdb.model.MovieResults
+import com.example.tmdb.model.PopularMovieSearch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 
-class PopularMovieDataSource(private val apiService: TmdbService)
-    : PageKeyedDataSource<Int, PopularMovieResults>() {
+class MovieDataSource(private val apiService: TmdbService, private val search: PopularMovieSearch)
+    : PageKeyedDataSource<Int, MovieResults>() {
 
-    private val networkState: MutableLiveData<NetworkStatus> = MutableLiveData<NetworkStatus>()
+    private val networkState: MutableLiveData<NetworkStatus> = MutableLiveData()
 
     override fun loadInitial(
         params: LoadInitialParams<Int>,
-        callback: LoadInitialCallback<Int, PopularMovieResults>
+        callback: LoadInitialCallback<Int, MovieResults>
     ) {
-        apiService.getPopularMovies(FIRST_PAGE)
-            .enqueue(object : Callback<PopularMovieResponse>{
-                override fun onFailure(call: Call<PopularMovieResponse>, t: Throwable) {
+        apiService.getMovies(search.movieType, FIRST_PAGE)
+            .enqueue(object : Callback<MovieResponse>{
+                override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
 
                 }
 
                 override fun onResponse(
-                    call: Call<PopularMovieResponse>,
-                    response: Response<PopularMovieResponse>
+                    call: Call<MovieResponse>,
+                    response: Response<MovieResponse>
                 ) {
                     if(!response.body()?.results?.isEmpty()!!) {
                         networkState.postValue(NetworkStatus.SUCCESS)
@@ -43,17 +44,17 @@ class PopularMovieDataSource(private val apiService: TmdbService)
 
     override fun loadAfter(
         params: LoadParams<Int>,
-        callback: LoadCallback<Int, PopularMovieResults>
+        callback: LoadCallback<Int, MovieResults>
     ) {
-        apiService.getPopularMovies(params.key)
-            .enqueue(object : Callback<PopularMovieResponse>{
-                override fun onFailure(call: Call<PopularMovieResponse>, t: Throwable) {
+        apiService.getMovies(search.movieType, params.key)
+            .enqueue(object : Callback<MovieResponse>{
+                override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
 
                 }
 
                 override fun onResponse(
-                    call: Call<PopularMovieResponse>,
-                    response: Response<PopularMovieResponse>
+                    call: Call<MovieResponse>,
+                    response: Response<MovieResponse>
                 ) {
                     if(!response.body()?.results?.isEmpty()!!) run {
                         networkState.postValue(NetworkStatus.SUCCESS)
@@ -69,17 +70,17 @@ class PopularMovieDataSource(private val apiService: TmdbService)
 
     override fun loadBefore(
         params: LoadParams<Int>,
-        callback: LoadCallback<Int, PopularMovieResults>
+        callback: LoadCallback<Int, MovieResults>
     ) {
-        apiService.getPopularMovies(params.key)
-            .enqueue(object : Callback<PopularMovieResponse>{
-                override fun onFailure(call: Call<PopularMovieResponse>, t: Throwable) {
+        apiService.getMovies(search.movieType, params.key)
+            .enqueue(object : Callback<MovieResponse>{
+                override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
 
                 }
 
                 override fun onResponse(
-                    call: Call<PopularMovieResponse>,
-                    response: Response<PopularMovieResponse>
+                    call: Call<MovieResponse>,
+                    response: Response<MovieResponse>
                 ) {
                     if(response.body()!!.results.isEmpty()) {
                         var key = if(params.key > 1) params.key -1 else null

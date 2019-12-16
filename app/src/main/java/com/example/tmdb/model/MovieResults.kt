@@ -8,7 +8,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class PopularMovieResults(
+data class MovieResults(
     val id: Int? = null,
     val vote_average: Double? = null,
     val title: String? = null,

@@ -5,14 +5,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.tmdb.GlideApp
 import com.example.tmdb.R
 import com.example.tmdb.api.AppConstants
-import com.example.tmdb.model.PopularMovieResults
-import com.squareup.picasso.Picasso
+import com.example.tmdb.model.MovieResults
 
-class Adapter(private val list: List<PopularMovieResults>)
+class Adapter(private val list: List<MovieResults>)
     : RecyclerView.Adapter<Adapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -28,7 +26,7 @@ class Adapter(private val list: List<PopularMovieResults>)
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
         var imageView: ImageView = view.findViewById(R.id.posterImageView)
 
-        fun bindItems(item: PopularMovieResults) {
+        fun bindItems(item: MovieResults) {
             GlideApp.with(imageView.context)
                 .load(AppConstants.IMAGE_URL + item.posterPath)
                 .placeholder(R.mipmap.ic_launcher_round)

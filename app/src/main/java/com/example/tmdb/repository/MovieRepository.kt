@@ -6,20 +6,20 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
-import com.example.tmdb.Paging.PopularMovieDataSource
+import com.example.tmdb.Paging.MovieDataSource
 import com.example.tmdb.Paging.PopularMoviesDataSourceFactory
 import com.example.tmdb.api.ApiFactory
 import com.example.tmdb.api.TmdbService
 import com.example.tmdb.model.NetworkStatus
-import com.example.tmdb.model.PopularMovieResponse
-import com.example.tmdb.model.PopularMovieResults
+import com.example.tmdb.model.MovieResponse
+import com.example.tmdb.model.MovieResults
 import com.example.tmdb.model.PopularMovieSearch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class MovieRepository(private val service : TmdbService)  {
-    val popularMovieLiveData : MutableLiveData<PopularMovieResponse> =  MutableLiveData()
+    val movieLiveData : MutableLiveData<MovieResponse> =  MutableLiveData()
     val TAG = "MovieRepository"
     var config = PagedList.Config.Builder()
         .setPageSize(20)
@@ -30,36 +30,36 @@ class MovieRepository(private val service : TmdbService)  {
 
     private var popularMoviesStatus: LiveData<NetworkStatus> = MutableLiveData<NetworkStatus>()
 
-    fun getPopularMovies(movieSearch: PopularMovieSearch) : MutableLiveData<PopularMovieResponse> {
-        service.getPopularMovies(movieSearch.page)
-            .enqueue(object : Callback<PopularMovieResponse>{
-                override fun onFailure(call: Call<PopularMovieResponse>, t: Throwable) {
+    fun getPopularMovies(movieSearch: PopularMovieSearch) : MutableLiveData<MovieResponse> {
+        service.getMovies(movieSearch.movieType, movieSearch.page)
+            .enqueue(object : Callback<MovieResponse>{
+                override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
                     Log.e(TAG, "Error: " + t.message)
                 }
 
                 override fun onResponse(
-                    call: Call<PopularMovieResponse>,
-                    response: Response<PopularMovieResponse>
+                    call: Call<MovieResponse>,
+                    response: Response<MovieResponse>
                 ) {
                     if(response.isSuccessful) {
-                        popularMovieLiveData.postValue(response.body())
-                        Log.e(TAG, "OnSuccess: " + popularMovieLiveData.value)
+                        movieLiveData.postValue(response.body())
+                        Log.e(TAG, "OnSuccess: " + movieLiveData.value)
                     }
                 }
 
 
             })
-        return popularMovieLiveData
+        return movieLiveData
     }
 
-    fun getPopular(): LiveData<PagedList<PopularMovieResults>> {
-        popularMoviesDataSourceFactory = PopularMoviesDataSourceFactory(ApiFactory.MOVIE_SERVICE)
+    fun getPopular(search: PopularMovieSearch): LiveData<PagedList<MovieResults>> {
+        popularMoviesDataSourceFactory = PopularMoviesDataSourceFactory(ApiFactory.MOVIE_SERVICE, search)
         popularMoviesStatus = Transformations
             .switchMap(
                 popularMoviesDataSourceFactory.getPopularMoviesDataSource(),
-                PopularMovieDataSource::getNetworkState
+                MovieDataSource::getNetworkState
             )
-        return LivePagedListBuilder<Int, PopularMovieResults>(popularMoviesDataSourceFactory, config).build()
+        return LivePagedListBuilder<Int, MovieResults>(popularMoviesDataSourceFactory, config).build()
     }
 
     fun getPopularMoviesStatus(): LiveData<NetworkStatus> {

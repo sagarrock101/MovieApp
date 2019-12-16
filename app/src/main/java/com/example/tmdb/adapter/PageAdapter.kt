@@ -6,9 +6,9 @@ import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import com.example.tmdb.MyViewHolder
 import com.example.tmdb.databinding.MoviePosterItemBinding
-import com.example.tmdb.model.PopularMovieResults
+import com.example.tmdb.model.MovieResults
 
-class PageAdapter : PagedListAdapter<PopularMovieResults, MyViewHolder>(diffCallback) {
+class PageAdapter : PagedListAdapter<MovieResults, MyViewHolder>(diffCallback) {
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         getItem(position)?.let { holder.bind(it) }
     }
@@ -33,15 +33,15 @@ class PageAdapter : PagedListAdapter<PopularMovieResults, MyViewHolder>(diffCall
          *
          * @see android.support.v7.util.DiffUtil
          */
-        private val diffCallback = object : DiffUtil.ItemCallback<PopularMovieResults>() {
-            override fun areItemsTheSame(oldItem: PopularMovieResults, newItem: PopularMovieResults): Boolean =
+        private val diffCallback = object : DiffUtil.ItemCallback<MovieResults>() {
+            override fun areItemsTheSame(oldItem: MovieResults, newItem: MovieResults): Boolean =
                 oldItem.id == newItem.id
 
             /**
              * Note that in kotlin, == checking on data classes compares all contents, but in Java,
              * typically you'll implement Object#equals, and use it to compare object contents.
              */
-            override fun areContentsTheSame(oldItem: PopularMovieResults, newItem: PopularMovieResults): Boolean =
+            override fun areContentsTheSame(oldItem: MovieResults, newItem: MovieResults): Boolean =
                 oldItem == newItem
 
         }

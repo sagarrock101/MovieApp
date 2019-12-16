@@ -5,13 +5,10 @@ import android.view.ViewGroup
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tmdb.BR
-import com.example.tmdb.GlideApp
-import com.example.tmdb.R
-import com.example.tmdb.api.AppConstants
 import com.example.tmdb.databinding.MoviePosterItemBinding
-import com.example.tmdb.model.PopularMovieResults
+import com.example.tmdb.model.MovieResults
 
-class MovieAdapter(private val list: List<PopularMovieResults>,
+class MovieAdapter(private val list: List<MovieResults>,
                    private val lifecycleOwner: LifecycleOwner)
     : RecyclerView.Adapter<MovieAdapter.ViewHolder>() {
 
@@ -31,7 +28,7 @@ class MovieAdapter(private val list: List<PopularMovieResults>,
 
     class ViewHolder( val binding: MoviePosterItemBinding)
         :RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: PopularMovieResults) {
+        fun bind(item: MovieResults) {
 //            GlideApp.with(binding.posterImageView)
 //                .load(AppConstants.IMAGE_URL + item.posterPath)
 //                .placeholder(R.mipmap.ic_launcher_round)

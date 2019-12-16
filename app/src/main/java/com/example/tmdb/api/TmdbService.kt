@@ -1,17 +1,17 @@
 package com.example.tmdb.api
 
-import com.example.tmdb.model.PopularMovieResponse
-import kotlinx.coroutines.Deferred
+import com.example.tmdb.model.MovieResponse
 import retrofit2.Call
-import retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface TmdbService {
 
-    @GET("movie/popular")
-    fun getPopularMovies(
+    @GET("movie/{id}")
+    fun getMovies(
+        @Path("id") movieId: String,
         @Query("page") page: Int
-    ) : Call<PopularMovieResponse>
+    ) : Call<MovieResponse>
 
 }

@@ -2,7 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:startDestination="@id/splashFragment"
+    app:startDestination="@id/splashFragment2"
     android:id="@+id/navigation">
 
     <fragment
@@ -10,13 +10,13 @@
         android:name="com.example.tmdb.ui.MovieFragment"
         tools:layout="@layout/fragment_movie"/>
     <fragment
-        android:id="@+id/splashFragment"
+        android:id="@+id/splashFragment2"
         android:name="com.example.tmdb.ui.SplashFragment"
         android:label="SplashFragment" >
         <action
-            android:id="@+id/action_splashFragment_to_movieFragment"
+            android:id="@+id/action_splashFragment2_to_movieFragment"
             app:destination="@id/movieFragment"
-            app:popUpTo="@+id/splashFragment"
+            app:popUpTo="@+id/splashFragment2"
             app:popUpToInclusive="true" />
     </fragment>
 </navigation>
