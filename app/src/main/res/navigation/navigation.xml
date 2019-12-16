@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/navigation"
-    app:startDestination="@id/movieFragment">
+    app:startDestination="@id/splashFragment"
+    android:id="@+id/navigation">
 
     <fragment
         android:id="@+id/movieFragment"
         android:name="com.example.tmdb.ui.MovieFragment"
-        android:label="movieFragment" />
+        tools:layout="@layout/fragment_movie"/>
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="com.example.tmdb.ui.SplashFragment"
+        android:label="SplashFragment" >
+        <action
+            android:id="@+id/action_splashFragment_to_movieFragment"
+            app:destination="@id/movieFragment"
+            app:popUpTo="@+id/splashFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
 </navigation>
