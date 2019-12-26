@@ -68,9 +68,4 @@ class MoviesViewModel() : ViewModel() {
         return repository.getPopularMoviesStatus()
     }
 
-
-
-
-
-
 }

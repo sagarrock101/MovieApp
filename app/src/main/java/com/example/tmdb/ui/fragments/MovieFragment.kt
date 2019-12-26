@@ -3,21 +3,25 @@ package com.example.tmdb.ui.fragments
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.tmdb.R
 import com.example.tmdb.adapter.PageAdapter
 import com.example.tmdb.databinding.FragmentMovieBinding
 import com.example.tmdb.model.NetworkStatus
 import com.example.tmdb.viewmodel.MoviesViewModel
+import kotlinx.android.synthetic.main.fragment_movie_detail.*
 
 class MovieFragment : Fragment() {
     private lateinit var viewModel : MoviesViewModel
     private lateinit var binding: FragmentMovieBinding
     private lateinit var adapter: PageAdapter
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     var page = 1
     var movieType = "popular"
     val TAG = "MovieFragment"
@@ -29,9 +33,17 @@ class MovieFragment : Fragment() {
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_movie, container, false)
         viewModel = ViewModelProviders.of(activity!!).get(MoviesViewModel::class.java)
+        swipeRefreshLayout = SwipeRefreshLayout(context!!)
+        swipeRefreshLayout.setOnRefreshListener {
+            Toast.makeText(context, "onRefresh",Toast.LENGTH_SHORT).show()
+            viewModel.fetchMovies(page, movieType)
+            loadPopular()
+        }
         val layoutManager = GridLayoutManager(context, 2)
         if(savedInstanceState == null) {
             viewModel.fetchMovies(page, movieType)
+        } else {
+            Log.e(TAG, "onSaveInstancState: $savedInstanceState")
         }
         binding.recyclerView.layoutManager = layoutManager
         loadPopular()
@@ -44,7 +56,6 @@ class MovieFragment : Fragment() {
         adapter = PageAdapter()
 
         viewModel.popularMoviesLiveData.observe(this, Observer { data ->
-            Log.e(TAG, "Size: " + data.size)
             adapter.submitList(data)
         })
         binding.recyclerView.adapter = adapter
@@ -78,5 +89,7 @@ class MovieFragment : Fragment() {
         viewModel.fetchMovies(page, movieType)
         return super.onOptionsItemSelected(item)
     }
+
+
 
 }
