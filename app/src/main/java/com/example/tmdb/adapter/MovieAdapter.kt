@@ -14,7 +14,7 @@ class MovieAdapter(private val list: List<MovieResults>,
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = MoviePosterItemBinding.inflate(inflater)
+        val binding = MoviePosterItemBinding.inflate(inflater, parent, false)
         binding.lifecycleOwner = lifecycleOwner
         return ViewHolder(binding)
     }

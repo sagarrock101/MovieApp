@@ -7,6 +7,9 @@ import com.example.tmdb.model.MovieResults
 
 class MyViewHolder(private var binding: MoviePosterItemBinding) : RecyclerView.ViewHolder(binding.root),
         GenericAdapter.Binder<MovieResults> {
+    var onItemClick: ((MovieResults) -> Unit)? = null
+    var posterImageView = binding.posterImageView
+
     override fun bind(data: MovieResults) {
       binding.movieItem = data
     }

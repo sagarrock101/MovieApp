@@ -1,6 +1,7 @@
-package com.example.tmdb.ui
+package com.example.tmdb.ui.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -19,6 +20,7 @@ class MovieFragment : Fragment() {
     private lateinit var adapter: PageAdapter
     var page = 1
     var movieType = "popular"
+    val TAG = "MovieFragment"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -28,7 +30,9 @@ class MovieFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_movie, container, false)
         viewModel = ViewModelProviders.of(activity!!).get(MoviesViewModel::class.java)
         val layoutManager = GridLayoutManager(context, 2)
-        viewModel.fetchMovies(page, movieType)
+        if(savedInstanceState == null) {
+            viewModel.fetchMovies(page, movieType)
+        }
         binding.recyclerView.layoutManager = layoutManager
         loadPopular()
         setHasOptionsMenu(true)
@@ -39,7 +43,8 @@ class MovieFragment : Fragment() {
 
         adapter = PageAdapter()
 
-        viewModel.movies.observe(this, Observer { data ->
+        viewModel.popularMoviesLiveData.observe(this, Observer { data ->
+            Log.e(TAG, "Size: " + data.size)
             adapter.submitList(data)
         })
         binding.recyclerView.adapter = adapter

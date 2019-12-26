@@ -36,6 +36,11 @@ class MainActivity : AppCompatActivity() {
         return navController.navigateUp()
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        navController.popBackStack()
+    }
+
 
 
 }

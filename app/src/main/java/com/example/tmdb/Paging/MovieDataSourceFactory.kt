@@ -4,9 +4,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
 import com.example.tmdb.api.TmdbService
 import com.example.tmdb.model.MovieResults
-import com.example.tmdb.model.PopularMovieSearch
+import com.example.tmdb.model.MovieSearch
 
-class PopularMoviesDataSourceFactory(movieApi: TmdbService, private val search: PopularMovieSearch) :
+class PopularMoviesDataSourceFactory(movieApi: TmdbService, private val search: MovieSearch) :
     DataSource.Factory<Int?, MovieResults?>() {
     private val movieApi: TmdbService = movieApi
     private val moviesDataSource: MutableLiveData<MovieDataSource> =

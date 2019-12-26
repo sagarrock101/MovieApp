@@ -1,12 +1,15 @@
 package com.example.tmdb.model
 
+import android.os.Parcelable
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 @JsonClass(generateAdapter = true)
 data class MovieResults(
     val id: Int? = null,
@@ -18,7 +21,7 @@ data class MovieResults(
     val posterPath: String? = null,
     @Json(name = "backdrop_path")
     val backDropPath: String? = null
-) {
+) : Parcelable {
     @BindingAdapter("poster_path")
     fun loadImage(view: ImageView, imageUrl: String) {
         Glide.with(view.context)

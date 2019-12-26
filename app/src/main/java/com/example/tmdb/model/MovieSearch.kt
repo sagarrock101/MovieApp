@@ -1,6 +1,6 @@
 package com.example.tmdb.model
 
-data class PopularMovieSearch(
+data class MovieSearch(
     var page:Int,
     var movieType: String
 ) {

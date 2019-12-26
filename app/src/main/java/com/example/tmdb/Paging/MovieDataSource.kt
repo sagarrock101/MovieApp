@@ -1,22 +1,23 @@
 package com.example.tmdb.Paging
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.PageKeyedDataSource
 import com.example.tmdb.api.TmdbService
 import com.example.tmdb.model.NetworkStatus
 import com.example.tmdb.model.MovieResponse
 import com.example.tmdb.model.MovieResults
-import com.example.tmdb.model.PopularMovieSearch
+import com.example.tmdb.model.MovieSearch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 
-class MovieDataSource(private val apiService: TmdbService, private val search: PopularMovieSearch)
+class MovieDataSource(private val apiService: TmdbService, private val search: MovieSearch)
     : PageKeyedDataSource<Int, MovieResults>() {
 
     private val networkState: MutableLiveData<NetworkStatus> = MutableLiveData()
-
+    val TAG = "MovieDataSource"
     override fun loadInitial(
         params: LoadInitialParams<Int>,
         callback: LoadInitialCallback<Int, MovieResults>
@@ -24,7 +25,7 @@ class MovieDataSource(private val apiService: TmdbService, private val search: P
         apiService.getMovies(search.movieType, FIRST_PAGE)
             .enqueue(object : Callback<MovieResponse>{
                 override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
-
+                    Log.e(TAG, "onFailure: " + t.message)
                 }
 
                 override fun onResponse(
@@ -33,7 +34,8 @@ class MovieDataSource(private val apiService: TmdbService, private val search: P
                 ) {
                     if(!response.body()?.results?.isEmpty()!!) {
                         networkState.postValue(NetworkStatus.SUCCESS)
-                        callback.onResult(response.body()?.results!!, null, FIRST_PAGE + 1)
+                        callback.onResult(response.body()?.results!!, null,
+                            FIRST_PAGE + 1)
                     } else {
                         networkState.postValue(NetworkStatus.EMPTY)
                     }
