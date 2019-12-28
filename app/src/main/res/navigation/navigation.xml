@@ -21,7 +21,11 @@
     <fragment
         android:id="@+id/splashFragment2"
         android:name="com.example.tmdb.ui.fragments.SplashFragment"
-        android:label="SplashFragment" />
+        android:label="SplashFragment" >
+        <action
+            android:id="@+id/action_splashFragment2_to_movieFragment"
+            app:destination="@id/movieFragment" />
+    </fragment>
     <fragment
         android:id="@+id/movieDetailFragment"
         android:name="com.example.tmdb.ui.fragments.MovieDetailFragment"

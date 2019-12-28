@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">TMDB</string>
+    <string name="refresh">refresh</string>
+    <string name="top_rated">top rated</string>
+    <string name="up_coming">up coming</string>
+    <string name="popular">popular</string>
 </resources>

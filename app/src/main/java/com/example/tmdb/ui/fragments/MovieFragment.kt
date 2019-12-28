@@ -33,7 +33,7 @@ class MovieFragment : Fragment() {
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_movie, container, false)
         viewModel = ViewModelProviders.of(activity!!).get(MoviesViewModel::class.java)
-        swipeRefreshLayout = SwipeRefreshLayout(context!!)
+        swipeRefreshLayout = binding.swipeToRefresh
         swipeRefreshLayout.setOnRefreshListener {
             Toast.makeText(context, "onRefresh",Toast.LENGTH_SHORT).show()
             viewModel.fetchMovies(page, movieType)
@@ -52,7 +52,7 @@ class MovieFragment : Fragment() {
     }
 
     private fun loadPopular() {
-
+        swipeRefreshLayout.isRefreshing  = false
         adapter = PageAdapter()
 
         viewModel.popularMoviesLiveData.observe(this, Observer { data ->
@@ -85,6 +85,10 @@ class MovieFragment : Fragment() {
             R.id.popular -> movieType = "popular"
             R.id.up_coming -> movieType = "upcoming"
             R.id.top_rated -> movieType = "top_rated"
+            R.id.menu_refresh -> {
+                swipeRefreshLayout.isRefreshing = true
+                loadPopular()
+            }
         }
         viewModel.fetchMovies(page, movieType)
         return super.onOptionsItemSelected(item)
