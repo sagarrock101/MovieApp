@@ -28,9 +28,9 @@ class PageAdapter
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         getItem(position)?.let { holder.bind(it) }
-//        holder.posterImageView.setOnClickListener {view ->
-//            view.findNavController().navigate(R.id.action_movieFragment_to_movieDetailFragment)
-//        }
+        holder.posterImageView.setOnClickListener {view ->
+            view.findNavController().navigate(R.id.action_movieFragment_to_movieDetailFragment)
+        }
 
     }
 
