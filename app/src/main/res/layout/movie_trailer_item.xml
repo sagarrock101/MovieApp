@@ -1,0 +1,25 @@
+<layout>
+    <data>
+        <variable
+            name="trailerItem"
+            type="com.example.tmdb.model.MovieTrailer" />
+    </data>
+    <FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ImageView
+            android:id="@+id/iv_trailer_thumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@mipmap/ic_launcher_foreground" />
+
+        <ImageView
+            android:id="@+id/iv_youtube_thumbnail"
+            android:layout_gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_youtube"/>
+
+    </FrameLayout>
+</layout>

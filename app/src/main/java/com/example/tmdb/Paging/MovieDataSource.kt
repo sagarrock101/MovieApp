@@ -6,7 +6,7 @@ import androidx.paging.PageKeyedDataSource
 import com.example.tmdb.api.TmdbService
 import com.example.tmdb.model.NetworkStatus
 import com.example.tmdb.model.MovieResponse
-import com.example.tmdb.model.MovieResults
+import com.example.tmdb.model.Movie
 import com.example.tmdb.model.MovieSearch
 import retrofit2.Call
 import retrofit2.Callback
@@ -14,13 +14,13 @@ import retrofit2.Response
 
 
 class MovieDataSource(private val apiService: TmdbService, private val search: MovieSearch)
-    : PageKeyedDataSource<Int, MovieResults>() {
+    : PageKeyedDataSource<Int, Movie>() {
 
     private val networkState: MutableLiveData<NetworkStatus> = MutableLiveData()
     val TAG = "MovieDataSource"
     override fun loadInitial(
         params: LoadInitialParams<Int>,
-        callback: LoadInitialCallback<Int, MovieResults>
+        callback: LoadInitialCallback<Int, Movie>
     ) {
         apiService.getMovies(search.movieType, FIRST_PAGE)
             .enqueue(object : Callback<MovieResponse>{
@@ -46,7 +46,7 @@ class MovieDataSource(private val apiService: TmdbService, private val search: M
 
     override fun loadAfter(
         params: LoadParams<Int>,
-        callback: LoadCallback<Int, MovieResults>
+        callback: LoadCallback<Int, Movie>
     ) {
         apiService.getMovies(search.movieType, params.key)
             .enqueue(object : Callback<MovieResponse>{
@@ -72,7 +72,7 @@ class MovieDataSource(private val apiService: TmdbService, private val search: M
 
     override fun loadBefore(
         params: LoadParams<Int>,
-        callback: LoadCallback<Int, MovieResults>
+        callback: LoadCallback<Int, Movie>
     ) {
         apiService.getMovies(search.movieType, params.key)
             .enqueue(object : Callback<MovieResponse>{

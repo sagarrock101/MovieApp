@@ -3,11 +3,11 @@ package com.example.tmdb.ui.fragments
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.tmdb.R
@@ -15,7 +15,6 @@ import com.example.tmdb.adapter.PageAdapter
 import com.example.tmdb.databinding.FragmentMovieBinding
 import com.example.tmdb.model.NetworkStatus
 import com.example.tmdb.viewmodel.MoviesViewModel
-import kotlinx.android.synthetic.main.fragment_movie_detail.*
 
 class MovieFragment : Fragment() {
     private lateinit var viewModel : MoviesViewModel
@@ -26,25 +25,31 @@ class MovieFragment : Fragment() {
     var movieType = "popular"
     val TAG = "MovieFragment"
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+//        viewModel = ViewModelProviders.of(activity!!).get(MoviesViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(MoviesViewModel::class.java)
+        if(savedInstanceState == null) {
+            viewModel.fetchMovies(page, movieType)
+        } else {
+            Log.e(TAG, "onSaveInstancState: $savedInstanceState")
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_movie, container, false)
-        viewModel = ViewModelProviders.of(activity!!).get(MoviesViewModel::class.java)
         swipeRefreshLayout = binding.swipeToRefresh
         swipeRefreshLayout.setOnRefreshListener {
-            Toast.makeText(context, "onRefresh",Toast.LENGTH_SHORT).show()
             viewModel.fetchMovies(page, movieType)
             loadPopular()
         }
         val layoutManager = GridLayoutManager(context, 2)
-        if(savedInstanceState == null) {
-            viewModel.fetchMovies(page, movieType)
-        } else {
-            Log.e(TAG, "onSaveInstancState: $savedInstanceState")
-        }
+
+
         binding.recyclerView.layoutManager = layoutManager
         loadPopular()
         setHasOptionsMenu(true)
@@ -53,7 +58,8 @@ class MovieFragment : Fragment() {
 
     private fun loadPopular() {
         swipeRefreshLayout.isRefreshing  = false
-        adapter = PageAdapter()
+        var fm = (activity as AppCompatActivity).supportFragmentManager
+        adapter = PageAdapter(fm)
 
         viewModel.popularMoviesLiveData.observe(this, Observer { data ->
             adapter.submitList(data)
@@ -72,6 +78,8 @@ class MovieFragment : Fragment() {
                 }
             }
         })
+
+
 
     }
 

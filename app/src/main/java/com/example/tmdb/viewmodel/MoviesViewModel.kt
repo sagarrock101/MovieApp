@@ -1,40 +1,44 @@
 package com.example.tmdb.viewmodel
 
+import android.app.Application
+import android.content.Context
 import androidx.lifecycle.*
 import androidx.paging.PagedList
 import com.example.tmdb.api.ApiFactory
-import com.example.tmdb.model.NetworkStatus
-import com.example.tmdb.model.MovieResults
-import com.example.tmdb.model.MovieSearch
+import com.example.tmdb.database.MovieDatabase
+import com.example.tmdb.model.*
 import com.example.tmdb.repository.MovieRepository
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 
 
-class MoviesViewModel() : ViewModel() {
+class MoviesViewModel(application: Application) : AndroidViewModel(application) {
     val TAG = "ViewModel"
-    private val parentJob = Job()
-    private val coroutineContext : CoroutineContext
-    get() = parentJob + Dispatchers.Default
-
-    private val scope = CoroutineScope(coroutineContext)
-
-    private val repository: MovieRepository = MovieRepository(ApiFactory.MOVIE_SERVICE)
 
 
-    private var moviesLiveData = MutableLiveData<MovieSearch>()
-    var popularMoviesLiveData : LiveData<PagedList<MovieResults>>
+    private val repository: MovieRepository = MovieRepository(ApiFactory.MOVIE_SERVICE, application)
+
+    private var moviesMutableLiveData = MutableLiveData<MovieSearch>()
+     var popularMoviesLiveData : LiveData<PagedList<Movie>>
+
+    private  var trailersMutableLiveDataLiveData = MutableLiveData<TrailerSearch>()
+     var trailersLiveData: LiveData<MovieTrailerResponse>
 //    var moviesLiveData: LiveData<MovieResponse>
 
-    var movies : MediatorLiveData<PagedList<MovieResults>> = MediatorLiveData()
+    var movies : MediatorLiveData<PagedList<Movie>> = MediatorLiveData()
 
     init {
-        this.popularMoviesLiveData = Transformations.switchMap(moviesLiveData) { search ->
+        this.popularMoviesLiveData = Transformations.switchMap(moviesMutableLiveData) { search ->
             repository.getPopular(search)
         }
 //        this.moviesLiveData = Transformations.switchMap(popularMoviesMutableLiveData) {search ->
 //            repository.getPopularMovies(search)
 //        }
+        this.trailersLiveData = Transformations.switchMap(trailersMutableLiveDataLiveData) {search ->
+            repository.getTrailersList(search)
+        }
+
+
 
 
 
@@ -50,17 +54,15 @@ class MoviesViewModel() : ViewModel() {
     fun fetchMovies(page: Int, movieType: String){
         val movieSearch = MovieSearch(page, movieType)
 //        movies.addSource(repository.getPopular(movieSearch), movies::setValue)
-        moviesLiveData.postValue(movieSearch)
+        moviesMutableLiveData.postValue(movieSearch)
     }
     fun fetchMovies(movieType: String) {
         val movieSearch = MovieSearch(1, movieType)
-        moviesLiveData.postValue(movieSearch)
+        moviesMutableLiveData.postValue(movieSearch)
 
     }
-    fun cancelRequests() = coroutineContext.cancel()
 
-
-    fun getMovie() : LiveData<PagedList<MovieResults>> {
+    fun getMovie() : LiveData<PagedList<Movie>> {
         return movies
     }
 
@@ -68,4 +70,20 @@ class MoviesViewModel() : ViewModel() {
         return repository.getPopularMoviesStatus()
     }
 
+    fun getTrailers(id: Int) {
+        var trailerSearch = TrailerSearch(id)
+        trailersMutableLiveDataLiveData.value = trailerSearch
+    }
+
+    fun getMovieFromDb(id: Int): LiveData<Movie> {
+        return repository.currentMovie
+    }
+
+    fun insertToDb(movie: Movie) {
+        repository.insertMovieToDb(movie)
+    }
+
+    fun deleteFromDb(id: Int) {
+        repository.deleteMovieInDb(id)
+    }
 }
