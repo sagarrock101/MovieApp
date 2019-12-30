@@ -15,12 +15,14 @@ import com.example.tmdb.adapter.PageAdapter
 import com.example.tmdb.databinding.FragmentMovieBinding
 import com.example.tmdb.model.NetworkStatus
 import com.example.tmdb.viewmodel.MoviesViewModel
+import com.example.tmdb.viewmodel.ViewModelFactory
 
 class MovieFragment : Fragment() {
     private lateinit var viewModel : MoviesViewModel
     private lateinit var binding: FragmentMovieBinding
     private lateinit var adapter: PageAdapter
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    private lateinit var viewModelFactory: ViewModelFactory
     var page = 1
     var movieType = "popular"
     val TAG = "MovieFragment"
@@ -28,7 +30,8 @@ class MovieFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //        viewModel = ViewModelProviders.of(activity!!).get(MoviesViewModel::class.java)
-        viewModel = ViewModelProvider(this).get(MoviesViewModel::class.java)
+        viewModelFactory = ViewModelFactory(activity!!.application)
+        viewModel = ViewModelProvider(this, viewModelFactory).get(MoviesViewModel::class.java)
         if(savedInstanceState == null) {
             viewModel.fetchMovies(page, movieType)
         } else {
