@@ -11,8 +11,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.tmdb.GlideApp
 import com.example.tmdb.R
 import com.example.tmdb.adapter.TrailerAdapter
+import com.example.tmdb.api.AppConstants
 import com.example.tmdb.databinding.FragmentMovieDetailBinding
 import com.example.tmdb.model.Movie
 import com.example.tmdb.viewmodel.MoviesViewModel
@@ -45,6 +47,10 @@ class MovieDetailFragment : Fragment() {
             binding.movieItem = arguments!!.getParcelable("data")
              movie = arguments!!.getParcelable("data")!!
             movie.id?.let { viewModel.getTrailers(it) }
+            GlideApp.with(binding.toolbarImage)
+                            .load(AppConstants.IMAGE_URL + movie.backDropPath)
+                            .placeholder(R.mipmap.ic_launcher_round)
+                            .into(binding.toolbarImage)
 
         }
 

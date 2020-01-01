@@ -123,12 +123,10 @@ class MovieRepository(private val service : TmdbService, private var context: Co
 //    }
 
     private val _movie = MutableLiveData<Movie>()
-     var currentMovie: LiveData<Movie> = _movie
+     lateinit var currentMovie: LiveData<Movie>
 
     fun getMovieFromDb(id: Int) {
-        uiScope.launch {
-           currentMovie = (database.movieDao.getMovie(id))
-        }
+        currentMovie = (database.movieDao.getMovie(id))
     }
 
     fun insertMovieToDb(movie: Movie) {
@@ -143,6 +141,10 @@ class MovieRepository(private val service : TmdbService, private var context: Co
         uiScope.launch {
             database.movieDao.deleteMovie(id)
         }
+    }
+
+    fun getFavoriteMovies() : LiveData<PagedList<Movie>> = runBlocking {
+         LivePagedListBuilder<Int, Movie>(database.movieDao.getMovieList(), config).build()
     }
 
 }

@@ -93,18 +93,33 @@ class MovieFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
-            R.id.popular -> movieType = "popular"
-            R.id.up_coming -> movieType = "upcoming"
-            R.id.top_rated -> movieType = "top_rated"
+            R.id.popular -> {
+                movieType = "popular"
+                viewModel.fetchMovies(page, movieType)
+            }
+            R.id.up_coming -> {
+                movieType = "upcoming"
+                viewModel.fetchMovies(page, movieType)
+            }
+            R.id.top_rated -> {
+                movieType = "top_rated"
+                viewModel.fetchMovies(page, movieType)
+            }
+            R.id.menu_favorites -> {
+                favoritesLoader()
+            }
             R.id.menu_refresh -> {
                 swipeRefreshLayout.isRefreshing = true
                 loadPopular()
             }
         }
-        viewModel.fetchMovies(page, movieType)
         return super.onOptionsItemSelected(item)
     }
 
-
+    private fun favoritesLoader() {
+        viewModel.loadFavorites().observe(this, Observer { data ->
+            adapter.submitList(data)
+        })
+    }
 
 }

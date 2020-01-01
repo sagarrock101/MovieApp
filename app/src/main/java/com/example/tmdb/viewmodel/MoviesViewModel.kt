@@ -90,4 +90,8 @@ class MoviesViewModel(application: Application) : AndroidViewModel(application) 
     fun deleteFromDb(id: Int) {
         repository.deleteMovieInDb(id)
     }
+
+    fun loadFavorites() : LiveData<PagedList<Movie>> {
+       return repository.getFavoriteMovies()
+    }
 }

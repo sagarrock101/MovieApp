@@ -3,6 +3,7 @@ package com.example.tmdb
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
+import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.signature.ObjectKey
@@ -40,3 +41,11 @@ fun ImageView.loadImageMovie(
     }
     requestBuilder.apply(requestOptions).into(this)
 }
+
+//@BindingAdapter(value = ["loadImage"])
+//fun ImageView.loadImage(view: ImageView, imageUrl: String) {
+//    Glide.with(view.context)
+//        .load(imageUrl)
+//        .apply(RequestOptions().circleCrop())
+//        .into(view)
+//}
