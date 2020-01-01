@@ -15,6 +15,7 @@ import kotlin.coroutines.CoroutineContext
 class MoviesViewModel(application: Application) : AndroidViewModel(application) {
     val TAG = "ViewModel"
 
+    var favoritesSelected: MutableLiveData<Boolean> = MutableLiveData()
 
     private val repository: MovieRepository = MovieRepository(ApiFactory.MOVIE_SERVICE, application)
 

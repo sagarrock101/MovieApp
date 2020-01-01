@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.tmdb.R
 import com.example.tmdb.adapter.PageAdapter
@@ -16,6 +17,7 @@ import com.example.tmdb.databinding.FragmentMovieBinding
 import com.example.tmdb.model.NetworkStatus
 import com.example.tmdb.viewmodel.MoviesViewModel
 import com.example.tmdb.viewmodel.ViewModelFactory
+import kotlinx.android.synthetic.main.fragment_movie.*
 
 class MovieFragment : Fragment() {
     private lateinit var viewModel : MoviesViewModel
@@ -24,16 +26,18 @@ class MovieFragment : Fragment() {
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var viewModelFactory: ViewModelFactory
     var page = 1
-    var movieType = "popular"
+//    var movieType = "popular"
+    var movieType: String? = null
     val TAG = "MovieFragment"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        viewModel = ViewModelProviders.of(activity!!).get(MoviesViewModel::class.java)
         viewModelFactory = ViewModelFactory(activity!!.application)
         viewModel = ViewModelProvider(this, viewModelFactory).get(MoviesViewModel::class.java)
+        movieType = "popular"
+        viewModel.favoritesSelected.value = false
         if(savedInstanceState == null) {
-            viewModel.fetchMovies(page, movieType)
+            movieType?.let { viewModel.fetchMovies(page, it) }
         } else {
             Log.e(TAG, "onSaveInstancState: $savedInstanceState")
         }
@@ -47,19 +51,23 @@ class MovieFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_movie, container, false)
         swipeRefreshLayout = binding.swipeToRefresh
         swipeRefreshLayout.setOnRefreshListener {
-            viewModel.fetchMovies(page, movieType)
-            loadPopular()
+            movieType?.let { viewModel.fetchMovies(page, it) }
+            loadMovies()
         }
         val layoutManager = GridLayoutManager(context, 2)
 
 
         binding.recyclerView.layoutManager = layoutManager
-        loadPopular()
+        if(viewModel.favoritesSelected.value == false) {
+            loadMovies()
+        } else {
+            favoritesLoader()
+        }
         setHasOptionsMenu(true)
         return binding.root
     }
 
-    private fun loadPopular() {
+    private fun loadMovies() {
         swipeRefreshLayout.isRefreshing  = false
         var fm = (activity as AppCompatActivity).supportFragmentManager
         adapter = PageAdapter(fm)
@@ -95,22 +103,26 @@ class MovieFragment : Fragment() {
         when(item.itemId) {
             R.id.popular -> {
                 movieType = "popular"
-                viewModel.fetchMovies(page, movieType)
+                viewModel.favoritesSelected.value = false
+                viewModel.fetchMovies(page, movieType!!)
             }
             R.id.up_coming -> {
                 movieType = "upcoming"
-                viewModel.fetchMovies(page, movieType)
+                viewModel.favoritesSelected.value = false
+                viewModel.fetchMovies(page, movieType!!)
             }
             R.id.top_rated -> {
                 movieType = "top_rated"
-                viewModel.fetchMovies(page, movieType)
+                viewModel.favoritesSelected.value = false
+                viewModel.fetchMovies(page, movieType!!)
             }
             R.id.menu_favorites -> {
+                viewModel.favoritesSelected.value = true
                 favoritesLoader()
             }
             R.id.menu_refresh -> {
                 swipeRefreshLayout.isRefreshing = true
-                loadPopular()
+                loadMovies()
             }
         }
         return super.onOptionsItemSelected(item)
@@ -120,6 +132,9 @@ class MovieFragment : Fragment() {
         viewModel.loadFavorites().observe(this, Observer { data ->
             adapter.submitList(data)
         })
+
+        binding.recyclerView.adapter = adapter
+        binding.recyclerView.layoutManager = GridLayoutManager(context, 2)
     }
 
 }
