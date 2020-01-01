@@ -42,7 +42,7 @@ class MoviesViewModel(application: Application) : AndroidViewModel(application) 
 
 
     }
-    
+
     fun fetchMovies(page: Int, movieType: String){
 
 

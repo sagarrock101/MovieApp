@@ -1,8 +1,10 @@
 package com.example.tmdb.adapter
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.FragmentManager
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
@@ -20,15 +22,29 @@ class PageAdapter(var supportFragmentManager: FragmentManager)
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         getItem(position)?.let { holder.bind(it) }
+
         holder.posterImageView.setOnClickListener {
-            val args = Bundle()
-            var fragment = MovieDetailFragment()
-            fragment.arguments = args
-            args.putParcelable("data", getItem(position))
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_main, fragment)
-                .addToBackStack(null)
-                .commit()
+            try {
+                val args = Bundle()
+                var fragment = MovieDetailFragment()
+                fragment.arguments = args
+                args.putParcelable("data", getItem(position))
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_main, fragment)
+                    .addToBackStack(null)
+                    .commit()
+            }catch (e: Exception) {
+                Log.e(TAG, "Position: $position")
+                Log.e(TAG, "Error Message: " + e.message)
+                val args = Bundle()
+                var fragment = MovieDetailFragment()
+                fragment.arguments = args
+                args.putParcelable("data", getItem(position-1))
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_main, fragment)
+                    .addToBackStack(null)
+                    .commit()
+            }
         }
 
     }
