@@ -1,15 +1,11 @@
 package com.example.tmdb.viewmodel
 
 import android.app.Application
-import android.content.Context
 import androidx.lifecycle.*
 import androidx.paging.PagedList
 import com.example.tmdb.api.ApiFactory
-import com.example.tmdb.database.MovieDatabase
 import com.example.tmdb.model.*
 import com.example.tmdb.repository.MovieRepository
-import kotlinx.coroutines.*
-import kotlin.coroutines.CoroutineContext
 
 
 class MoviesViewModel(application: Application) : AndroidViewModel(application) {
@@ -30,11 +26,13 @@ class MoviesViewModel(application: Application) : AndroidViewModel(application) 
 
     init {
         this.popularMoviesLiveData = Transformations.switchMap(moviesMutableLiveData) { search ->
-            repository.getPopular(search)
+            if(search.movieType == "favorites") {
+                repository.getFavoriteMovies(search)
+            } else {
+                repository.getPopular(search)
+            }
         }
-//        this.moviesLiveData = Transformations.switchMap(popularMoviesMutableLiveData) {search ->
-//            repository.getPopularMovies(search)
-//        }
+
         this.trailersLiveData = Transformations.switchMap(trailersMutableLiveDataLiveData) {search ->
             repository.getTrailersList(search)
         }
@@ -44,18 +42,13 @@ class MoviesViewModel(application: Application) : AndroidViewModel(application) 
 
 
     }
-//    var moviesLiveData: LiveData<MovieResponse>
-
-//    init {
-//        this.moviesLiveData = Transformations.switchMap(popularMoviesMutableLiveData) { search ->
-//            repository.getPopularMovies(search)
-//        }
-//    }
-
+    
     fun fetchMovies(page: Int, movieType: String){
-        val movieSearch = MovieSearch(page, movieType)
-//        movies.addSource(repository.getPopular(movieSearch), movies::setValue)
-        moviesMutableLiveData.postValue(movieSearch)
+
+
+            val movieSearch = MovieSearch(page, movieType)
+            moviesMutableLiveData.postValue(movieSearch)
+
     }
     fun fetchMovies(movieType: String) {
         val movieSearch = MovieSearch(1, movieType)
@@ -92,7 +85,5 @@ class MoviesViewModel(application: Application) : AndroidViewModel(application) 
         repository.deleteMovieInDb(id)
     }
 
-    fun loadFavorites() : LiveData<PagedList<Movie>> {
-       return repository.getFavoriteMovies()
-    }
+
 }

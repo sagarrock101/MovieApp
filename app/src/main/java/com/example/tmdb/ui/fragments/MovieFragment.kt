@@ -58,11 +58,8 @@ class MovieFragment : Fragment() {
 
 
         binding.recyclerView.layoutManager = layoutManager
-        if(viewModel.favoritesSelected.value == false) {
             loadMovies()
-        } else {
-            favoritesLoader()
-        }
+
         setHasOptionsMenu(true)
         return binding.root
     }
@@ -72,9 +69,11 @@ class MovieFragment : Fragment() {
         var fm = (activity as AppCompatActivity).supportFragmentManager
         adapter = PageAdapter(fm)
 
-        viewModel.popularMoviesLiveData.observe(this, Observer { data ->
-            adapter.submitList(data)
-        })
+        movieType?.let {
+            viewModel.popularMoviesLiveData.observe(this, Observer { data ->
+                adapter.submitList(data)
+            })
+        }
         binding.recyclerView.adapter = adapter
 
         viewModel.getMoviesStatus().observe(this, Observer { networkStatus ->
@@ -117,8 +116,9 @@ class MovieFragment : Fragment() {
                 viewModel.fetchMovies(page, movieType!!)
             }
             R.id.menu_favorites -> {
+                movieType = "favorites"
                 viewModel.favoritesSelected.value = true
-                favoritesLoader()
+                viewModel.fetchMovies(page, movieType!!)
             }
             R.id.menu_refresh -> {
                 swipeRefreshLayout.isRefreshing = true
@@ -129,7 +129,7 @@ class MovieFragment : Fragment() {
     }
 
     private fun favoritesLoader() {
-        viewModel.loadFavorites().observe(this, Observer { data ->
+        viewModel.popularMoviesLiveData.observe(this, Observer { data ->
             adapter.submitList(data)
         })
 

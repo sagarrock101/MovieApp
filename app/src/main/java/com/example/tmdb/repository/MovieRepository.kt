@@ -143,8 +143,8 @@ class MovieRepository(private val service : TmdbService, private var context: Co
         }
     }
 
-    fun getFavoriteMovies() : LiveData<PagedList<Movie>> = runBlocking {
-         LivePagedListBuilder<Int, Movie>(database.movieDao.getMovieList(), config).build()
+    fun getFavoriteMovies(movieSearch: MovieSearch) : LiveData<PagedList<Movie>>  {
+        return LivePagedListBuilder<Int, Movie>(database.movieDao.getMovieList(), config).build()
     }
 
 }
