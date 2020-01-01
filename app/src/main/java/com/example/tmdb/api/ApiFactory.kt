@@ -1,5 +1,6 @@
 package com.example.tmdb.api
 
+import com.facebook.stetho.okhttp3.StethoInterceptor
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -24,6 +25,7 @@ object ApiFactory {
 
     private val tmdbClient = OkHttpClient().newBuilder()
         .addInterceptor(authInterceptor)
+        .addNetworkInterceptor(StethoInterceptor())
         .build()
 
 

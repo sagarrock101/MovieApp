@@ -1,5 +1,6 @@
 package com.example.tmdb.database
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -16,5 +17,5 @@ interface MovieDao {
     suspend fun deleteMovie(id: Int)
 
     @Query("SELECT * FROM movie_table WHERE id = :id")
-     suspend fun getMovie(id: Int): Movie
+      fun getMovie(id: Int): LiveData<Movie>
 }

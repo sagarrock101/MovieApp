@@ -75,8 +75,12 @@ class MoviesViewModel(application: Application) : AndroidViewModel(application) 
         trailersMutableLiveDataLiveData.value = trailerSearch
     }
 
-    fun getMovieFromDb(id: Int): LiveData<Movie> {
+    fun getMovieFromDb(): LiveData<Movie> {
         return repository.currentMovie
+    }
+
+    fun getMovieCheck(id: Int) {
+        repository.getMovieFromDb(id)
     }
 
     fun insertToDb(movie: Movie) {

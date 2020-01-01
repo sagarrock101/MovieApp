@@ -2,6 +2,7 @@ package com.example.tmdb.repository
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -121,22 +122,24 @@ class MovieRepository(private val service : TmdbService, private var context: Co
 //        }
 //    }
 
-    private val _movie = MediatorLiveData<Movie>()
-    val currentMovie: LiveData<Movie> = _movie
+    private val _movie = MutableLiveData<Movie>()
+     var currentMovie: LiveData<Movie> = _movie
 
     fun getMovieFromDb(id: Int) {
         uiScope.launch {
-           _movie.postValue(database.movieDao.getMovie(id))
+           currentMovie = (database.movieDao.getMovie(id))
         }
     }
 
     fun insertMovieToDb(movie: Movie) {
+        Toast.makeText(context, "Inserted to DB",Toast.LENGTH_SHORT).show()
         uiScope.launch {
             database.movieDao.insert(movie)
         }
     }
 
     fun deleteMovieInDb(id: Int) {
+        Toast.makeText(context, "Deleted from DB",Toast.LENGTH_SHORT).show()
         uiScope.launch {
             database.movieDao.deleteMovie(id)
         }

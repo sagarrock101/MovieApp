@@ -1,9 +1,11 @@
 package com.example.tmdb.ui.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -21,6 +23,8 @@ class MovieDetailFragment : Fragment() {
     private lateinit var adapter: TrailerAdapter
     private var heartFlag = false
     lateinit var movie: Movie
+
+    val TAG = "MovieDetailFragment"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,12 +54,19 @@ class MovieDetailFragment : Fragment() {
             binding.rvTrailerThumbnail.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL,
                 false)
         })
-
-        viewModel.getMovieFromDb(movie.id!!).observe(this, Observer { liveData ->
-            if(movie.id == liveData.id) {
-                binding.fab.setImageResource(R.drawable.ic_heart)
-                heartFlag = false
-            }
+        movie.id?.let { viewModel.getMovieCheck(it) }
+        viewModel.getMovieFromDb().observe(this, Observer { liveData ->
+           if(liveData != null) {
+               if(movie.id == liveData.id) {
+                   binding.fab.setImageResource(R.drawable.ic_like)
+                   heartFlag = true
+                   Toast.makeText(context, "Inserted", Toast.LENGTH_SHORT).show()
+               } else {
+                   Toast.makeText(context, "not inserted", Toast.LENGTH_SHORT).show()
+                   binding.fab.setImageResource(R.drawable.ic_heart)
+                   heartFlag = false
+               }
+           }
         })
 
         binding.fab.setOnClickListener {

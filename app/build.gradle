@@ -18,6 +18,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        javaCompileOptions.annotationProcessorOptions.includeCompileClasspath = true
     }
     buildTypes {
         release {
@@ -122,5 +123,12 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
     kapt 'androidx.room:room-compiler:2.2.1'
+
+    //stetho
+    implementation 'com.facebook.stetho:stetho:1.5.1'
+
+    //okhttp stetho
+    implementation 'com.facebook.stetho:stetho-okhttp3:1.5.1' // for OkHttp library
+
 
 }
