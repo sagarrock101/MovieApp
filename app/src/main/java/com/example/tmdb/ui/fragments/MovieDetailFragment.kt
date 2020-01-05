@@ -32,7 +32,7 @@ class MovieDetailFragment : Fragment() {
     lateinit var movie: Movie
 
     val TAG = "MovieDetailFragment"
-    
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

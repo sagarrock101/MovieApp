@@ -23,6 +23,7 @@ import retrofit2.Response
 import javax.inject.Inject
 
 class MovieRepository @Inject constructor( val service : TmdbService,  var context: Context)  {
+    
     val movieLiveData : MutableLiveData<MovieResponse> =  MutableLiveData()
     lateinit var movieDao: MovieDao
     val TAG = "MovieRepository"
@@ -65,7 +66,7 @@ class MovieRepository @Inject constructor( val service : TmdbService,  var conte
     }
 
     fun getPopular(search: MovieSearch): LiveData<PagedList<Movie>> {
-        popularMoviesDataSourceFactory = PopularMoviesDataSourceFactory(ApiFactory.MOVIE_SERVICE, search)
+        popularMoviesDataSourceFactory = PopularMoviesDataSourceFactory(service, search)
         popularMoviesStatus = Transformations
             .switchMap(
                 popularMoviesDataSourceFactory.getPopularMoviesDataSource(),
