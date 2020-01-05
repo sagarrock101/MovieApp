@@ -3,7 +3,6 @@ package com.example.tmdb.viewmodel
 import android.app.Application
 import androidx.lifecycle.*
 import androidx.paging.PagedList
-import com.example.tmdb.api.ApiFactory
 import com.example.tmdb.model.*
 import com.example.tmdb.repository.MovieRepository
 import javax.inject.Inject
@@ -14,7 +13,9 @@ class MoviesViewModel @Inject constructor(application: Application) : AndroidVie
 
     var favoritesSelected: MutableLiveData<Boolean> = MutableLiveData()
 
-    private val repository: MovieRepository = MovieRepository(ApiFactory.MOVIE_SERVICE, application)
+    @Inject
+    lateinit var repository: MovieRepository
+//            = MovieRepository(ApiFactory.MOVIE_SERVICE, application)
 
     private var moviesMutableLiveData = MutableLiveData<MovieSearch>()
      var popularMoviesLiveData : LiveData<PagedList<Movie>>

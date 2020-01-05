@@ -20,8 +20,9 @@ import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import javax.inject.Inject
 
-class MovieRepository(private val service : TmdbService, private var context: Context)  {
+class MovieRepository @Inject constructor( val service : TmdbService,  var context: Context)  {
     val movieLiveData : MutableLiveData<MovieResponse> =  MutableLiveData()
     lateinit var movieDao: MovieDao
     val TAG = "MovieRepository"
@@ -97,30 +98,6 @@ class MovieRepository(private val service : TmdbService, private var context: Co
         return liveData
 
     }
-
-//     private suspend fun getMovieFromDb(id: Int) : LiveData<Movie> {
-//            return withContext(Dispatchers.IO) {
-//                 database.movieDao.getMovie(id)
-//            }
-//    }
-//
-//    private suspend fun insertMovie(movie: Movie) {
-//        return withContext(Dispatchers.IO) {
-//            database.movieDao.insert(movie)
-//        }
-//    }
-//
-//    private suspend fun deleteMovie(id: Int) {
-//        return withContext(Dispatchers.IO) {
-//            database.movieDao.deleteMovie(id)
-//        }
-//    }
-//    private var movieFromDb: MutableLiveData<Movie> = MutableLiveData()
-//    private fun getMovie(id: Int) {
-//        uiScope.launch {
-//            movieFromDb.value = getMovieFromDb(id)
-//        }
-//    }
 
     private val _movie = MutableLiveData<Movie>()
      lateinit var currentMovie: LiveData<Movie>

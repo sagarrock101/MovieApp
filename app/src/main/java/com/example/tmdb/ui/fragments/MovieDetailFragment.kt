@@ -1,5 +1,6 @@
 package com.example.tmdb.ui.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,29 +13,26 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.tmdb.GlideApp
+import com.example.tmdb.MyApplication
 import com.example.tmdb.R
 import com.example.tmdb.adapter.TrailerAdapter
 import com.example.tmdb.api.AppConstants
 import com.example.tmdb.databinding.FragmentMovieDetailBinding
 import com.example.tmdb.model.Movie
 import com.example.tmdb.viewmodel.MoviesViewModel
+import javax.inject.Inject
 
 class MovieDetailFragment : Fragment() {
     private lateinit var binding: FragmentMovieDetailBinding
-    private lateinit var viewModel : MoviesViewModel
+
+    @Inject
+    lateinit var viewModel : MoviesViewModel
     private lateinit var adapter: TrailerAdapter
     private var heartFlag = false
     lateinit var movie: Movie
 
     val TAG = "MovieDetailFragment"
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel = ViewModelProviders.of(activity!!).get(MoviesViewModel::class.java)
-
-
-    }
-
+    
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -91,5 +89,9 @@ class MovieDetailFragment : Fragment() {
         return binding.root
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        (activity!!.application as MyApplication).appComponent.inject(this)
+    }
 
 }
