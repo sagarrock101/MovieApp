@@ -11,6 +11,7 @@ buildscript {
          lifecycle_version = "2.1.0"
         navigationVersion = '1.0.0-rc02'
         room_version = "2.2.3"
+        dagger_version = "2.25.4"
     }
     repositories {
         google()

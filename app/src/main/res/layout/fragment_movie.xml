@@ -12,7 +12,7 @@
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:listitem="@layout/movie_poster_item" />
+        tools:listitem="@layout/movie_poster_item" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
         <ProgressBar

@@ -1,5 +1,6 @@
 package com.example.tmdb.ui.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -7,32 +8,35 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.tmdb.MyApplication
 import com.example.tmdb.R
 import com.example.tmdb.adapter.PageAdapter
 import com.example.tmdb.databinding.FragmentMovieBinding
 import com.example.tmdb.model.NetworkStatus
 import com.example.tmdb.viewmodel.MoviesViewModel
 import com.example.tmdb.viewmodel.ViewModelFactory
+import javax.inject.Inject
 
 class MovieFragment : Fragment() {
-    
-    private lateinit var viewModel : MoviesViewModel
+
+    @Inject
+    lateinit var viewModel : MoviesViewModel
     private lateinit var binding: FragmentMovieBinding
     private lateinit var adapter: PageAdapter
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
-    private lateinit var viewModelFactory: ViewModelFactory
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
 
     var page = 1
     var movieType: String? = null
     val TAG = "MovieFragment"
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
-        viewModelFactory = ViewModelFactory(activity!!.application)
-        viewModel = ViewModelProvider(this, viewModelFactory).get(MoviesViewModel::class.java)
         movieType = "popular"
         viewModel.favoritesSelected.value = false
         if(savedInstanceState == null) {
@@ -121,6 +125,11 @@ class MovieFragment : Fragment() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        (activity!!.application as MyApplication).appComponent.inject(this)
     }
 
 }

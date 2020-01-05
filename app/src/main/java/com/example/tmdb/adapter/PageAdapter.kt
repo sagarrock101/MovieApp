@@ -17,7 +17,6 @@ import com.example.tmdb.ui.fragments.MovieDetailFragment
 class PageAdapter(var supportFragmentManager: FragmentManager)
     : PagedListAdapter<Movie, PageAdapter.MyViewHolder>(diffCallback) {
 
-    var onItemClick: ((Movie) -> Unit)? = null
     private var TAG = "PageAdapter"
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {

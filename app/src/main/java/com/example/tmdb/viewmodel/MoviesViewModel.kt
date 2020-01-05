@@ -6,9 +6,10 @@ import androidx.paging.PagedList
 import com.example.tmdb.api.ApiFactory
 import com.example.tmdb.model.*
 import com.example.tmdb.repository.MovieRepository
+import javax.inject.Inject
 
 
-class MoviesViewModel(application: Application) : AndroidViewModel(application) {
+class MoviesViewModel @Inject constructor(application: Application) : AndroidViewModel(application) {
     val TAG = "ViewModel"
 
     var favoritesSelected: MutableLiveData<Boolean> = MutableLiveData()

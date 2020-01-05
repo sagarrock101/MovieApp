@@ -130,5 +130,8 @@ dependencies {
     //okhttp stetho
     implementation 'com.facebook.stetho:stetho-okhttp3:1.5.1' // for OkHttp library
 
+    //dagger android
+    implementation "com.google.dagger:dagger:$dagger_version"
+    kapt "com.google.dagger:dagger-compiler:$dagger_version"
 
 }

@@ -14,12 +14,13 @@
         app:cardCornerRadius="10dp"
         android:orientation="vertical">
 
-        <androidx.appcompat.widget.AppCompatImageView
+        <ImageView
             android:id="@+id/posterImageView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
             android:layout_margin="1dp"
+            android:contentDescription="@string/check"
             app:srcCompat="@drawable/ic_launcher_foreground"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
