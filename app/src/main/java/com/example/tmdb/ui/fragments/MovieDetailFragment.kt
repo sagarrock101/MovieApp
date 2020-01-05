@@ -11,6 +11,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.tmdb.GlideApp
 import com.example.tmdb.MyApplication
@@ -24,6 +25,8 @@ import javax.inject.Inject
 
 class MovieDetailFragment : Fragment() {
     private lateinit var binding: FragmentMovieDetailBinding
+
+    val args: MovieDetailFragmentArgs by navArgs()
 
     @Inject
     lateinit var viewModel : MoviesViewModel
@@ -41,9 +44,10 @@ class MovieDetailFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_movie_detail, container,
             false)
 
-        if(arguments != null) {
-            binding.movieItem = arguments!!.getParcelable("data")
-             movie = arguments!!.getParcelable("data")!!
+        if(args != null) {
+//            binding.movieItem = arguments!!.getParcelable("data")
+//             movie = arguments!!.getParcelable("data")!!
+            movie = args.movieData!!
             movie.id?.let { viewModel.getTrailers(it) }
             GlideApp.with(binding.toolbarImage)
                             .load(AppConstants.IMAGE_URL + movie.backDropPath)

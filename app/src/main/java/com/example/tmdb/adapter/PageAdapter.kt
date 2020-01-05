@@ -4,8 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.fragment.app.FragmentManager
+import androidx.navigation.findNavController
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -13,8 +12,9 @@ import com.example.tmdb.R
 import com.example.tmdb.databinding.MoviePosterItemBinding
 import com.example.tmdb.model.Movie
 import com.example.tmdb.ui.fragments.MovieDetailFragment
+import com.example.tmdb.ui.fragments.MovieFragmentDirections
 
-class PageAdapter(var supportFragmentManager: FragmentManager)
+class PageAdapter()
     : PagedListAdapter<Movie, PageAdapter.MyViewHolder>(diffCallback) {
 
     private var TAG = "PageAdapter"
@@ -22,27 +22,33 @@ class PageAdapter(var supportFragmentManager: FragmentManager)
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         getItem(position)?.let { holder.bind(it) }
 
-        holder.posterImageView.setOnClickListener {
+        holder.posterImageView.setOnClickListener { view ->
+
             try {
                 val args = Bundle()
                 var fragment = MovieDetailFragment()
-                fragment.arguments = args
-                args.putParcelable("data", getItem(position))
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_main, fragment)
-                    .addToBackStack(null)
-                    .commit()
+//                fragment.arguments = args
+//                args.putParcelable("data", getItem(position))
+                val action = MovieFragmentDirections.actionMovieFragmentToMovieDetailFragment(getItem(position))
+                view.findNavController().navigate(action)
+//                supportFragmentManager.beginTransaction()
+//                    .replace(R.id.fragment_main, fragment)
+//                    .addToBackStack(null)
+//                    .commit()
             }catch (e: Exception) {
                 Log.e(TAG, "Position: $position")
                 Log.e(TAG, "Error Message: " + e.message)
                 val args = Bundle()
                 var fragment = MovieDetailFragment()
-                fragment.arguments = args
-                args.putParcelable("data", getItem(position-1))
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_main, fragment)
-                    .addToBackStack(null)
-                    .commit()
+                val action = MovieFragmentDirections.actionMovieFragmentToMovieDetailFragment(getItem(position))
+                view.findNavController().navigate(action)
+                //                fragment.arguments = args
+//                args.putParcelable("data", getItem(position-1))
+//                supportFragmentManager.beginTransaction()
+
+//                    .replace(R.id.fragment_main, fragment)
+//                    .addToBackStack(null)
+//                    .commit()
             }
         }
 

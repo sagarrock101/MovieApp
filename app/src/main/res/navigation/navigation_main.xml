@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/navigation_main"
+    app:startDestination="@id/splashFragment">
+
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="com.example.tmdb.ui.fragments.SplashFragment"
+        android:label="SplashFragment" >
+        <action
+            android:id="@+id/action_splashFragment_to_movieFragment"
+            app:destination="@id/movieFragment"
+            app:popUpTo="@+id/splashFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/movieFragment"
+        android:name="com.example.tmdb.ui.fragments.MovieFragment"
+        android:label="MovieFragment" >
+        <action
+            android:id="@+id/action_movieFragment_to_movieDetailFragment"
+            app:destination="@id/movieDetailFragment"
+            app:popUpTo="@+id/movieFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/movieDetailFragment"
+        android:name="com.example.tmdb.ui.fragments.MovieDetailFragment"
+        android:label="MovieDetailFragment" >
+        <argument
+            android:name="movieData"
+            app:argType="com.example.tmdb.model.Movie"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
+</navigation>

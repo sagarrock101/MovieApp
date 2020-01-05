@@ -35,7 +35,6 @@ class MovieFragment : Fragment() {
     val TAG = "MovieFragment"
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         movieType = "popular"
         viewModel.favoritesSelected.value = false
@@ -70,7 +69,7 @@ class MovieFragment : Fragment() {
     private fun loadMovies() {
         swipeRefreshLayout.isRefreshing  = false
         var fm = (activity as AppCompatActivity).supportFragmentManager
-        adapter = PageAdapter(fm)
+        adapter = PageAdapter()
 
         movieType?.let {
             viewModel.popularMoviesLiveData.observe(this, Observer { data ->
