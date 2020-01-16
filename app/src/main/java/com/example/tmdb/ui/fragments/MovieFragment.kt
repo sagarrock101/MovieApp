@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.tmdb.MyApplication
@@ -37,11 +38,10 @@ class MovieFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         movieType = "popular"
-        viewModel.favoritesSelected.value = false
+//        viewModel.favoritesSelected.value = false
+//        viewModel = ViewModelProviders.of(this).get(MoviesViewModel::class.java)
         if(savedInstanceState == null) {
             movieType?.let { viewModel.fetchMovies(page, it) }
-        } else {
-            Log.e(TAG, "onSaveInstancState: $savedInstanceState")
         }
     }
 

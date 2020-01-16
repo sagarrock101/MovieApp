@@ -6,7 +6,9 @@ import com.example.tmdb.ui.fragments.MovieDetailFragment
 import com.example.tmdb.ui.fragments.MovieFragment
 import dagger.BindsInstance
 import dagger.Component
+import javax.inject.Singleton
 
+@Singleton
 @Component(modules = [AppModule::class])
 interface AppComponent {
 

@@ -6,8 +6,9 @@ import androidx.paging.PagedList
 import com.example.tmdb.model.*
 import com.example.tmdb.repository.MovieRepository
 import javax.inject.Inject
+import javax.inject.Singleton
 
-
+@Singleton
 class MoviesViewModel @Inject constructor(application: Application) : AndroidViewModel(application) {
     val TAG = "ViewModel"
 

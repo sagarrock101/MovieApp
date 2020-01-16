@@ -18,9 +18,5 @@
             app:navGraph="@navigation/navigation_main"
             app:defaultNavHost="true"
             />
-<!--        <FrameLayout-->
-<!--            android:id="@+id/fragment_main"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent"/>-->
     </LinearLayout>
 </layout>

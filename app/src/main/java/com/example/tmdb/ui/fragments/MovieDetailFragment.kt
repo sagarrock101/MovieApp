@@ -11,6 +11,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.tmdb.GlideApp
@@ -44,17 +45,16 @@ class MovieDetailFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_movie_detail, container,
             false)
 
-        if(args != null) {
-//            binding.movieItem = arguments!!.getParcelable("data")
+        //            binding.movieItem = arguments!!.getParcelable("data")
 //             movie = arguments!!.getParcelable("data")!!
-            movie = args.movieData!!
-            movie.id?.let { viewModel.getTrailers(it) }
-            GlideApp.with(binding.toolbarImage)
-                            .load(AppConstants.IMAGE_URL + movie.backDropPath)
-                            .placeholder(R.mipmap.ic_launcher_round)
-                            .into(binding.toolbarImage)
+        Log.e(TAG, "Navigation Host " + Navigation.findNavController(activity!!,R.id.myNavHostFragment).currentDestination)
 
-        }
+        movie = args.movieData!!
+        movie.id?.let { viewModel.getTrailers(it) }
+        GlideApp.with(binding.toolbarImage)
+                        .load(AppConstants.IMAGE_URL + movie.backDropPath)
+                        .placeholder(R.mipmap.ic_launcher_round)
+                        .into(binding.toolbarImage)
 
         viewModel.trailersLiveData.observe(this, Observer { response ->
             adapter = TrailerAdapter(response.results)
