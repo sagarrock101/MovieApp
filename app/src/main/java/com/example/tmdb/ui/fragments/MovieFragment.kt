@@ -81,8 +81,8 @@ class MovieFragment : Fragment() {
         viewModel.getMoviesStatus().observe(this, Observer { networkStatus ->
             when(networkStatus) {
                 NetworkStatus.SUCCESS -> {
-                    binding.itemProgressBar.visibility = View.GONE
-                    binding.recyclerView.visibility = View.VISIBLE
+                    binding.itemProgressBar.visibility = View.INVISIBLE
+//                    binding.recyclerView.visibility = View.VISIBLE
                 }
                 NetworkStatus.LOADING -> {
                     binding.recyclerView.visibility = View.INVISIBLE

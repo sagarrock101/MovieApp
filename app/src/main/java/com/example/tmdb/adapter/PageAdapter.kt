@@ -36,8 +36,18 @@ class PageAdapter
                 Log.e(TAG, "Position: $position")
                 Log.e(TAG, "Error Message: " + e.message)
                 if(Navigation.findNavController(view).currentDestination?.id == R.id.movieFragment) {
-                    val action = MovieFragmentDirections.actionMovieFragmentToMovieDetailFragment(getItem(position))
-                    view.findNavController().navigate(action)
+                    if(position == currentList?.size) {
+                        val action = MovieFragmentDirections.actionMovieFragmentToMovieDetailFragment(getItem(position-1))
+                        view.findNavController().navigate(action)
+                    } else {
+                        if(position < currentList!!.size) {
+                            val action = MovieFragmentDirections.actionMovieFragmentToMovieDetailFragment(getItem(position))
+                            view.findNavController().navigate(action)
+                        } else {
+                            val action = MovieFragmentDirections.actionMovieFragmentToMovieDetailFragment(getItem(0))
+                            view.findNavController().navigate(action)
+                        }
+                    }
                 } else {
                     Log.e(TAG, "Navigation Host " + Navigation.findNavController(view).currentDestination?.id)
                 }
