@@ -108,8 +108,6 @@ class MovieDetailFragment : Fragment() {
             intent.putExtra(Intent.EXTRA_TEXT, movie.title)
             intent.type = "text/string"
             startActivity(Intent.createChooser(intent, "Share the movie via"))
-            getInstalledApps(context!!)
-
         }
 
 
@@ -120,29 +118,5 @@ class MovieDetailFragment : Fragment() {
         super.onAttach(context)
         (activity!!.application as MyApplication).appComponent.inject(this)
     }
-    fun getInstalledApps(ctx: Context): Set<PackageInfo>? {
-        val packageManager = ctx.packageManager
-        val allInstalledPackages =
-            packageManager.getInstalledPackages(PackageManager.GET_META_DATA)
-        val filteredPackages: MutableSet<PackageInfo> = HashSet()
-        val defaultActivityIcon = packageManager.defaultActivityIcon
-        for (each in allInstalledPackages) {
-            if (ctx.packageName == each.packageName) {
-                continue  // skip own app
-            }
-            try { // add only apps with application icon
-                val intentOfStartActivity =
-                    packageManager.getLaunchIntentForPackage(each.packageName)
-                        ?: continue
-                val applicationIcon =
-                    packageManager.getActivityIcon(intentOfStartActivity)
-                if (applicationIcon != null && defaultActivityIcon != applicationIcon) {
-                    filteredPackages.add(each)
-                }
-            } catch (e: PackageManager.NameNotFoundException) {
-                Log.i("MyTag", "Unknown package name " + each.packageName)
-            }
-        }
-        return filteredPackages
-    }
+
 }
