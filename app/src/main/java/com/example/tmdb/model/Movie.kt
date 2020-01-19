@@ -23,7 +23,7 @@ data class Movie(
 
     @ColumnInfo
     @Json(name = "vote_average")
-    val vote_average: Double? = null,
+    val vote_average: Float? = null,
 
     @ColumnInfo
     @Json(name = "title")

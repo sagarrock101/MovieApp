@@ -44,6 +44,7 @@
                     android:layout_height="61dp"
                     app:layout_collapseMode="pin"
                     app:layout_scrollFlags="scroll|enterAlways"
+
                     app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
 
@@ -61,20 +62,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
+
                 <TextView
-                    android:id="@+id/detail_year"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Year"
-                    android:layout_marginTop="20dp"
-                    android:textSize="15sp"
-                    />
-                <TextView
-                    android:id="@+id/detail_movie"
+                    android:id="@+id/tv_movie_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="@{movieItem.title}"
                     android:textSize="25sp"/>
 
                 <RatingBar
@@ -84,7 +77,6 @@
                     android:layout_marginTop="10dp"
                     style="?android:attr/ratingBarStyleSmall"
                     android:numStars="5"
-
                     />
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
@@ -100,7 +92,7 @@
                         android:layout_marginTop="10dp"
                         />
                     <TextView
-                        android:id="@+id/cardView_synopsis_full"
+                        android:id="@+id/cv_synopsis"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="50dp"
@@ -127,20 +119,6 @@
                     android:layout_height="175dp"
                     tools:listitem="@layout/movie_trailer_item"/>
 
-                <TextView
-                    android:id="@+id/reviewsLabel"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Reviews"
-                    android:textSize="22sp"/>
-                <LinearLayout
-                    android:id="@+id/movieReviews"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginRight="16dp"
-                    android:orientation="vertical" />
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 
@@ -153,6 +131,18 @@
             app:layout_anchor="@+id/item_detail_container"
             app:layout_anchorGravity="top|end"
             app:srcCompat="@drawable/ic_heart"
+            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+            tools:ignore="VectorDrawableCompat" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_share"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|bottom"
+            android:layout_margin="@dimen/fab_margin"
+            app:layout_anchor="@+id/item_detail_container"
+            app:layout_anchorGravity="bottom|end"
+            app:srcCompat="@drawable/ic_share_black_24dp"
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
             tools:ignore="VectorDrawableCompat" />
 

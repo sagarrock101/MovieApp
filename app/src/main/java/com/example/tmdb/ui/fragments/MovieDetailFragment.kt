@@ -1,6 +1,9 @@
 package com.example.tmdb.ui.fragments
 
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,7 +13,6 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,6 +25,7 @@ import com.example.tmdb.databinding.FragmentMovieDetailBinding
 import com.example.tmdb.model.Movie
 import com.example.tmdb.viewmodel.MoviesViewModel
 import javax.inject.Inject
+
 
 class MovieDetailFragment : Fragment() {
     private lateinit var binding: FragmentMovieDetailBinding
@@ -42,6 +45,10 @@ class MovieDetailFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        val pm = context!!.packageManager
+        val apps = pm.getInstalledApplications(0)
+
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_movie_detail, container,
             false)
 
@@ -50,7 +57,13 @@ class MovieDetailFragment : Fragment() {
         Log.e(TAG, "Navigation Host " + Navigation.findNavController(activity!!,R.id.myNavHostFragment).currentDestination)
 
         movie = args.movieData!!
-        movie.id?.let { viewModel.getTrailers(it) }
+        movie.id?.let { viewModel.getTrailers(it)
+            binding.toolbarLayout.title = movie.title
+            binding.tvMovieTitle.text = movie.title
+            binding.cvSynopsis.text = movie.overview
+            binding.detailStars.rating = movie.vote_average!!/2
+
+        }
         GlideApp.with(binding.toolbarImage)
                         .load(AppConstants.IMAGE_URL + movie.backDropPath)
                         .placeholder(R.mipmap.ic_launcher_round)
@@ -89,6 +102,16 @@ class MovieDetailFragment : Fragment() {
             }
         }
 
+        binding.fabShare.setOnClickListener {
+            val intent = Intent(Intent.ACTION_SEND)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            intent.putExtra(Intent.EXTRA_TEXT, movie.title)
+            intent.type = "text/string"
+            startActivity(Intent.createChooser(intent, "Share the movie via"))
+            getInstalledApps(context!!)
+
+        }
+
 
         return binding.root
     }
@@ -97,5 +120,29 @@ class MovieDetailFragment : Fragment() {
         super.onAttach(context)
         (activity!!.application as MyApplication).appComponent.inject(this)
     }
-
+    fun getInstalledApps(ctx: Context): Set<PackageInfo>? {
+        val packageManager = ctx.packageManager
+        val allInstalledPackages =
+            packageManager.getInstalledPackages(PackageManager.GET_META_DATA)
+        val filteredPackages: MutableSet<PackageInfo> = HashSet()
+        val defaultActivityIcon = packageManager.defaultActivityIcon
+        for (each in allInstalledPackages) {
+            if (ctx.packageName == each.packageName) {
+                continue  // skip own app
+            }
+            try { // add only apps with application icon
+                val intentOfStartActivity =
+                    packageManager.getLaunchIntentForPackage(each.packageName)
+                        ?: continue
+                val applicationIcon =
+                    packageManager.getActivityIcon(intentOfStartActivity)
+                if (applicationIcon != null && defaultActivityIcon != applicationIcon) {
+                    filteredPackages.add(each)
+                }
+            } catch (e: PackageManager.NameNotFoundException) {
+                Log.i("MyTag", "Unknown package name " + each.packageName)
+            }
+        }
+        return filteredPackages
+    }
 }
