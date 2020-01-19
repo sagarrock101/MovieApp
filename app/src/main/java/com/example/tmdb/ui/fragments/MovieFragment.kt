@@ -2,6 +2,7 @@ package com.example.tmdb.ui.fragments
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
@@ -38,8 +39,6 @@ class MovieFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         movieType = "popular"
-//        viewModel.favoritesSelected.value = false
-//        viewModel = ViewModelProviders.of(this).get(MoviesViewModel::class.java)
         if(savedInstanceState == null) {
             movieType?.let { viewModel.fetchMovies(page, it) }
         }
@@ -50,6 +49,9 @@ class MovieFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        val postDelayed = Handler().postDelayed({
+            loadMovies()
+        }, 2000)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_movie, container, false)
         swipeRefreshLayout = binding.swipeToRefresh
         swipeRefreshLayout.setOnRefreshListener {
@@ -57,20 +59,20 @@ class MovieFragment : Fragment() {
             loadMovies()
         }
         val layoutManager = GridLayoutManager(context, 2)
-
-
+        postDelayed
+        binding.itemProgressBar.visibility = View.VISIBLE
         binding.recyclerView.layoutManager = layoutManager
-            loadMovies()
+
 
         setHasOptionsMenu(true)
         return binding.root
     }
 
     private fun loadMovies() {
+        binding.itemProgressBar.visibility = View.INVISIBLE
         swipeRefreshLayout.isRefreshing  = false
-        var fm = (activity as AppCompatActivity).supportFragmentManager
         adapter = PageAdapter()
-
+        Log.e(TAG, "loadMovies")
         movieType?.let {
             viewModel.popularMoviesLiveData.observe(this, Observer { data ->
                 adapter.submitList(data)
@@ -82,7 +84,7 @@ class MovieFragment : Fragment() {
             when(networkStatus) {
                 NetworkStatus.SUCCESS -> {
                     binding.itemProgressBar.visibility = View.INVISIBLE
-//                    binding.recyclerView.visibility = View.VISIBLE
+                    binding.recyclerView.visibility = View.VISIBLE
                 }
                 NetworkStatus.LOADING -> {
                     binding.recyclerView.visibility = View.INVISIBLE
