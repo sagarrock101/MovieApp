@@ -2,8 +2,7 @@ package com.example.tmdb.ui.fragments
 
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageInfo
-import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -24,12 +23,14 @@ import com.example.tmdb.api.AppConstants
 import com.example.tmdb.databinding.FragmentMovieDetailBinding
 import com.example.tmdb.model.Movie
 import com.example.tmdb.viewmodel.MoviesViewModel
+import java.util.*
 import javax.inject.Inject
 
 
 class MovieDetailFragment : Fragment() {
     private lateinit var binding: FragmentMovieDetailBinding
-    private val MOVIE_TRAILER_THUMBNAIL_URL_PART_ONE = "https://img.youtube.com/vi/"
+    private val MOVIE_TRAILER_THUMBNAIL_URL_PART_ONE = "https://img.youtube.com/watch?v="
+    private val MOVIE_YOUTUBE_APP_TRAILER_URL = "vnd.youtube:"
 
     val args: MovieDetailFragmentArgs by navArgs()
 
@@ -113,11 +114,14 @@ class MovieDetailFragment : Fragment() {
 
 
         adapter?.onTrailerItemClick = {item ->
-            val intent = Intent(Intent.ACTION_SEND)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            intent.putExtra(Intent.EXTRA_TEXT, MOVIE_TRAILER_THUMBNAIL_URL_PART_ONE + item.key)
-            intent.type = "video/url"
+            val intent = Intent(Intent.ACTION_VIEW, item.key?.let { buildYoutubeAppVideoUrl(it) })
             startActivity(Intent.createChooser(intent, "Watch this trailer on"))
+
+            if (intent.resolveActivity(Objects.requireNonNull(context)!!.packageManager)
+                != null
+            ) {
+                startActivity(intent)
+            } 
         }
 
         return binding.root
@@ -128,4 +132,7 @@ class MovieDetailFragment : Fragment() {
         (activity!!.application as MyApplication).appComponent.inject(this)
     }
 
+    private fun buildYoutubeAppVideoUrl(key: String): Uri? {
+        return Uri.parse(MOVIE_YOUTUBE_APP_TRAILER_URL + key)
+    }
 }
