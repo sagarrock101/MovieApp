@@ -2,14 +2,12 @@ package com.example.tmdb.ui.fragments
 
 import android.content.Context
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.tmdb.MyApplication
@@ -20,6 +18,7 @@ import com.example.tmdb.model.NetworkStatus
 import com.example.tmdb.viewmodel.MoviesViewModel
 import com.example.tmdb.viewmodel.ViewModelFactory
 import javax.inject.Inject
+
 
 class MovieFragment : Fragment() {
 
@@ -49,18 +48,15 @@ class MovieFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val postDelayed = Handler().postDelayed({
-            loadMovies()
-        }, 2000)
+
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_movie, container, false)
+        (activity as AppCompatActivity?)!!.setSupportActionBar(binding.toolbar)
         swipeRefreshLayout = binding.swipeToRefresh
         swipeRefreshLayout.setOnRefreshListener {
             movieType?.let { viewModel.fetchMovies(page, it) }
             loadMovies()
         }
         val layoutManager = GridLayoutManager(context, 2)
-        postDelayed
-        binding.itemProgressBar.visibility = View.VISIBLE
         binding.recyclerView.layoutManager = layoutManager
 
 
