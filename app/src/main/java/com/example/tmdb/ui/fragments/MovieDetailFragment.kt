@@ -29,12 +29,13 @@ import javax.inject.Inject
 
 class MovieDetailFragment : Fragment() {
     private lateinit var binding: FragmentMovieDetailBinding
+    private val MOVIE_TRAILER_THUMBNAIL_URL_PART_ONE = "https://img.youtube.com/vi/"
 
     val args: MovieDetailFragmentArgs by navArgs()
 
     @Inject
     lateinit var viewModel : MoviesViewModel
-    private lateinit var adapter: TrailerAdapter
+    private var adapter: TrailerAdapter? = null
     private var heartFlag = false
     lateinit var movie: Movie
 
@@ -51,7 +52,7 @@ class MovieDetailFragment : Fragment() {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_movie_detail, container,
             false)
-
+        adapter = TrailerAdapter()
         //            binding.movieItem = arguments!!.getParcelable("data")
 //             movie = arguments!!.getParcelable("data")!!
         Log.e(TAG, "Navigation Host " + Navigation.findNavController(activity!!,R.id.myNavHostFragment).currentDestination)
@@ -70,7 +71,7 @@ class MovieDetailFragment : Fragment() {
                         .into(binding.toolbarImage)
 
         viewModel.trailersLiveData.observe(this, Observer { response ->
-            adapter = TrailerAdapter(response.results)
+            adapter?.setData(response.results)
             binding.rvTrailerThumbnail.adapter = adapter
             binding.rvTrailerThumbnail.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL,
                 false)
@@ -110,6 +111,14 @@ class MovieDetailFragment : Fragment() {
             startActivity(Intent.createChooser(intent, "Share the movie via"))
         }
 
+
+        adapter?.onTrailerItemClick = {item ->
+            val intent = Intent(Intent.ACTION_SEND)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            intent.putExtra(Intent.EXTRA_TEXT, MOVIE_TRAILER_THUMBNAIL_URL_PART_ONE + item.key)
+            intent.type = "video/url"
+            startActivity(Intent.createChooser(intent, "Watch this trailer on"))
+        }
 
         return binding.root
     }
