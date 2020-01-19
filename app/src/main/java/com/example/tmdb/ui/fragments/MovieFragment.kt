@@ -58,7 +58,7 @@ class MovieFragment : Fragment() {
         }
         val layoutManager = GridLayoutManager(context, 2)
         binding.recyclerView.layoutManager = layoutManager
-
+        loadMovies()
 
         setHasOptionsMenu(true)
         return binding.root
