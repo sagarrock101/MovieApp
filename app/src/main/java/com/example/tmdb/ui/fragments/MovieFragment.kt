@@ -8,6 +8,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.tmdb.MyApplication
@@ -128,5 +131,7 @@ class MovieFragment : Fragment() {
         super.onAttach(context)
         (activity!!.application as MyApplication).appComponent.inject(this)
     }
+
+
 
 }
