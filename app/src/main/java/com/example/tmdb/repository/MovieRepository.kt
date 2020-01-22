@@ -22,7 +22,7 @@ import retrofit2.Response
 import javax.inject.Inject
 
 class MovieRepository @Inject constructor( val service : TmdbService,  var context: Context)  {
-    
+
     val TAG = "MovieRepository"
     var config = PagedList.Config.Builder()
         .setPageSize(10)
@@ -96,4 +96,4 @@ class MovieRepository @Inject constructor( val service : TmdbService,  var conte
         return LivePagedListBuilder<Int, Movie>(database.movieDao.getMovieList(), config).build()
     }
 
-}
+}       
