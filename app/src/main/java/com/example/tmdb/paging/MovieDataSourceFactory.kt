@@ -1,4 +1,4 @@
-package com.example.tmdb.Paging
+package com.example.tmdb.paging
 
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
@@ -9,7 +9,7 @@ import com.example.tmdb.model.MovieSearch
 class PopularMoviesDataSourceFactory(movieApi: TmdbService, private val search: MovieSearch) :
     DataSource.Factory<Int?, Movie?>() {
     private val movieApi: TmdbService = movieApi
-    private val moviesDataSource: MutableLiveData<MovieDataSource> =
+    val moviesDataSource: MutableLiveData<MovieDataSource> =
         MutableLiveData()
 
     override fun create(): DataSource<Int?, Movie?> {

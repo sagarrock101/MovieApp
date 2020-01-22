@@ -11,7 +11,7 @@
             android:id="@+id/action_splashFragment_to_movieFragment"
             app:destination="@id/movieFragment"
             app:launchSingleTop="true"
-            app:popUpTo="@+id/splashFragment"
+            app:popUpTo="@+id/navigation_main"
             app:popUpToInclusive="true" />
     </fragment>
     <fragment

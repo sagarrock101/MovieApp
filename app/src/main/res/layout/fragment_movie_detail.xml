@@ -26,7 +26,7 @@
                 android:fitsSystemWindows="true"
                 app:contentScrim="?attr/colorPrimary"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed"
-                app:toolbarId="@+id/detail_toolbar"
+                app:toolbarId="@+id/toolbar"
                 app:collapsedTitleTextAppearance="@style/TextAppearance.MyApp.Title.Collapsed"
                 app:expandedTitleTextAppearance="@style/TextAppearance.MyApp.Title.Expanded"
                 >
@@ -39,12 +39,11 @@
 
 
                 <androidx.appcompat.widget.Toolbar
-                    android:id="@+id/detail_toolbar"
+                    android:id="@+id/toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="61dp"
                     app:layout_collapseMode="pin"
                     app:layout_scrollFlags="scroll|enterAlways"
-
                     app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
 

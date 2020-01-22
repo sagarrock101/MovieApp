@@ -9,11 +9,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.tmdb.GlideApp
 import com.example.tmdb.MyApplication
@@ -53,6 +56,10 @@ class MovieDetailFragment : Fragment() {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_movie_detail, container,
             false)
+
+        (activity as AppCompatActivity?)!!.setSupportActionBar(binding.toolbar)
+        val navController = activity!!.findNavController(R.id.myNavHostFragment)
+        NavigationUI.setupActionBarWithNavController(activity as AppCompatActivity,navController)
         adapter = TrailerAdapter()
         //            binding.movieItem = arguments!!.getParcelable("data")
 //             movie = arguments!!.getParcelable("data")!!
@@ -121,7 +128,7 @@ class MovieDetailFragment : Fragment() {
                 != null
             ) {
                 startActivity(intent)
-            } 
+            }
         }
 
         return binding.root
@@ -135,4 +142,6 @@ class MovieDetailFragment : Fragment() {
     private fun buildYoutubeAppVideoUrl(key: String): Uri? {
         return Uri.parse(MOVIE_YOUTUBE_APP_TRAILER_URL + key)
     }
+
+
 }

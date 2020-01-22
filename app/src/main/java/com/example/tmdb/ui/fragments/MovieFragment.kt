@@ -8,16 +8,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.tmdb.MyApplication
 import com.example.tmdb.R
 import com.example.tmdb.adapter.PageAdapter
 import com.example.tmdb.databinding.FragmentMovieBinding
-import com.example.tmdb.model.NetworkStatus
+import com.example.tmdb.model.NetworkState
 import com.example.tmdb.viewmodel.MoviesViewModel
 import com.example.tmdb.viewmodel.ViewModelFactory
 import javax.inject.Inject
@@ -54,6 +51,10 @@ class MovieFragment : Fragment() {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_movie, container, false)
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.toolbar)
+        viewModel.getNetworkStatus()?.observe(this, Observer {
+            Log.e(TAG, "networkState: ${it.status}")
+            adapter.setNetworkState(it)
+        })
         swipeRefreshLayout = binding.swipeToRefresh
         swipeRefreshLayout.setOnRefreshListener {
             movieType?.let { viewModel.fetchMovies(page, it) }
@@ -68,29 +69,20 @@ class MovieFragment : Fragment() {
     }
 
     private fun loadMovies() {
+
         binding.itemProgressBar.visibility = View.INVISIBLE
         swipeRefreshLayout.isRefreshing  = false
         adapter = PageAdapter()
         Log.e(TAG, "loadMovies")
         movieType?.let {
-            viewModel.popularMoviesLiveData.observe(this, Observer { data ->
+            viewModel.movies.observe(this, Observer { data ->
                 adapter.submitList(data)
             })
         }
         binding.recyclerView.adapter = adapter
 
-        viewModel.getMoviesStatus().observe(this, Observer { networkStatus ->
-            when(networkStatus) {
-                NetworkStatus.SUCCESS -> {
-                    binding.itemProgressBar.visibility = View.INVISIBLE
-                    binding.recyclerView.visibility = View.VISIBLE
-                }
-                NetworkStatus.LOADING -> {
-                    binding.recyclerView.visibility = View.INVISIBLE
-                    binding.itemProgressBar.visibility = View.VISIBLE
-                }
-            }
-        })
+
+
 
 
 

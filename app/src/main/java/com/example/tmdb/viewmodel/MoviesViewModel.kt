@@ -47,10 +47,9 @@ class MoviesViewModel @Inject constructor(application: Application) : AndroidVie
     }
 
     fun fetchMovies(page: Int, movieType: String){
-
-
             val movieSearch = MovieSearch(page, movieType)
             moviesMutableLiveData.postValue(movieSearch)
+        movies.addSource(repository.getPopular(movieSearch), movies::setValue)
 
     }
     fun fetchMovies(movieType: String) {
@@ -63,8 +62,8 @@ class MoviesViewModel @Inject constructor(application: Application) : AndroidVie
         return movies
     }
 
-    fun getMoviesStatus(): LiveData<NetworkStatus> {
-        return repository.getPopularMoviesStatus()
+    fun getNetworkStatus(): LiveData<NetworkState>? {
+        return repository.networkStatusLiveData
     }
 
     fun getTrailers(id: Int) {
