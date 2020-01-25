@@ -3,10 +3,13 @@ package com.example.tmdb.adapter
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tmdb.R
 import com.example.tmdb.databinding.MoviePosterItemBinding
@@ -15,12 +18,17 @@ import com.example.tmdb.model.NetworkState
 import com.example.tmdb.ui.fragments.MovieFragmentDirections
 import com.example.tmdb.viewholders.NetworkStateItemViewHolder
 
+
 class PageAdapter
     : PagedListAdapter<Movie, RecyclerView.ViewHolder>(diffCallback) {
 
     private var TAG = "PageAdapter"
 
     private var networkState: NetworkState? = null
+
+    var typeOfGridMutableLiveData = MutableLiveData<Int>()
+
+    var type = ""
 
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -86,17 +94,18 @@ class PageAdapter
 
     override fun getItemViewType(position: Int): Int {
         return if (hasExtraRow() && position == itemCount - 1) {
+            type = "progress"
+            typeOfGridMutableLiveData.postValue(1)
             R.layout.component_network_state_item
+
         } else {
+            type = "movie_item"
+            typeOfGridMutableLiveData.postValue(2)
             R.layout.movie_poster_item
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-//        val inflater = LayoutInflater.from(parent.context)
-//        val binding = MoviePosterItemBinding.inflate(inflater, parent, false)
-//        return MyViewHolder(binding)
-
         return when(viewType) {
             R.layout.movie_poster_item -> {
                 val inflater = LayoutInflater.from(parent.context)
@@ -159,6 +168,10 @@ class PageAdapter
         } else if (hasExtraRow && previousState != newNetworkState) {
             notifyItemChanged(itemCount - 1)
         }
+    }
+
+    fun typeOfGrid(): LiveData<Int> {
+      return typeOfGridMutableLiveData
     }
 
 }

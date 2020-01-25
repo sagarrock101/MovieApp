@@ -25,7 +25,7 @@ class MovieRepository @Inject constructor( val service : TmdbService,  var conte
 
     val TAG = "MovieRepository"
     var config = PagedList.Config.Builder()
-        .setPageSize(10)
+        .setPageSize(5)
         .setEnablePlaceholders(false)
         .build()
 
@@ -96,4 +96,4 @@ class MovieRepository @Inject constructor( val service : TmdbService,  var conte
         return LivePagedListBuilder<Int, Movie>(database.movieDao.getMovieList(), config).build()
     }
 
-}       
+}

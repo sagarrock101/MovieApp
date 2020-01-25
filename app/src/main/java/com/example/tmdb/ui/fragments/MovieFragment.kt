@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -14,9 +15,9 @@ import com.example.tmdb.MyApplication
 import com.example.tmdb.R
 import com.example.tmdb.adapter.PageAdapter
 import com.example.tmdb.databinding.FragmentMovieBinding
-import com.example.tmdb.model.NetworkState
 import com.example.tmdb.viewmodel.MoviesViewModel
 import com.example.tmdb.viewmodel.ViewModelFactory
+import kotlinx.android.synthetic.main.fragment_movie.*
 import javax.inject.Inject
 
 
@@ -60,8 +61,7 @@ class MovieFragment : Fragment() {
             movieType?.let { viewModel.fetchMovies(page, it) }
             loadMovies()
         }
-        val layoutManager = GridLayoutManager(context, 2)
-        binding.recyclerView.layoutManager = layoutManager
+
         loadMovies()
 
         setHasOptionsMenu(true)
@@ -69,10 +69,18 @@ class MovieFragment : Fragment() {
     }
 
     private fun loadMovies() {
-
+        var layoutManager: GridLayoutManager? = null
         binding.itemProgressBar.visibility = View.INVISIBLE
         swipeRefreshLayout.isRefreshing  = false
         adapter = PageAdapter()
+        layoutManager = GridLayoutManager(context!!, 4)
+        adapter.typeOfGridMutableLiveData.observe(this, Observer {
+            Toast.makeText(context!!, it.toString(), Toast.LENGTH_SHORT)
+                .show()
+            (recyclerView.layoutManager as GridLayoutManager).spanCount = it
+
+        })
+        binding.recyclerView.layoutManager = layoutManager
         Log.e(TAG, "loadMovies")
         movieType?.let {
             viewModel.movies.observe(this, Observer { data ->
