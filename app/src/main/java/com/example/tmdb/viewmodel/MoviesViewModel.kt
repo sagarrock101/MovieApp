@@ -32,7 +32,7 @@ class MoviesViewModel @Inject constructor(application: Application) : AndroidVie
             if(search.movieType == "favorites") {
                 repository.getFavoriteMovies(search)
             } else {
-                repository.getPopular(search)
+                repository.getMovies(search)
             }
         }
 
@@ -49,14 +49,14 @@ class MoviesViewModel @Inject constructor(application: Application) : AndroidVie
     fun fetchMovies(page: Int, movieType: String){
             val movieSearch = MovieSearch(page, movieType)
             moviesMutableLiveData.postValue(movieSearch)
-        movies.addSource(repository.getPopular(movieSearch), movies::setValue)
+        movies.addSource(repository.getMovies(movieSearch), movies::setValue)
 
     }
-    fun fetchFavorites(movieType: String) {
-        val movieSearch = MovieSearch(1, movieType)
-        moviesMutableLiveData.postValue(movieSearch)
-
-    }
+//    fun fetchFavorites(movieType: String) {
+//        val movieSearch = MovieSearch(1, movieType)
+//        moviesMutableLiveData.postValue(movieSearch)
+//
+//    }
 
     fun getMovie() : LiveData<PagedList<Movie>> {
         return movies

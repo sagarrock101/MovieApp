@@ -119,8 +119,8 @@ class MovieFragment : Fragment() {
             }
             R.id.menu_favorites -> {
                 movieType = "favorites"
-                viewModel.fetchFavorites(movieType!!)
-                observeFavorites()
+                viewModel.fetchMovies(page, movieType!!)
+//                observeFavorites()
             }
             R.id.menu_refresh -> {
                 swipeRefreshLayout.isRefreshing = true

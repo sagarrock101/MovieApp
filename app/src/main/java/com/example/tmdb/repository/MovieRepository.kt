@@ -40,14 +40,18 @@ class MovieRepository @Inject constructor( val service : TmdbService,  var conte
 
      var networkStatusLiveData: LiveData<NetworkState>? =null
 
-    fun getPopular(search: MovieSearch): LiveData<PagedList<Movie>> {
-        popularMoviesDataSourceFactory = PopularMoviesDataSourceFactory(service, search)
-        networkStatusLiveData = Transformations
-            .switchMap(
-                popularMoviesDataSourceFactory.moviesDataSource) {
-            it.networkState
-            }
-        return LivePagedListBuilder<Int, Movie>(popularMoviesDataSourceFactory, config).build()
+    fun getMovies(search: MovieSearch): LiveData<PagedList<Movie>> {
+        if(search.movieType == "favorites") {
+            return LivePagedListBuilder<Int, Movie>(database.movieDao.getMovieList(), config).build()
+        }
+            popularMoviesDataSourceFactory = PopularMoviesDataSourceFactory(service, search)
+            networkStatusLiveData = Transformations
+                .switchMap(
+                    popularMoviesDataSourceFactory.moviesDataSource) {
+                    it.networkState
+                }
+            return LivePagedListBuilder<Int, Movie>(popularMoviesDataSourceFactory, config).build()
+
     }
 
     fun getTrailersList(trailerSearch: TrailerSearch) : MutableLiveData<MovieTrailerResponse> {
