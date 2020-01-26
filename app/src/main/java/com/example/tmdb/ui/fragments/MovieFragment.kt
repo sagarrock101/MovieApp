@@ -4,12 +4,12 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.tmdb.MyApplication
 import com.example.tmdb.R
@@ -17,7 +17,6 @@ import com.example.tmdb.adapter.PageAdapter
 import com.example.tmdb.databinding.FragmentMovieBinding
 import com.example.tmdb.viewmodel.MoviesViewModel
 import com.example.tmdb.viewmodel.ViewModelFactory
-import kotlinx.android.synthetic.main.fragment_movie.*
 import javax.inject.Inject
 
 
@@ -73,14 +72,17 @@ class MovieFragment : Fragment() {
         binding.itemProgressBar.visibility = View.INVISIBLE
         swipeRefreshLayout.isRefreshing  = false
         adapter = PageAdapter()
-        layoutManager = GridLayoutManager(context!!, 4)
-        adapter.typeOfGridMutableLiveData.observe(this, Observer {
-            Toast.makeText(context!!, it.toString(), Toast.LENGTH_SHORT)
-                .show()
-            (recyclerView.layoutManager as GridLayoutManager).spanCount = it
+        layoutManager = GridLayoutManager(context!!, 2)
 
-        })
         binding.recyclerView.layoutManager = layoutManager
+
+        layoutManager.spanSizeLookup = object : SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                val type: Int = adapter.getItemViewType(position)
+                return if (type == R.layout.component_network_state_item) 2 else 1
+            }
+        }
+
         Log.e(TAG, "loadMovies")
         movieType?.let {
             viewModel.movies.observe(this, Observer { data ->
