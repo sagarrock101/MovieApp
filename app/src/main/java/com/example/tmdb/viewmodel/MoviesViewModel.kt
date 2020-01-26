@@ -19,7 +19,7 @@ class MoviesViewModel @Inject constructor(application: Application) : AndroidVie
 //            = MovieRepository(ApiFactory.MOVIE_SERVICE, application)
 
     private var moviesMutableLiveData = MutableLiveData<MovieSearch>()
-     var popularMoviesLiveData : LiveData<PagedList<Movie>>
+     var moviesLiveData : LiveData<PagedList<Movie>>
 
     private  var trailersMutableLiveDataLiveData = MutableLiveData<TrailerSearch>()
      var trailersLiveData: LiveData<MovieTrailerResponse>
@@ -28,7 +28,7 @@ class MoviesViewModel @Inject constructor(application: Application) : AndroidVie
     var movies : MediatorLiveData<PagedList<Movie>> = MediatorLiveData()
 
     init {
-        this.popularMoviesLiveData = Transformations.switchMap(moviesMutableLiveData) { search ->
+        this.moviesLiveData = Transformations.switchMap(moviesMutableLiveData) { search ->
             if(search.movieType == "favorites") {
                 repository.getFavoriteMovies(search)
             } else {
@@ -52,7 +52,7 @@ class MoviesViewModel @Inject constructor(application: Application) : AndroidVie
         movies.addSource(repository.getPopular(movieSearch), movies::setValue)
 
     }
-    fun fetchMovies(movieType: String) {
+    fun fetchFavorites(movieType: String) {
         val movieSearch = MovieSearch(1, movieType)
         moviesMutableLiveData.postValue(movieSearch)
 

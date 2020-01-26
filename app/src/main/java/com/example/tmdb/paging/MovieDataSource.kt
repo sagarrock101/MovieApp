@@ -30,10 +30,12 @@ class MovieDataSource(private val apiService: TmdbService, private val search: M
                     call: Call<MovieResponse>,
                     response: Response<MovieResponse>
                 ) {
-                    if(!response.body()?.results?.isEmpty()!!) {
-                        callback.onResult(response.body()?.results!!, null,
-                            FIRST_PAGE + 1)
-                    } else {
+                    if(response.isSuccessful) {
+                        if(response.body()?.results?.isNotEmpty()!!) {
+                            callback.onResult(response.body()?.results!!, null,
+                                FIRST_PAGE + 1)
+                        } else {
+                        }
                     }
                 }
 

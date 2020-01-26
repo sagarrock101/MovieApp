@@ -15,6 +15,7 @@ import com.example.tmdb.MyApplication
 import com.example.tmdb.R
 import com.example.tmdb.adapter.PageAdapter
 import com.example.tmdb.databinding.FragmentMovieBinding
+import com.example.tmdb.model.NetworkState
 import com.example.tmdb.viewmodel.MoviesViewModel
 import com.example.tmdb.viewmodel.ViewModelFactory
 import javax.inject.Inject
@@ -52,7 +53,6 @@ class MovieFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_movie, container, false)
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.toolbar)
         viewModel.getNetworkStatus()?.observe(this, Observer {
-            Log.e(TAG, "networkState: ${it.status}")
             adapter.setNetworkState(it)
         })
         swipeRefreshLayout = binding.swipeToRefresh
@@ -119,7 +119,8 @@ class MovieFragment : Fragment() {
             }
             R.id.menu_favorites -> {
                 movieType = "favorites"
-                viewModel.fetchMovies(page, movieType!!)
+                viewModel.fetchFavorites(movieType!!)
+                observeFavorites()
             }
             R.id.menu_refresh -> {
                 swipeRefreshLayout.isRefreshing = true
@@ -127,6 +128,13 @@ class MovieFragment : Fragment() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun observeFavorites() {
+        viewModel.moviesLiveData.observe(this, Observer { favorites ->
+            adapter.submitList(favorites)
+            adapter.setNetworkState(null)
+        })
     }
 
     override fun onAttach(context: Context) {

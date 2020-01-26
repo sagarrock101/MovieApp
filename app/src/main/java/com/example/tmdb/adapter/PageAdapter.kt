@@ -94,13 +94,8 @@ class PageAdapter
 
     override fun getItemViewType(position: Int): Int {
         return if (hasExtraRow() && position == itemCount - 1) {
-            type = "progress"
-            typeOfGridMutableLiveData.postValue(1)
             R.layout.component_network_state_item
-
         } else {
-            type = "movie_item"
-            typeOfGridMutableLiveData.postValue(2)
             R.layout.movie_poster_item
         }
     }
