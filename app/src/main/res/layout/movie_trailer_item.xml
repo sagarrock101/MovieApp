@@ -6,12 +6,10 @@
     </data>
     <FrameLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="300dp"
-        android:layout_height="match_parent">
+        android:layout_width="150dp"
+        android:layout_height="100dp">
         <ImageView
             android:id="@+id/iv_trailer_thumbnail"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:src="@mipmap/ic_launcher_foreground" />

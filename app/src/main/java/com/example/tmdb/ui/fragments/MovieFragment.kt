@@ -15,9 +15,12 @@ import com.example.tmdb.MyApplication
 import com.example.tmdb.R
 import com.example.tmdb.adapter.PageAdapter
 import com.example.tmdb.databinding.FragmentMovieBinding
-import com.example.tmdb.model.NetworkState
 import com.example.tmdb.viewmodel.MoviesViewModel
 import com.example.tmdb.viewmodel.ViewModelFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -31,6 +34,10 @@ class MovieFragment : Fragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
+
+    val coroutineScope: CoroutineScope by lazy {
+        CoroutineScope(Dispatchers.Main)
+    }
 
     var page = 1
     var movieType: String? = null
@@ -60,9 +67,7 @@ class MovieFragment : Fragment() {
             movieType?.let { viewModel.fetchMovies(page, it) }
             loadMovies()
         }
-
         loadMovies()
-
         setHasOptionsMenu(true)
         return binding.root
     }
@@ -82,18 +87,21 @@ class MovieFragment : Fragment() {
                 return if (type == R.layout.component_network_state_item) 2 else 1
             }
         }
-
+        binding.recyclerView.adapter = adapter
         Log.e(TAG, "loadMovies")
         movieType?.let {
             viewModel.movies.observe(this, Observer { data ->
                 adapter.submitList(data)
+//                val position = layoutManager.findFirstCompletelyVisibleItemPosition()
+//                if(position != RecyclerView.NO_POSITION) {
+//
+//                }
+              coroutineScope.launch {
+                  delay(500)
+                  binding.recyclerView.scrollToPosition(0)
+              }
             })
         }
-        binding.recyclerView.adapter = adapter
-
-
-
-
 
 
     }
@@ -120,7 +128,6 @@ class MovieFragment : Fragment() {
             R.id.menu_favorites -> {
                 movieType = "favorites"
                 viewModel.fetchMovies(page, movieType!!)
-//                observeFavorites()
             }
             R.id.menu_refresh -> {
                 swipeRefreshLayout.isRefreshing = true
@@ -130,18 +137,9 @@ class MovieFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun observeFavorites() {
-        viewModel.moviesLiveData.observe(this, Observer { favorites ->
-            adapter.submitList(favorites)
-            adapter.setNetworkState(null)
-        })
-    }
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
         (activity!!.application as MyApplication).appComponent.inject(this)
     }
-
-
 
 }

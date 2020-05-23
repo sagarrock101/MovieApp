@@ -3,11 +3,12 @@ package com.example.tmdb
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.signature.ObjectKey
 import java.io.File
+
 
 @BindingAdapter(
     value = ["loadImageMovie", "placeholder", "centerCrop", "fitCenter", "circleCrop", "cacheSource", "animation", "large"],
@@ -22,13 +23,16 @@ fun ImageView.loadImageMovie(
         setImageDrawable(placeHolder)
         return
     }
+    var requestOptions = RequestOptions()
+     requestOptions = requestOptions.transforms(CenterCrop(), RoundedCorners(16))
+
     val urlWithHost =
         (if (isLarge) BuildConfig.LARGE_IMAGE_URL else BuildConfig.SMALL_IMAGE_URL) + url
     val requestBuilder = GlideApp.with(context).load(urlWithHost)
         .placeholder(R.mipmap.ic_launcher_round)
-    val requestOptions = RequestOptions().diskCacheStrategy(
-        if (isCacheSource) DiskCacheStrategy.DATA else DiskCacheStrategy.RESOURCE
-    )
+//    val requestOptions = RequestOptions().diskCacheStrategy(
+//        if (isCacheSource) DiskCacheStrategy.DATA else DiskCacheStrategy.RESOURCE
+//    )
         .placeholder(placeHolder)
 
     if (animation.not()) requestOptions.dontAnimate()

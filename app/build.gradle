@@ -13,7 +13,7 @@ android {
     buildToolsVersion "29.0.2"
     defaultConfig {
         applicationId "com.example.tmdb"
-        minSdkVersion 15
+        minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -73,7 +73,9 @@ android {
 
 dependencies {
 
+    implementation "com.google.android.material:material:$materialVersion"
 
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -111,7 +113,7 @@ dependencies {
 
     implementation "androidx.cardview:cardview:1.0.0"
 
-    implementation 'androidx.paging:paging-runtime:2.1.0'
+    implementation 'androidx.paging:paging-runtime:2.1.2'
 
     implementation("com.github.bumptech.glide:glide:4.9.0")
     kapt("com.github.bumptech.glide:compiler:4.9.0")

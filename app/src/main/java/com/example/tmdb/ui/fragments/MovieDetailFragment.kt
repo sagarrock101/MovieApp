@@ -25,12 +25,14 @@ import com.example.tmdb.adapter.TrailerAdapter
 import com.example.tmdb.api.AppConstants
 import com.example.tmdb.databinding.FragmentMovieDetailBinding
 import com.example.tmdb.model.Movie
+import com.example.tmdb.ui.requestGlideListener
 import com.example.tmdb.viewmodel.MoviesViewModel
+import com.google.android.material.appbar.AppBarLayout
 import java.util.*
 import javax.inject.Inject
 
 
-class MovieDetailFragment : Fragment() {
+class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener {
     private lateinit var binding: FragmentMovieDetailBinding
     private val MOVIE_TRAILER_THUMBNAIL_URL_PART_ONE = "https://img.youtube.com/watch?v="
     private val MOVIE_YOUTUBE_APP_TRAILER_URL = "vnd.youtube:"
@@ -73,10 +75,12 @@ class MovieDetailFragment : Fragment() {
             binding.detailStars.rating = movie.vote_average!!/2
 
         }
-        GlideApp.with(binding.toolbarImage)
-                        .load(AppConstants.IMAGE_URL + movie.backDropPath)
-                        .placeholder(R.mipmap.ic_launcher_round)
-                        .into(binding.toolbarImage)
+        Log.e(TAG, "${AppConstants.IMAGE_URL}${movie.backDropPath} ")
+
+        GlideApp.with(binding.movieDetailPoster)
+                            .load(AppConstants.IMAGE_BACK_DROP + movie.backDropPath)
+            .listener(binding.movieDetailPoster.requestGlideListener())
+                        .into(binding.movieDetailPoster)
 
         viewModel.trailersLiveData.observe(this, Observer { response ->
             adapter?.setData(response.results)
@@ -131,6 +135,8 @@ class MovieDetailFragment : Fragment() {
             }
         }
 
+        binding.appBar.addOnOffsetChangedListener(this)
+
         return binding.root
     }
 
@@ -143,5 +149,12 @@ class MovieDetailFragment : Fragment() {
         return Uri.parse(MOVIE_YOUTUBE_APP_TRAILER_URL + key)
     }
 
+    override fun onOffsetChanged(appBarLayout: AppBarLayout?, verticalOffset: Int) {
+        if(verticalOffset == 0)
+            binding.fab.visibility = View.VISIBLE
+        else
+            binding.fab.visibility = View.GONE
+
+    }
 
 }
