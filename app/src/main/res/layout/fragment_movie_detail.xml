@@ -122,13 +122,37 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_trailer_thumbnail"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="175dp"
                     android:layout_marginTop="4dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/trailersLabel"
                     app:layout_constraintStart_toStartOf="@id/trailersLabel"
                     tools:listitem="@layout/movie_trailer_item"/>
+
+                <TextView
+                    android:id="@+id/tv_reviews"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="left"
+                    android:text="Reviews"
+                    android:textSize="22sp"
+                    android:textColor="@color/colorWhite"
+                    app:layout_constraintTop_toBottomOf="@id/rv_trailer_thumbnail"
+                    app:layout_constraintStart_toStartOf="@id/rv_trailer_thumbnail"
+                    app:layout_constraintEnd_toEndOf="@id/rv_trailer_thumbnail"
+                    />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_reviews"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    tools:listitem="@layout/item_review"
+                    app:layout_constraintTop_toBottomOf="@id/tv_reviews"
+                    app:layout_constraintStart_toStartOf="@id/tv_reviews"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>

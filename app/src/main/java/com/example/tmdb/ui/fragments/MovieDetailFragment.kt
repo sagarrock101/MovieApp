@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.tmdb.GlideApp
 import com.example.tmdb.MyApplication
 import com.example.tmdb.R
+import com.example.tmdb.adapter.ReviewAdpater
 import com.example.tmdb.adapter.TrailerAdapter
 import com.example.tmdb.api.AppConstants
 import com.example.tmdb.databinding.FragmentMovieDetailBinding
@@ -47,6 +48,8 @@ class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener {
 
     val TAG = "MovieDetailFragment"
 
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -69,6 +72,7 @@ class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener {
 
         movie = args.movieData!!
         movie.id?.let { viewModel.getTrailers(it)
+            viewModel.fetchReviews(it)
             binding.toolbarLayout.title = movie.title
             binding.tvMovieTitle.text = movie.title
             binding.cvSynopsis.text = movie.overview
@@ -76,7 +80,7 @@ class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener {
 
         }
         Log.e(TAG, "${AppConstants.IMAGE_URL}${movie.backDropPath} ")
-
+        setReviewObserver()
         GlideApp.with(binding.movieDetailPoster)
                             .load(AppConstants.IMAGE_BACK_DROP + movie.backDropPath)
             .listener(binding.movieDetailPoster.requestGlideListener())
@@ -138,6 +142,21 @@ class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener {
         binding.appBar.addOnOffsetChangedListener(this)
 
         return binding.root
+    }
+
+    private fun setReviewObserver() {
+        var adapter = ReviewAdpater()
+        viewModel.reviewsLD.observe(this, Observer {reviewListResponse ->
+            if (reviewListResponse != null) {
+                if(reviewListResponse.results != null) {
+                    adapter.setData(reviewListResponse.results)
+                    binding.rvReviews.adapter = adapter
+                }
+            }
+        })
+
+        binding.rvReviews.layoutManager = LinearLayoutManager(context!!,
+            LinearLayoutManager.VERTICAL, false)
     }
 
     override fun onAttach(context: Context) {

@@ -15,6 +15,7 @@ import com.example.tmdb.MyApplication
 import com.example.tmdb.R
 import com.example.tmdb.adapter.PageAdapter
 import com.example.tmdb.databinding.FragmentMovieBinding
+import com.example.tmdb.ui.MainActivity
 import com.example.tmdb.viewmodel.MoviesViewModel
 import com.example.tmdb.viewmodel.ViewModelFactory
 import kotlinx.coroutines.CoroutineScope
@@ -34,6 +35,8 @@ class MovieFragment : Fragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
+
+
 
     val coroutineScope: CoroutineScope by lazy {
         CoroutineScope(Dispatchers.Main)
@@ -96,10 +99,13 @@ class MovieFragment : Fragment() {
 //                if(position != RecyclerView.NO_POSITION) {
 //
 //                }
-              coroutineScope.launch {
-                  delay(500)
-                  binding.recyclerView.scrollToPosition(0)
-              }
+             if(!MainActivity.firstTime) {
+                 coroutineScope.launch {
+                     delay(500)
+                     binding.recyclerView.scrollToPosition(0)
+                 }
+                 MainActivity.firstTime = true
+             }
             })
         }
 

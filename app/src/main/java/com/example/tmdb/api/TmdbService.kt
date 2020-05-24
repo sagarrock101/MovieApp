@@ -1,8 +1,6 @@
 package com.example.tmdb.api
 
-import com.example.tmdb.model.MovieResponse
-import com.example.tmdb.model.MovieTrailer
-import com.example.tmdb.model.MovieTrailerResponse
+import com.example.tmdb.model.*
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -18,4 +16,7 @@ interface TmdbService {
 
     @GET("movie/{movie_id}/videos")
     fun getTrailerList(@Path("movie_id") movieId: Int): Call<MovieTrailerResponse>
+
+    @GET("movie/{movie_id}/reviews")
+    fun getReviews(@Path("movie_id") movieId: Int) : Call<ReviewListResponse>
 }

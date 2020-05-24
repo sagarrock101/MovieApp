@@ -25,6 +25,9 @@ class MoviesViewModel @Inject constructor(application: Application) : AndroidVie
      var trailersLiveData: LiveData<MovieTrailerResponse>
 //    var moviesLiveData: LiveData<MovieResponse>
 
+    private var reviewsMLD = MutableLiveData<Int>()
+    var reviewsLD: LiveData<ReviewListResponse>
+
     var movies : MediatorLiveData<PagedList<Movie>> = MediatorLiveData()
 
     init {
@@ -40,10 +43,13 @@ class MoviesViewModel @Inject constructor(application: Application) : AndroidVie
             repository.getTrailersList(search)
         }
 
+        this.reviewsLD = Transformations.switchMap(reviewsMLD) {movieId ->
+            repository.getReviews(movieId)
+        }
+    }
 
-
-
-
+    fun fetchReviews(movieId: Int) {
+        reviewsMLD.postValue(movieId)
     }
 
     fun fetchMovies(page: Int, movieType: String){
