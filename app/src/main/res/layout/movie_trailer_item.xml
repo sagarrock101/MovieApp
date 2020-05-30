@@ -12,6 +12,7 @@
             android:id="@+id/iv_trailer_thumbnail"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            thumbailKey="@{trailerItem}"
             android:src="@mipmap/ic_launcher_foreground" />
 
         <ImageView

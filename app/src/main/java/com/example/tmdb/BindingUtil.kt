@@ -2,13 +2,19 @@ package com.example.tmdb
 
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.databinding.BindingAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.signature.ObjectKey
+import com.example.tmdb.adapter.BaseAdapter
+import com.example.tmdb.api.AppConstants
+import com.example.tmdb.model.Movie
+import com.example.tmdb.model.MovieTrailer
+import com.example.tmdb.ui.requestGlideListener
 import java.io.File
-
 
 @BindingAdapter(
     value = ["loadImageMovie", "placeholder", "centerCrop", "fitCenter", "circleCrop", "cacheSource", "animation", "large"],
@@ -46,10 +52,26 @@ fun ImageView.loadImageMovie(
     requestBuilder.apply(requestOptions).into(this)
 }
 
-//@BindingAdapter(value = ["loadImage"])
-//fun ImageView.loadImage(view: ImageView, imageUrl: String) {
-//    Glide.with(view.context)
-//        .load(imageUrl)
-//        .apply(RequestOptions().circleCrop())
-//        .into(view)
-//}
+@BindingAdapter("adapter")
+fun RecyclerView.bindAdapter(baseAdapter: BaseAdapter<Any>) {
+    this.adapter = baseAdapter
+}
+
+@BindingAdapter("thumbailKey")
+fun ImageView.bindTrailerThumbnail(item: MovieTrailer) {
+    GlideApp.with(this)
+        .load(
+            Constants.MOVIE_TRAILER_THUMBNAIL_URL_PART_ONE + item.key +
+                    Constants.MOVIE_TRAILER_THUMBNAIL_URL_PART_TWO
+        )
+        .placeholder(R.mipmap.ic_launcher_round)
+        .into(this)
+}
+
+@BindingAdapter("backdrop")
+fun AppCompatImageView.bindBackDrop(movie: Movie) {
+    GlideApp.with(this)
+        .load(AppConstants.IMAGE_BACK_DROP + movie.backDropPath)
+        .listener(this.requestGlideListener())
+        .into(this)
+}

@@ -9,7 +9,6 @@ import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tmdb.R
 import com.example.tmdb.databinding.MoviePosterItemBinding
@@ -139,7 +138,7 @@ class PageAdapter
 
     inner class MyViewHolder(private var binding: MoviePosterItemBinding)
         : RecyclerView.ViewHolder(binding.root),
-        GenericAdapter.Binder<Movie> {
+        BaseAdapter.Binder<Movie> {
         var onItemClick: ((Movie) -> Unit)? = null
         var posterImageView = binding.posterImageView
 

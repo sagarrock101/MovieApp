@@ -34,14 +34,8 @@ class TrailerAdapter
     inner class ViewHolder(val binding: MovieTrailerItemBinding):
         RecyclerView.ViewHolder(binding.root){
 
-        private val MOVIE_TRAILER_THUMBNAIL_URL_PART_ONE = "https://img.youtube.com/vi/"
-        private val MOVIE_TRAILER_THUMBNAIL_URL_PART_TWO = "/0.jpg"
-
         fun bind(data: MovieTrailer) {
-            GlideApp.with(binding.ivTrailerThumbnail)
-                .load(MOVIE_TRAILER_THUMBNAIL_URL_PART_ONE + data.key + MOVIE_TRAILER_THUMBNAIL_URL_PART_TWO)
-                .placeholder(R.mipmap.ic_launcher_round)
-                .into(binding.ivTrailerThumbnail)
+          binding.trailerItem = data
         }
 
         init {
@@ -49,8 +43,5 @@ class TrailerAdapter
                 onTrailerItemClick?.invoke(list!![adapterPosition])
             }
         }
-
-
     }
-
 }

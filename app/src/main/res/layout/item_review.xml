@@ -3,7 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="item"
+            type="com.example.tmdb.model.Review" />
     </data>
 
     <LinearLayout
@@ -20,6 +22,7 @@
             android:textColor="@color/colorWhite"
             android:textSize="17sp"
             android:textStyle="bold"
+            android:text="@{item.author}"
             tools:text="title" />
 
         <com.ms.square.android.expandabletextview.ExpandableTextView
@@ -43,8 +46,7 @@
                 android:lineSpacingMultiplier="1.2"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textColor="@color/colorWhite"
-                android:textSize="14sp"
-                tools:text="content" />
+                android:textSize="14sp" />
 
             <ImageButton
                 android:id="@id/expand_collapse"

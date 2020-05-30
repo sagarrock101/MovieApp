@@ -36,15 +36,13 @@ class MovieFragment : Fragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
-
-
     val coroutineScope: CoroutineScope by lazy {
         CoroutineScope(Dispatchers.Main)
     }
 
     var page = 1
     var movieType: String? = null
-    val TAG = "MovieFragment"
+    val TAG = this.javaClass.name
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +58,8 @@ class MovieFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_movie, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_movie, container,
+            false)
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.toolbar)
         viewModel.getNetworkStatus()?.observe(this, Observer {
             adapter.setNetworkState(it)
@@ -95,10 +94,6 @@ class MovieFragment : Fragment() {
         movieType?.let {
             viewModel.movies.observe(this, Observer { data ->
                 adapter.submitList(data)
-//                val position = layoutManager.findFirstCompletelyVisibleItemPosition()
-//                if(position != RecyclerView.NO_POSITION) {
-//
-//                }
              if(!MainActivity.firstTime) {
                  coroutineScope.launch {
                      delay(500)
@@ -147,5 +142,4 @@ class MovieFragment : Fragment() {
         super.onAttach(context)
         (activity!!.application as MyApplication).appComponent.inject(this)
     }
-
 }

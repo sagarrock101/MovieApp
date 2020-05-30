@@ -13,19 +13,20 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.tmdb.Constants
 import com.example.tmdb.GlideApp
 import com.example.tmdb.MyApplication
 import com.example.tmdb.R
-import com.example.tmdb.adapter.ReviewAdpater
+import com.example.tmdb.adapter.ReviewAdapter
 import com.example.tmdb.adapter.TrailerAdapter
 import com.example.tmdb.api.AppConstants
 import com.example.tmdb.databinding.FragmentMovieDetailBinding
 import com.example.tmdb.model.Movie
+import com.example.tmdb.model.MovieTrailer
 import com.example.tmdb.ui.requestGlideListener
 import com.example.tmdb.viewmodel.MoviesViewModel
 import com.google.android.material.appbar.AppBarLayout
@@ -35,8 +36,7 @@ import javax.inject.Inject
 
 class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener {
     private lateinit var binding: FragmentMovieDetailBinding
-    private val MOVIE_TRAILER_THUMBNAIL_URL_PART_ONE = "https://img.youtube.com/watch?v="
-    private val MOVIE_YOUTUBE_APP_TRAILER_URL = "vnd.youtube:"
+
 
     val args: MovieDetailFragmentArgs by navArgs()
 
@@ -46,46 +46,29 @@ class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener {
     private var heartFlag = false
     lateinit var movie: Movie
 
-    val TAG = "MovieDetailFragment"
-
-
+    val TAG = this.javaClass.name
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        val pm = context!!.packageManager
-        val apps = pm.getInstalledApplications(0)
-
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_movie_detail, container,
             false)
-
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.toolbar)
         val navController = activity!!.findNavController(R.id.myNavHostFragment)
         NavigationUI.setupActionBarWithNavController(activity as AppCompatActivity,navController)
         adapter = TrailerAdapter()
-        //            binding.movieItem = arguments!!.getParcelable("data")
-//             movie = arguments!!.getParcelable("data")!!
-        Log.e(TAG, "Navigation Host " + Navigation.findNavController(activity!!,R.id.myNavHostFragment).currentDestination)
-
         movie = args.movieData!!
+
         movie.id?.let { viewModel.getTrailers(it)
             viewModel.fetchReviews(it)
-            binding.toolbarLayout.title = movie.title
-            binding.tvMovieTitle.text = movie.title
-            binding.cvSynopsis.text = movie.overview
+            binding.movieItem = movie
             binding.detailStars.rating = movie.vote_average!!/2
 
         }
         Log.e(TAG, "${AppConstants.IMAGE_URL}${movie.backDropPath} ")
         setReviewObserver()
-        GlideApp.with(binding.movieDetailPoster)
-                            .load(AppConstants.IMAGE_BACK_DROP + movie.backDropPath)
-            .listener(binding.movieDetailPoster.requestGlideListener())
-                        .into(binding.movieDetailPoster)
-
         viewModel.trailersLiveData.observe(this, Observer { response ->
             adapter?.setData(response.results)
             binding.rvTrailerThumbnail.adapter = adapter
@@ -127,36 +110,24 @@ class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener {
             startActivity(Intent.createChooser(intent, "Share the movie via"))
         }
 
-
         adapter?.onTrailerItemClick = {item ->
-            val intent = Intent(Intent.ACTION_VIEW, item.key?.let { buildYoutubeAppVideoUrl(it) })
-            startActivity(Intent.createChooser(intent, "Watch this trailer on"))
-
-            if (intent.resolveActivity(Objects.requireNonNull(context)!!.packageManager)
-                != null
-            ) {
-                startActivity(intent)
-            }
+           startYouTube(item)
         }
 
         binding.appBar.addOnOffsetChangedListener(this)
-
         return binding.root
     }
 
     private fun setReviewObserver() {
-        var adapter = ReviewAdpater()
+        var adapter = ReviewAdapter()
         viewModel.reviewsLD.observe(this, Observer {reviewListResponse ->
             if (reviewListResponse != null) {
                 if(reviewListResponse.results != null) {
-                    adapter.setData(reviewListResponse.results)
-                    binding.rvReviews.adapter = adapter
+                    adapter.setItems(reviewListResponse.results)
+                    binding.reviewAdapter = adapter
                 }
             }
         })
-
-        binding.rvReviews.layoutManager = LinearLayoutManager(context!!,
-            LinearLayoutManager.VERTICAL, false)
     }
 
     override fun onAttach(context: Context) {
@@ -165,15 +136,33 @@ class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener {
     }
 
     private fun buildYoutubeAppVideoUrl(key: String): Uri? {
-        return Uri.parse(MOVIE_YOUTUBE_APP_TRAILER_URL + key)
+        return Uri.parse(Constants.MOVIE_YOUTUBE_APP_TRAILER_URL + key)
     }
 
     override fun onOffsetChanged(appBarLayout: AppBarLayout?, verticalOffset: Int) {
         if(verticalOffset == 0)
-            binding.fab.visibility = View.VISIBLE
+            binding.fab.animate(View.VISIBLE, 1.0f)
         else
-            binding.fab.visibility = View.GONE
+            binding.fab.animate(View.GONE, 0.01f)
 
+    }
+
+    private fun View.animate(visibility: Int, alpha: Float) {
+        this.apply {
+            this.visibility = visibility
+            animate().alpha(alpha).duration = 400
+        }
+    }
+
+    private fun startYouTube(item: MovieTrailer) {
+        val intent = Intent(Intent.ACTION_VIEW, item.key?.let { buildYoutubeAppVideoUrl(it) })
+        startActivity(Intent.createChooser(intent, "Watch this trailer on"))
+
+        if (intent.resolveActivity(Objects.requireNonNull(context)!!.packageManager)
+            != null
+        ) {
+            startActivity(intent)
+        }
     }
 
 }
