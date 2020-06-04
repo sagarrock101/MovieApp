@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,7 +20,6 @@ import com.example.tmdb.MyApplication
 import com.example.tmdb.R
 import com.example.tmdb.adapter.ReviewAdapter
 import com.example.tmdb.adapter.TrailerAdapter
-import com.example.tmdb.api.AppConstants
 import com.example.tmdb.databinding.FragmentMovieDetailBinding
 import com.example.tmdb.model.Movie
 import com.example.tmdb.model.MovieTrailer
@@ -33,19 +31,18 @@ import javax.inject.Inject
 
 
 class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener,
-    OnTrailerClickListener {
+    OnTrailerClickListener, View.OnClickListener {
+    
     private lateinit var binding: FragmentMovieDetailBinding
 
-
-    val args: MovieDetailFragmentArgs by navArgs()
+    private val args: MovieDetailFragmentArgs by navArgs()
 
     @Inject
     lateinit var viewModel : MoviesViewModel
-    private var adapter: TrailerAdapter? = null
     private var heartFlag = false
     lateinit var movie: Movie
 
-    val TAG = this.javaClass.name
+    private val TAG = this.javaClass.name
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,59 +51,52 @@ class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener,
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_movie_detail, container,
             false)
+        setUpNavController()
+        setViewClickListeners()
+        callApi()
+        setReviewObserver()
+        setTrailerObserver()
+        checkForFavorite()
+        return binding.root
+    }
+
+    private fun setUpNavController() {
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.toolbar)
         val navController = activity!!.findNavController(R.id.myNavHostFragment)
         NavigationUI.setupActionBarWithNavController(activity as AppCompatActivity,navController)
-        adapter = TrailerAdapter()
-        movie = args.movieData!!
+    }
 
-        movie.id?.let { viewModel.getTrailers(it)
+    private fun callApi() {
+        movie = args.movieData!!
+        movie.id?.let {
+            viewModel.getTrailers(it)
             viewModel.fetchReviews(it)
+            viewModel.getMovieCheck(it)
             binding.movieItem = movie
             binding.detailStars.rating = movie.vote_average!!/2
-
         }
-        Log.e(TAG, "${AppConstants.IMAGE_URL}${movie.backDropPath} ")
-        setReviewObserver()
-        setTrailerObserver()
-        movie.id?.let { viewModel.getMovieCheck(it) }
-        viewModel.getMovieFromDb().observe(this, Observer { liveData ->
-           if(liveData != null) {
-               if(movie.id == liveData.id) {
-                   binding.fab.setImageResource(R.drawable.ic_like)
-                   heartFlag = true
-                   Toast.makeText(context, "Inserted", Toast.LENGTH_SHORT).show()
-               } else {
-                   Toast.makeText(context, "not inserted", Toast.LENGTH_SHORT).show()
-                   binding.fab.setImageResource(R.drawable.ic_heart)
-                   heartFlag = false
-               }
-           }
-        })
+    }
 
-        binding.fab.setOnClickListener {
-            if(heartFlag) {
-                binding.fab.setImageResource(R.drawable.ic_heart)
-                viewModel.deleteFromDb(movie.id!!)
-                heartFlag = false
-            } else {
-                binding.fab.setImageResource(R.drawable.ic_like)
-                viewModel.insertToDb(movie)
-                heartFlag = true
-            }
-        }
-
-        binding.fabShare.setOnClickListener {
-            val intent = Intent(Intent.ACTION_SEND)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            intent.putExtra(Intent.EXTRA_TEXT, movie.title)
-            intent.type = "text/string"
-            startActivity(Intent.createChooser(intent, "Share the movie via"))
-        }
-
-
+    private fun setViewClickListeners() {
+        binding.fab.setOnClickListener(this)
+        binding.fabShare.setOnClickListener(this)
         binding.appBar.addOnOffsetChangedListener(this)
-        return binding.root
+    }
+
+    private fun checkForFavorite() {
+        viewModel.getMovieFromDb().observe(this, Observer { liveData ->
+            if(liveData != null) {
+                if(movie.id == liveData.id) {
+                    binding.fab.setImageResource(R.drawable.ic_like)
+                    heartFlag = true
+                    Toast.makeText(context, "Inserted", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, "not inserted", Toast.LENGTH_SHORT).show()
+                    binding.fab.setImageResource(R.drawable.ic_heart)
+                    heartFlag = false
+                }
+            }
+        })
     }
 
     private fun setTrailerObserver() {
@@ -173,5 +163,34 @@ class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener,
         startYouTube(item)
     }
 
+    override fun onClick(view: View?) {
+        when(view) {
+            binding.fab -> {
+               setHeart()
+            }
+            binding.fabShare -> {
+                share()
+            }
+        }
+    }
 
+    private fun setHeart() {
+        heartFlag = if(heartFlag) {
+            binding.fab.setImageResource(R.drawable.ic_heart)
+            viewModel.deleteFromDb(movie.id!!)
+            false
+        } else {
+            binding.fab.setImageResource(R.drawable.ic_like)
+            viewModel.insertToDb(movie)
+            true
+        }
+    }
+
+    private fun share() {
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        intent.putExtra(Intent.EXTRA_TEXT, movie.title)
+        intent.type = "text/string"
+        startActivity(Intent.createChooser(intent, "Share the movie via"))
+    }
 }
