@@ -16,9 +16,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.ui.NavigationUI
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.tmdb.Constants
-import com.example.tmdb.GlideApp
 import com.example.tmdb.MyApplication
 import com.example.tmdb.R
 import com.example.tmdb.adapter.ReviewAdapter
@@ -27,14 +25,15 @@ import com.example.tmdb.api.AppConstants
 import com.example.tmdb.databinding.FragmentMovieDetailBinding
 import com.example.tmdb.model.Movie
 import com.example.tmdb.model.MovieTrailer
-import com.example.tmdb.ui.requestGlideListener
+import com.example.tmdb.ui.interfaces.OnTrailerClickListener
 import com.example.tmdb.viewmodel.MoviesViewModel
 import com.google.android.material.appbar.AppBarLayout
 import java.util.*
 import javax.inject.Inject
 
 
-class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener {
+class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener,
+    OnTrailerClickListener {
     private lateinit var binding: FragmentMovieDetailBinding
 
 
@@ -69,12 +68,7 @@ class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener {
         }
         Log.e(TAG, "${AppConstants.IMAGE_URL}${movie.backDropPath} ")
         setReviewObserver()
-        viewModel.trailersLiveData.observe(this, Observer { response ->
-            adapter?.setData(response.results)
-            binding.rvTrailerThumbnail.adapter = adapter
-            binding.rvTrailerThumbnail.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL,
-                false)
-        })
+        setTrailerObserver()
         movie.id?.let { viewModel.getMovieCheck(it) }
         viewModel.getMovieFromDb().observe(this, Observer { liveData ->
            if(liveData != null) {
@@ -110,19 +104,29 @@ class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener {
             startActivity(Intent.createChooser(intent, "Share the movie via"))
         }
 
-        adapter?.onTrailerItemClick = {item ->
-           startYouTube(item)
-        }
 
         binding.appBar.addOnOffsetChangedListener(this)
         return binding.root
     }
 
+    private fun setTrailerObserver() {
+        var adapter = TrailerAdapter()
+        adapter.setTrailerListener(this)
+        viewModel.trailersLiveData.observe(this, Observer { response ->
+            if(!response.results.isNullOrEmpty()) {
+                adapter.setItems(response.results)
+                binding.trailerAdapter = adapter
+            }
+        })
+    }
+
+
+
     private fun setReviewObserver() {
         var adapter = ReviewAdapter()
         viewModel.reviewsLD.observe(this, Observer {reviewListResponse ->
             if (reviewListResponse != null) {
-                if(reviewListResponse.results != null) {
+                if(!reviewListResponse.results.isNullOrEmpty()) {
                     adapter.setItems(reviewListResponse.results)
                     binding.reviewAdapter = adapter
                 }
@@ -164,5 +168,10 @@ class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener {
             startActivity(intent)
         }
     }
+
+    override fun onTrailerClicked(item: MovieTrailer) {
+        startYouTube(item)
+    }
+
 
 }

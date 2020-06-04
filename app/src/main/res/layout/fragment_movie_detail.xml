@@ -7,6 +7,10 @@
         <variable
             name="reviewAdapter"
             type="com.example.tmdb.adapter.ReviewAdapter" />
+
+        <variable
+            name="trailerAdapter"
+            type="com.example.tmdb.adapter.TrailerAdapter" />
     </data>
     <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -131,6 +135,9 @@
                     android:layout_width="0dp"
                     android:layout_height="175dp"
                     android:layout_marginTop="4dp"
+                    adapter="@{trailerAdapter}"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    android:orientation="horizontal"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/trailersLabel"
                     app:layout_constraintStart_toStartOf="@id/trailersLabel"
