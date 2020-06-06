@@ -32,7 +32,7 @@ import javax.inject.Inject
 
 class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener,
     OnTrailerClickListener, View.OnClickListener {
-    
+
     private lateinit var binding: FragmentMovieDetailBinding
 
     private val args: MovieDetailFragmentArgs by navArgs()
