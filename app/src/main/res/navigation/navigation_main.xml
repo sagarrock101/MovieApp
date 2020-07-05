@@ -28,11 +28,16 @@
     <fragment
         android:id="@+id/movieDetailFragment"
         android:name="com.example.tmdb.ui.fragments.MovieDetailFragment"
-        android:label="MovieDetailFragment" >
+        android:label="{movie_title}">
         <argument
             android:name="movieData"
+            android:defaultValue="@null"
             app:argType="com.example.tmdb.model.Movie"
-            app:nullable="true"
-            android:defaultValue="@null" />
+            app:nullable="true" />
+        <argument
+            android:name="movie_title"
+            android:defaultValue="movie_title"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
 </navigation>

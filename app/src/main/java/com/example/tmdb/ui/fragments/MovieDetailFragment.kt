@@ -63,7 +63,7 @@ class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener,
     private fun setUpNavController() {
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.toolbar)
         val navController = activity!!.findNavController(R.id.myNavHostFragment)
-        NavigationUI.setupActionBarWithNavController(activity as AppCompatActivity,navController)
+        NavigationUI.setupActionBarWithNavController(activity as AppCompatActivity, navController)
     }
 
     private fun callApi() {

@@ -39,7 +39,8 @@ class PageAdapter
                             if(Navigation.findNavController(view).currentDestination?.id ==
                                 R.id.movieFragment) {
                                 val action = MovieFragmentDirections
-                                    .actionMovieFragmentToMovieDetailFragment(getItem(position))
+                                    .actionMovieFragmentToMovieDetailFragment(getItem(position),
+                                    getItem(position)?.title)
                                 view.findNavController().navigate(action)
                                 Log.e(TAG, "Navigation Host "
                                         + Navigation.findNavController(view).currentDestination)
