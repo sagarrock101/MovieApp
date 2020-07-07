@@ -6,7 +6,7 @@ import com.example.tmdb.model.MovieTrailer
 import com.example.tmdb.ui.interfaces.OnTrailerClickListener
 
 class TrailerViewHolder(val binding: MovieTrailerItemBinding,
-                        var onTrailerClickListener: OnTrailerClickListener
+                        private var onTrailerClickListener: OnTrailerClickListener
 ):
     BaseViewHolder<MovieTrailer>(binding), View.OnClickListener {
     private var listener: OnTrailerClickListener? = null

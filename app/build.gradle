@@ -144,5 +144,7 @@ dependencies {
     //expandable textview
     implementation "com.ms-square:expandableTextView:$expandableTextViewVersion"
 
+    implementation "androidx.work:work-runtime-ktx:$work"
+
 
 }

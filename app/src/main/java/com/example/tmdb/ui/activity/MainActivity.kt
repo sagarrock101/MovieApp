@@ -2,26 +2,40 @@ package com.example.tmdb.ui.activity
 
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.SharedPreferences
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.MenuItem
 import android.widget.RadioButton
 import android.widget.RadioGroup
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
+import androidx.work.WorkInfo
+import com.example.tmdb.MyApplication
 import com.example.tmdb.R
+import com.example.tmdb.Utils.showToast
+import com.example.tmdb.broadcastReciever.NetworkBroadcastReceiver
 import com.example.tmdb.databinding.ActivityMainBinding
 import com.example.tmdb.ui.activity.MainActivity.Values.DARK_THEME
 import com.example.tmdb.ui.activity.MainActivity.Values.LIGHT_THEME
 import com.example.tmdb.ui.activity.MainActivity.Values.THEME_SELECTED
+import com.example.tmdb.ui.fragments.MovieFragment
+import com.example.tmdb.ui.interfaces.InternetChecker
+import com.example.tmdb.viewmodel.MoviesViewModel
+import java.lang.Exception
+import javax.inject.Inject
 import kotlin.properties.Delegates
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), InternetChecker {
 
     private lateinit var binding: ActivityMainBinding
 
@@ -29,13 +43,19 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var sharedPrefFile: String
 
+    private lateinit var broadcastReceiver: NetworkBroadcastReceiver
+
     private var themeSelected by Delegates.notNull<Int>()
+
+    @Inject
+    lateinit var viewModel: MoviesViewModel
 
     object Values {
         const val LIGHT_THEME = R.id.rb_light_theme
         const val DARK_THEME = R.id.rb_dartk_theme
         const val RIPPLE_DELAY = 500L
         const val THEME_SELECTED = "theme_selected"
+        val TAG = this.javaClass.name
     }
 
     companion object {
@@ -46,7 +66,18 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setupSharedPreferences()
         setupTheme()
+        (this.application as MyApplication).appComponent.inject(this)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        initBroadcastReceiver()
+    }
+
+    private fun initBroadcastReceiver() {
+        broadcastReceiver = NetworkBroadcastReceiver()
+        broadcastReceiver.setListener(this)
+        val filter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION).apply {
+            addAction(ConnectivityManager.CONNECTIVITY_ACTION)
+        }
+        registerReceiver(broadcastReceiver, filter)
     }
 
     private fun setupTheme() {
@@ -67,6 +98,7 @@ class MainActivity : AppCompatActivity() {
         var preferenceEditor = sharedPreferences.edit()
         preferenceEditor.putInt(THEME_SELECTED, themeSelected)
         preferenceEditor.apply()
+        removeReceiver()
         super.onPause()
     }
 
@@ -149,5 +181,34 @@ class MainActivity : AppCompatActivity() {
         Handler().postDelayed(
             {AppCompatDelegate.setDefaultNightMode(themeId)
             restartActivity()}, Values.RIPPLE_DELAY)
+    }
+    
+    override fun isInternetAvailable(boolean: Boolean) {
+        if(boolean) {
+          try {
+              var navHost = supportFragmentManager.findFragmentById(R.id.myNavHostFragment)
+              var movieFragment = navHost?.childFragmentManager?.fragments?.get(0) as MovieFragment
+              movieFragment.loadMovies()
+          } catch (e: Exception) {
+
+          }
+        } else {
+            Handler().postDelayed({
+                showToast(this, "please check your internet connection")
+            }, 200)
+        }
+    }
+
+    override fun onDestroy() {
+        removeReceiver()
+        super.onDestroy()
+    }
+
+    private fun removeReceiver() {
+        try {
+            unregisterReceiver(broadcastReceiver)
+        } catch (e: Exception) {
+            Log.e(Values.TAG, "${e.message}")
+        }
     }
 }

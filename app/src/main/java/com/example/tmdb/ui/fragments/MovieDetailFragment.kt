@@ -150,13 +150,7 @@ class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener,
 
     private fun startYouTube(item: MovieTrailer) {
         val intent = Intent(Intent.ACTION_VIEW, item.key?.let { buildYoutubeAppVideoUrl(it) })
-        startActivity(Intent.createChooser(intent, "Watch this trailer on"))
-
-        if (intent.resolveActivity(Objects.requireNonNull(context)!!.packageManager)
-            != null
-        ) {
-            startActivity(intent)
-        }
+        startActivity(intent)
     }
 
     override fun onTrailerClicked(item: MovieTrailer) {

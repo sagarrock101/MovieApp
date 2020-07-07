@@ -4,7 +4,10 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.PageKeyedDataSource
 import com.example.tmdb.api.TmdbService
-import com.example.tmdb.model.*
+import com.example.tmdb.model.Movie
+import com.example.tmdb.model.MovieResponse
+import com.example.tmdb.model.MovieSearch
+import com.example.tmdb.model.NetworkState
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

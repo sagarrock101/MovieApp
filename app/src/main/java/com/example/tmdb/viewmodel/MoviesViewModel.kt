@@ -30,7 +30,13 @@ class MoviesViewModel @Inject constructor(application: Application) : AndroidVie
 
     var movies : MediatorLiveData<PagedList<Movie>> = MediatorLiveData()
 
+//    val outputWorkInfo: LiveData<List<WorkInfo>>
+
+
     init {
+
+//        outputWorkInfo = workManager.getWorkInfosByTagLiveData("check")
+
         this.moviesLiveData = Transformations.switchMap(moviesMutableLiveData) { search ->
             if(search.movieType == "favorites") {
                 repository.getFavoriteMovies(search)
@@ -58,11 +64,6 @@ class MoviesViewModel @Inject constructor(application: Application) : AndroidVie
         movies.addSource(repository.getMovies(movieSearch), movies::setValue)
 
     }
-//    fun fetchFavorites(movieType: String) {
-//        val movieSearch = MovieSearch(1, movieType)
-//        moviesMutableLiveData.postValue(movieSearch)
-//
-//    }
 
     fun getMovie() : LiveData<PagedList<Movie>> {
         return movies
