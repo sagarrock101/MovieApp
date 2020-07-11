@@ -11,31 +11,30 @@ import android.util.Log
 import android.view.MenuItem
 import android.widget.RadioButton
 import android.widget.RadioGroup
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
-import androidx.work.WorkInfo
 import com.example.tmdb.MyApplication
 import com.example.tmdb.R
 import com.example.tmdb.Utils.showToast
 import com.example.tmdb.broadcastReciever.NetworkBroadcastReceiver
 import com.example.tmdb.databinding.ActivityMainBinding
+import com.example.tmdb.paging.MovieDataSource
 import com.example.tmdb.ui.activity.MainActivity.Values.DARK_THEME
 import com.example.tmdb.ui.activity.MainActivity.Values.LIGHT_THEME
 import com.example.tmdb.ui.activity.MainActivity.Values.THEME_SELECTED
 import com.example.tmdb.ui.fragments.MovieFragment
 import com.example.tmdb.ui.interfaces.InternetChecker
+import com.example.tmdb.ui.interfaces.OnPageLoading
 import com.example.tmdb.viewmodel.MoviesViewModel
 import java.lang.Exception
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
 
-class MainActivity : AppCompatActivity(), InternetChecker {
+class MainActivity : AppCompatActivity(), InternetChecker, OnPageLoading {
 
     private lateinit var binding: ActivityMainBinding
 
@@ -46,6 +45,8 @@ class MainActivity : AppCompatActivity(), InternetChecker {
     private lateinit var broadcastReceiver: NetworkBroadcastReceiver
 
     private var themeSelected by Delegates.notNull<Int>()
+
+    private var currentPage = 1
 
     @Inject
     lateinit var viewModel: MoviesViewModel
@@ -69,6 +70,7 @@ class MainActivity : AppCompatActivity(), InternetChecker {
         (this.application as MyApplication).appComponent.inject(this)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         initBroadcastReceiver()
+        MovieDataSource.setPageListener(this)
     }
 
     private fun initBroadcastReceiver() {
@@ -188,14 +190,15 @@ class MainActivity : AppCompatActivity(), InternetChecker {
           try {
               var navHost = supportFragmentManager.findFragmentById(R.id.myNavHostFragment)
               var movieFragment = navHost?.childFragmentManager?.fragments?.get(0) as MovieFragment
-              movieFragment.loadMovies()
+
+//              movieFragment.scrollAndFetch(currentPage)
           } catch (e: Exception) {
 
           }
         } else {
             Handler().postDelayed({
                 showToast(this, "please check your internet connection")
-            }, 200)
+            }, 10)
         }
     }
 
@@ -210,5 +213,9 @@ class MainActivity : AppCompatActivity(), InternetChecker {
         } catch (e: Exception) {
             Log.e(Values.TAG, "${e.message}")
         }
+    }
+
+    override fun getPageLoading(page: Int) {
+        currentPage = page
     }
 }

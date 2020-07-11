@@ -18,17 +18,14 @@ import com.example.tmdb.ui.fragments.MovieFragmentDirections
 import com.example.tmdb.viewholders.NetworkStateItemViewHolder
 
 
-class PageAdapter
+class MoviesAdapter(private val retryCallback: () -> Unit)
     : PagedListAdapter<Movie, RecyclerView.ViewHolder>(diffCallback) {
 
     private var TAG = "PageAdapter"
 
     private var networkState: NetworkState? = null
 
-    var typeOfGridMutableLiveData = MutableLiveData<Int>()
-
     var type = ""
-
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(getItemViewType(position)) {
@@ -107,13 +104,10 @@ class PageAdapter
                 val binding = MoviePosterItemBinding.inflate(inflater, parent, false)
                 MyViewHolder(binding)
             }
-            R.layout.component_network_state_item -> NetworkStateItemViewHolder.create(parent)
+            R.layout.component_network_state_item -> NetworkStateItemViewHolder.create(parent,retryCallback)
             else -> throw IllegalArgumentException("unknown view type $viewType")
         }
     }
-
-
-
 
     companion object {
         /**
@@ -164,9 +158,4 @@ class PageAdapter
             notifyItemChanged(itemCount - 1)
         }
     }
-
-    fun typeOfGrid(): LiveData<Int> {
-      return typeOfGridMutableLiveData
-    }
-
 }

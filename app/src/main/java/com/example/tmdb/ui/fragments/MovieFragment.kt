@@ -3,7 +3,7 @@ package com.example.tmdb.ui.fragments
 import android.content.Context
 import android.os.Bundle
 import android.view.*
-import android.widget.Toast
+import android.widget.PopupMenu
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -12,11 +12,9 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import androidx.work.WorkInfo
 import com.example.tmdb.MyApplication
 import com.example.tmdb.R
-import com.example.tmdb.Utils
-import com.example.tmdb.adapter.PageAdapter
+import com.example.tmdb.adapter.MoviesAdapter
 import com.example.tmdb.databinding.FragmentMovieBinding
 import com.example.tmdb.ui.activity.MainActivity
 import com.example.tmdb.viewmodel.MoviesViewModel
@@ -33,7 +31,7 @@ class MovieFragment : Fragment() {
     @Inject
     lateinit var viewModel : MoviesViewModel
     private lateinit var binding: FragmentMovieBinding
-    private lateinit var adapter: PageAdapter
+    private lateinit var adapter: MoviesAdapter
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var layoutManager: GridLayoutManager
 
@@ -90,8 +88,19 @@ class MovieFragment : Fragment() {
     private fun setupSwipeToRefresh() {
         swipeRefreshLayout = binding.swipeToRefresh
         swipeRefreshLayout.setOnRefreshListener {
-            movieType?.let { viewModel.fetchMovies(page, it) }
+            fetchMovies(page)
             loadMovies()
+        }
+    }
+
+    fun fetchMovies(currentPage: Int) {
+        movieType?.let { viewModel.fetchMovies(currentPage, it) }
+    }
+
+    fun scrollAndFetch(currentPage: Int) {
+        movieType?.let { viewModel.fetchMovies(currentPage, it) }
+        binding.recyclerView.post {
+            binding.recyclerView.scrollToPosition(adapter.itemCount - 1)
         }
     }
 
@@ -104,7 +113,7 @@ class MovieFragment : Fragment() {
     fun loadMovies() {
         binding.itemProgressBar.visibility = View.INVISIBLE
         swipeRefreshLayout.isRefreshing  = false
-        initRv()
+        initAdapter()
         setSpanLookUp()
         setTypeOfMovieObserver()
     }
@@ -133,8 +142,10 @@ class MovieFragment : Fragment() {
         }
     }
 
-    private fun initRv() {
-        adapter = PageAdapter()
+    private fun initAdapter() {
+        adapter = MoviesAdapter(){
+            viewModel.retry()
+        }
         layoutManager = GridLayoutManager(context!!, 2)
         binding.recyclerView.layoutManager = layoutManager
         binding.recyclerView.adapter = adapter
@@ -147,28 +158,47 @@ class MovieFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
-            R.id.popular -> {
-                movieType = "popular"
-                viewModel.fetchMovies(page, movieType!!)
-            }
-            R.id.up_coming -> {
-                movieType = "upcoming"
-                viewModel.fetchMovies(page, movieType!!)
-            }
-            R.id.top_rated -> {
-                movieType = "top_rated"
-                viewModel.fetchMovies(page, movieType!!)
-            }
-            R.id.menu_favorites -> {
-                movieType = "favorites"
-                viewModel.fetchMovies(page, movieType!!)
-            }
             R.id.menu_refresh -> {
                 swipeRefreshLayout.isRefreshing = true
                 loadMovies()
             }
+            R.id.menu_sort -> {
+                showFilterPopUpMenu()
+            }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun showFilterPopUpMenu() {
+        val view = activity?.findViewById<View>(R.id.menu_sort) ?: return
+        PopupMenu(requireContext(), view).run {
+            menuInflater.inflate(R.menu.sort_menu, menu)
+            setOnMenuItemClickListener {
+                when(it.itemId) {
+                    R.id.popular -> {
+                        sortMovie(page,"popular")
+                    }
+                    R.id.up_coming -> {
+                        sortMovie(page,"upcoming")
+                    }
+                    R.id.top_rated -> {
+                        sortMovie(page, "top_rated")
+                    }
+                    R.id.menu_favorites -> {
+                        sortMovie(page, "favorites")
+                    } else -> {
+                        false
+                    }
+                }
+                true
+            }
+            show()
+        }
+    }
+
+    private fun sortMovie(page:Int, movieType: String) {
+        viewModel.fetchMovies(page, movieType!!)
+
     }
 
     override fun onAttach(context: Context) {

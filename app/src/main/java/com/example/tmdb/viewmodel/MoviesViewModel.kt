@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.*
 import androidx.paging.PagedList
 import com.example.tmdb.model.*
+import com.example.tmdb.paging.MovieDataSource
 import com.example.tmdb.repository.MovieRepository
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -94,5 +95,7 @@ class MoviesViewModel @Inject constructor(application: Application) : AndroidVie
         repository.deleteMovieInDb(id)
     }
 
-
+    fun retry() {
+        MovieDataSource.retryFailed()
+    }
 }

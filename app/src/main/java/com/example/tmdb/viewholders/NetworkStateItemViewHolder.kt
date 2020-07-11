@@ -13,18 +13,29 @@ import com.example.tmdb.model.Status
  * A View Holder that can display a loading or have click action.
  * It is used to show the network state of paging.
  */
-class NetworkStateItemViewHolder(val binding: ComponentNetworkStateItemBinding)
+class NetworkStateItemViewHolder(
+    val binding: ComponentNetworkStateItemBinding,
+    val retryCallback: () -> Unit
+)
     : RecyclerView.ViewHolder(binding.root) {
+
+
 
     fun bindTo(networkState: NetworkState?) {
         binding.progressBar.visibility = toVisibility(networkState?.status == Status.RUNNING)
+        binding.retryButton.visibility = toVisibility(networkState?.status == Status.FAILED)
+        binding.errorMsg.visibility = toVisibility(networkState?.msg != null)
+        binding.errorMsg.text = networkState?.msg
+        binding.retryButton.setOnClickListener {
+            retryCallback.invoke()
+        }
     }
 
     companion object {
-        fun create(parent: ViewGroup): NetworkStateItemViewHolder {
+        fun create(parent: ViewGroup, retryCallback: () -> Unit): NetworkStateItemViewHolder {
             val inflater = LayoutInflater.from(parent.context)
             val binding = ComponentNetworkStateItemBinding.inflate(inflater, parent, false)
-            return NetworkStateItemViewHolder(binding)
+            return NetworkStateItemViewHolder(binding, retryCallback)
         }
 
         fun toVisibility(constraint : Boolean): Int {

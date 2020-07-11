@@ -8,6 +8,7 @@ import com.example.tmdb.model.Movie
 import com.example.tmdb.model.MovieResponse
 import com.example.tmdb.model.MovieSearch
 import com.example.tmdb.model.NetworkState
+import com.example.tmdb.ui.interfaces.OnPageLoading
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -17,7 +18,10 @@ class MovieDataSource(private val apiService: TmdbService, private val search: M
     : PageKeyedDataSource<Int, Movie>() {
 
     val networkState: MutableLiveData<NetworkState> = MutableLiveData()
+
     val TAG = "MovieDataSource"
+
+
     override fun loadInitial(
         params: LoadInitialParams<Int>,
         callback: LoadInitialCallback<Int, Movie>
@@ -27,6 +31,11 @@ class MovieDataSource(private val apiService: TmdbService, private val search: M
             .enqueue(object : Callback<MovieResponse>{
                 override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
                     Log.e(TAG, "onFailure: " + t.message)
+                    networkState.postValue(NetworkState.error(t.message ?: "unknown err"))
+                    retry = {
+                        loadInitial(params, callback)
+                    }
+
                 }
 
                 override fun onResponse(
@@ -38,6 +47,11 @@ class MovieDataSource(private val apiService: TmdbService, private val search: M
                             callback.onResult(response.body()?.results!!, null,
                                 FIRST_PAGE + 1)
                         } else {
+                            retry = {
+                                loadInitial(params, callback)
+                            }
+                            networkState.postValue(
+                                NetworkState.error("error code: ${response.code()}"))
                         }
                     }
                 }
@@ -54,6 +68,9 @@ class MovieDataSource(private val apiService: TmdbService, private val search: M
             .enqueue(object : Callback<MovieResponse>{
                 override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
                     networkState.postValue(NetworkState.error(t.message ?: "unknown err"))
+                    retry = {
+                        loadAfter(params, callback)
+                    }
                 }
 
                 override fun onResponse(
@@ -65,8 +82,17 @@ class MovieDataSource(private val apiService: TmdbService, private val search: M
                         var nextPageNumber = params.key + 1
                         var totalPages = response.body()!!.totalPages
                         var key = if(totalPages > nextPageNumber) nextPageNumber else null
+                        if (key != null) {
+                            onPageLoading.getPageLoading(key)
+                        }
+                        retry = null
                         callback.onResult(response.body()!!.results, key)
-                    }
+                    } else {
+                        retry = {
+                            loadAfter(params, callback)
+                        }
+                        networkState.postValue(
+                            NetworkState.error("error code: ${response.code()}"))                    }
                 }
 
             })
@@ -79,6 +105,10 @@ class MovieDataSource(private val apiService: TmdbService, private val search: M
         apiService.getMovies(search.movieType, params.key)
             .enqueue(object : Callback<MovieResponse>{
                 override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
+                    retry = {
+                        loadBefore(params, callback)
+                    }
+                    networkState.postValue(NetworkState.error(t.message ?: "unknown err"))
 
                 }
 
@@ -89,6 +119,12 @@ class MovieDataSource(private val apiService: TmdbService, private val search: M
                     if(response.body()!!.results.isEmpty()) {
                         var key = if(params.key > 1) params.key -1 else null
                         callback.onResult(response.body()!!.results, key)
+                    } else {
+                        retry = {
+                            loadBefore(params, callback)
+                        }
+                        networkState.postValue(
+                            NetworkState.error("error code: ${response.code()}"))
                     }
                 }
 
@@ -97,6 +133,18 @@ class MovieDataSource(private val apiService: TmdbService, private val search: M
 
     companion object {
         const val FIRST_PAGE = 1
+        lateinit var onPageLoading: OnPageLoading
+
+        fun setPageListener(listener: OnPageLoading) {
+            this.onPageLoading = listener
+        }
+
+        private var retry: (() -> Any)? = null
+
+        fun retryFailed() {
+            retry?.invoke()
+        }
+
     }
 
 }
