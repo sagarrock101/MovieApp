@@ -75,3 +75,5 @@ fun AppCompatImageView.bindBackDrop(movie: Movie) {
         .listener(this.requestGlideListener())
         .into(this)
 }
+
+

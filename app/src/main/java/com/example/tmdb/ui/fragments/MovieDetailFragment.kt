@@ -26,7 +26,6 @@ import com.example.tmdb.model.MovieTrailer
 import com.example.tmdb.ui.interfaces.OnTrailerClickListener
 import com.example.tmdb.viewmodel.MoviesViewModel
 import com.google.android.material.appbar.AppBarLayout
-import java.util.*
 import javax.inject.Inject
 
 
