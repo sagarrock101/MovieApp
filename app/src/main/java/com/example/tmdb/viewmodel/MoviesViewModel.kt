@@ -8,6 +8,7 @@ import com.example.tmdb.paging.MovieDataSource
 import com.example.tmdb.repository.MovieRepository
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.example.tmdb.R
 
 @Singleton
 class MoviesViewModel @Inject constructor(application: Application) : AndroidViewModel(application) {
@@ -24,6 +25,10 @@ class MoviesViewModel @Inject constructor(application: Application) : AndroidVie
 
     private  var trailersMutableLiveDataLiveData = MutableLiveData<TrailerSearch>()
      var trailersLiveData: LiveData<MovieTrailerResponse>
+
+    private val _snackbarText = MutableLiveData<Int>()
+    val snackbarText: LiveData<Int> = _snackbarText
+
 //    var moviesLiveData: LiveData<MovieResponse>
 
     private var reviewsMLD = MutableLiveData<Int>()
@@ -98,4 +103,6 @@ class MoviesViewModel @Inject constructor(application: Application) : AndroidVie
     fun retry() {
         MovieDataSource.retryFailed()
     }
+
+
 }

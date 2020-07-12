@@ -104,14 +104,12 @@ class MovieRepository @Inject constructor( val service : TmdbService,  var conte
     }
 
     fun insertMovieToDb(movie: Movie) {
-        Toast.makeText(context, "Inserted to DB",Toast.LENGTH_SHORT).show()
         uiScope.launch {
             database.movieDao.insert(movie)
         }
     }
 
     fun deleteMovieInDb(id: Int) {
-        Toast.makeText(context, "Deleted from DB",Toast.LENGTH_SHORT).show()
         uiScope.launch {
             database.movieDao.deleteMovie(id)
         }

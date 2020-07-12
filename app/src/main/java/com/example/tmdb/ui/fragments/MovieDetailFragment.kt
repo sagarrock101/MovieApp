@@ -4,10 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.Toast
+import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -26,6 +23,7 @@ import com.example.tmdb.model.MovieTrailer
 import com.example.tmdb.ui.interfaces.OnTrailerClickListener
 import com.example.tmdb.viewmodel.MoviesViewModel
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.snackbar.Snackbar
 import javax.inject.Inject
 
 
@@ -78,21 +76,19 @@ class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener,
 
     private fun setViewClickListeners() {
         binding.fab.setOnClickListener(this)
-        binding.fabShare.setOnClickListener(this)
         binding.appBar.addOnOffsetChangedListener(this)
+        binding.fabShare.setOnClickListener(this)
     }
 
     private fun checkForFavorite() {
         viewModel.getMovieFromDb().observe(this, Observer { liveData ->
             if(liveData != null) {
-                if(movie.id == liveData.id) {
+                heartFlag = if(movie.id == liveData.id) {
                     binding.fab.setImageResource(R.drawable.ic_like)
-                    heartFlag = true
-                    Toast.makeText(context, "Inserted", Toast.LENGTH_SHORT).show()
+                    true
                 } else {
-                    Toast.makeText(context, "not inserted", Toast.LENGTH_SHORT).show()
                     binding.fab.setImageResource(R.drawable.ic_heart)
-                    heartFlag = false
+                    false
                 }
             }
         })
@@ -108,8 +104,6 @@ class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener,
             }
         })
     }
-
-
 
     private fun setReviewObserver() {
         var adapter = ReviewAdapter()
@@ -133,10 +127,13 @@ class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener,
     }
 
     override fun onOffsetChanged(appBarLayout: AppBarLayout?, verticalOffset: Int) {
-        if(verticalOffset == 0)
+        if(verticalOffset == 0) {
             binding.fab.animate(View.VISIBLE, 1.0f)
-        else
+            binding.fabShare.animate(View.VISIBLE, 1.0f)
+        } else {
             binding.fab.animate(View.GONE, 0.01f)
+            binding.fabShare.animate(View.GONE, 0.01f)
+        }
 
     }
 
@@ -171,12 +168,19 @@ class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener,
         heartFlag = if(heartFlag) {
             binding.fab.setImageResource(R.drawable.ic_heart)
             viewModel.deleteFromDb(movie.id!!)
+            showSnack(R.string.removed_from_favorites)
             false
         } else {
             binding.fab.setImageResource(R.drawable.ic_like)
             viewModel.insertToDb(movie)
+            showSnack(R.string.added_to_favorites)
             true
         }
+    }
+
+    private fun showSnack(msg: Int) {
+        Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT)
+            .show()
     }
 
     private fun share() {

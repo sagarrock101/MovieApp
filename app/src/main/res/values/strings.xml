@@ -1,10 +1,10 @@
 <resources>
     <string name="app_name">TMDB</string>
     <string name="refresh">Refresh</string>
-    <string name="top_rated">top rated</string>
-    <string name="up_coming">up coming</string>
-    <string name="popular">popular</string>
-    <string name="favorties">favorties</string>
+    <string name="top_rated">Top Rated</string>
+    <string name="up_coming">Up Coming</string>
+    <string name="popular">Popular</string>
+    <string name="favorties">Favorties</string>
     <string name="check">check</string>
     <string name="settings">Settings</string>
     <string name="title_activity_settings">SettingsActivity</string>
@@ -22,4 +22,10 @@
     <string name="choose_theme">Choose Theme</string>
     <string name="retry">Retry</string>
     <string name="filter">filter</string>
+    <string name="reviews">Reviews</string>
+    <string name="trailer">Trailer</string>
+    <string name="release_data">Release Date:</string>
+    <string name="added_to_favorites">Added to Favorites</string>
+    <string name="removed_from_favorites">Removed from Favorites</string>
+    <string name="share">Share</string>
 </resources>

@@ -43,7 +43,11 @@ data class Movie(
 
     @ColumnInfo
     @Json(name = "backdrop_path")
-    val backDropPath: String? = null
+    val backDropPath: String? = null,
+
+    @ColumnInfo
+    @Json(name =  "release_date")
+    val releaseData: String? = null
 ) : Parcelable {
     @BindingAdapter("poster_path")
     fun loadImage(view: ImageView, imageUrl: String) {

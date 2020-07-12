@@ -5,11 +5,15 @@ import android.os.Build
 import android.view.View
 import android.view.ViewAnimationUtils
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.example.tmdb.R
+import com.google.android.material.snackbar.Snackbar
 import kotlin.math.max
 
 fun View.visible() {
@@ -58,3 +62,20 @@ fun View.circularRevealedAtCenter() {
 }
 
 fun checkIsMaterialVersion() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+
+
+fun View.setupSnackbar (
+    lifecycleOwner: LifecycleOwner,
+    snackbarEvent: LiveData<Int>,
+    timeLength: Int
+) {
+    snackbarEvent.observe(lifecycleOwner, Observer { it ->
+            this.showSnackbar(context.getString(it), timeLength)
+    })
+}
+
+
+
+fun View.showSnackbar(snackbarText: String, timeLength: Int) {
+    Snackbar.make(this, snackbarText, timeLength).show()
+}
