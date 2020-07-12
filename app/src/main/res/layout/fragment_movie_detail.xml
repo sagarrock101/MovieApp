@@ -73,15 +73,17 @@
 
                 <TextView
                     android:id="@+id/tv_movie_title"
-                    android:text="@{movieItem.title}"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="8dp"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+                    android:text="@{movieItem.title}"
                     android:textColor="?attr/textColor"
-                    android:textSize="25sp"/>
+                    android:textSize="25sp"
+                    android:layout_marginEnd="72dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/tv_release_date_label"
@@ -148,7 +150,7 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_trailer_thumbnail"
                     android:layout_width="0dp"
-                    android:layout_height="175dp"
+                    android:layout_height="100dp"
                     android:layout_marginTop="4dp"
                     adapter="@{trailerAdapter}"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
@@ -164,6 +166,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="left"
                     android:text="@string/reviews"
+                    android:layout_marginTop="16dp"
                     android:visibility="@{reviewAdapter.listItems.size() >0 ? View.VISIBLE : View.GONE}"
                     android:textSize="22sp"
                     android:textColor="?attr/textColor"
@@ -213,8 +216,6 @@
             app:srcCompat="@drawable/ic_heart"
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
             tools:ignore="VectorDrawableCompat" />
-
-
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>
