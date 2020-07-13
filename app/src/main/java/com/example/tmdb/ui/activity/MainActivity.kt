@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity(), InternetChecker, OnPageLoading {
 
     private lateinit var broadcastReceiver: NetworkBroadcastReceiver
 
-    private var themeSelected by Delegates.notNull<Int>()
+    private var themeSelected = LIGHT_THEME
 
     private var currentPage = 1
 

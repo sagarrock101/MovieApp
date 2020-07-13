@@ -5,7 +5,9 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -179,8 +181,11 @@ class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener,
     }
 
     private fun showSnack(msg: Int) {
-        Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT)
-            .show()
+        var snack = Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT)
+        var view = snack.view
+        var tv = view.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        tv.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorWhite))
+        snack.show()
     }
 
     private fun share() {

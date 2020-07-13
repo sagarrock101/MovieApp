@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.tmdb.MyApplication
 import com.example.tmdb.R
+import com.example.tmdb.Utils.showToast
 import com.example.tmdb.adapter.MoviesAdapter
 import com.example.tmdb.databinding.FragmentMovieBinding
 import com.example.tmdb.ui.activity.MainActivity
@@ -29,11 +30,11 @@ import javax.inject.Inject
 class MovieFragment : Fragment() {
 
     @Inject
-    lateinit var viewModel : MoviesViewModel
+    lateinit var viewModel: MoviesViewModel
     private lateinit var binding: FragmentMovieBinding
     private lateinit var adapter: MoviesAdapter
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
-    private lateinit var layoutManager: GridLayoutManager
+    private var layoutManager: GridLayoutManager? = null
 
 
     @Inject
@@ -51,10 +52,12 @@ class MovieFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         movieType = "popular"
-        if(savedInstanceState == null) {
+        if (savedInstanceState == null) {
             movieType?.let { viewModel.fetchMovies(page, it) }
         }
-
+        adapter = MoviesAdapter() {
+            viewModel.retry()
+        }
     }
 
     override fun onCreateView(
@@ -63,10 +66,11 @@ class MovieFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_movie, container,
-            false)
+        binding = DataBindingUtil.inflate(
+            inflater, R.layout.fragment_movie, container,
+            false
+        )
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.toolbar)
-
         setPagesLoadingObserver()
         setupSwipeToRefresh()
         loadMovies()
@@ -77,7 +81,7 @@ class MovieFragment : Fragment() {
     }
 
     private fun setOnBackPressed() {
-        val callback = object: OnBackPressedCallback(true) {
+        val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 (activity as AppCompatActivity).finish()
             }
@@ -112,7 +116,7 @@ class MovieFragment : Fragment() {
 
     fun loadMovies() {
         binding.itemProgressBar.visibility = View.INVISIBLE
-        swipeRefreshLayout.isRefreshing  = false
+        swipeRefreshLayout.isRefreshing = false
         initAdapter()
         setSpanLookUp()
         setTypeOfMovieObserver()
@@ -122,7 +126,7 @@ class MovieFragment : Fragment() {
         movieType?.let {
             viewModel.movies.observe(this, Observer { data ->
                 adapter.submitList(data)
-                if(!MainActivity.firstTime) {
+                if (!MainActivity.firstTime) {
                     coroutineScope.launch {
                         delay(500)
                         binding.recyclerView.scrollToPosition(0)
@@ -134,7 +138,7 @@ class MovieFragment : Fragment() {
     }
 
     private fun setSpanLookUp() {
-        layoutManager.spanSizeLookup = object : SpanSizeLookup() {
+        layoutManager?.spanSizeLookup = object : SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
                 val type: Int = adapter.getItemViewType(position)
                 return if (type == R.layout.component_network_state_item) 2 else 1
@@ -143,10 +147,7 @@ class MovieFragment : Fragment() {
     }
 
     private fun initAdapter() {
-        adapter = MoviesAdapter(){
-            viewModel.retry()
-        }
-        layoutManager = GridLayoutManager(context!!, 2)
+        layoutManager = GridLayoutManager(activity, 2)
         binding.recyclerView.layoutManager = layoutManager
         binding.recyclerView.adapter = adapter
     }
@@ -157,7 +158,7 @@ class MovieFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
+        when (item.itemId) {
             R.id.menu_refresh -> {
                 swipeRefreshLayout.isRefreshing = true
                 loadMovies()
@@ -174,19 +175,20 @@ class MovieFragment : Fragment() {
         PopupMenu(requireContext(), view).run {
             menuInflater.inflate(R.menu.sort_menu, menu)
             setOnMenuItemClickListener {
-                when(it.itemId) {
+                when (it.itemId) {
                     R.id.popular -> {
-                        sortMovie(page,"popular")
+                        sortMovie(page, "popular")
                     }
                     R.id.up_coming -> {
-                        sortMovie(page,"upcoming")
+                        sortMovie(page, "upcoming")
                     }
                     R.id.top_rated -> {
                         sortMovie(page, "top_rated")
                     }
                     R.id.menu_favorites -> {
                         sortMovie(page, "favorites")
-                    } else -> {
+                    }
+                    else -> {
                         false
                     }
                 }
@@ -196,7 +198,7 @@ class MovieFragment : Fragment() {
         }
     }
 
-    private fun sortMovie(page:Int, movieType: String) {
+    private fun sortMovie(page: Int, movieType: String) {
         viewModel.fetchMovies(page, movieType!!)
 
     }
@@ -204,5 +206,11 @@ class MovieFragment : Fragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         (activity!!.application as MyApplication).appComponent.inject(this)
+    }
+
+    override fun onDestroyView() {
+        layoutManager?.spanSizeLookup = null
+        layoutManager = null
+        super.onDestroyView()
     }
 }
