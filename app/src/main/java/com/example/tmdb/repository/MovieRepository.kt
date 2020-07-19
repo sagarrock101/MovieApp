@@ -1,6 +1,7 @@
 package com.example.tmdb.repository
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -41,9 +42,10 @@ class MovieRepository @Inject constructor( val service : TmdbService,  var conte
      var networkStatusLiveData: LiveData<NetworkState>? =null
 
     fun getMovies(search: MovieSearch): LiveData<PagedList<Movie>> {
-        if(search.movieType == "favorites") {
-            return LivePagedListBuilder(database.movieDao.getMovieList(), config).build()
-        }
+        Log.e(TAG, "type: ${search.movieType}")
+//        if(search.movieType == "favorites") {
+//            return LivePagedListBuilder(database.movieDao.getMovieList(), config).build()
+//        }
             popularMoviesDataSourceFactory = PopularMoviesDataSourceFactory(service,
                 search)
             networkStatusLiveData = Transformations
@@ -61,7 +63,6 @@ class MovieRepository @Inject constructor( val service : TmdbService,  var conte
                 override fun onFailure(call: Call<MovieTrailerResponse>, t: Throwable) {
 
                 }
-
                 override fun onResponse(
                     call: Call<MovieTrailerResponse>,
                     response: Response<MovieTrailerResponse>
@@ -115,8 +116,8 @@ class MovieRepository @Inject constructor( val service : TmdbService,  var conte
         }
     }
 
-    fun getFavoriteMovies(movieSearch: MovieSearch) : LiveData<PagedList<Movie>>  {
-        return LivePagedListBuilder<Int, Movie>(database.movieDao.getMovieList(), config).build()
+    fun getFavoriteMovies() : LiveData<List<Movie>>  {
+        return database.movieDao.getMovieList()
     }
 
 }

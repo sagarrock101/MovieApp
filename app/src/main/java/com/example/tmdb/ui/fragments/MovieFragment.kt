@@ -2,6 +2,7 @@ package com.example.tmdb.ui.fragments
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.PopupMenu
 import androidx.activity.OnBackPressedCallback
@@ -9,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -40,24 +42,25 @@ class MovieFragment : Fragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
+
     private val coroutineScope: CoroutineScope by lazy {
         CoroutineScope(Dispatchers.Main)
     }
 
     var page = 1
-    var movieType: String? = null
+    var movieType = "popular"
     val TAG = this.javaClass.name
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        movieType = "popular"
         if (savedInstanceState == null) {
-            movieType?.let { viewModel.fetchMovies(page, it) }
+            movieType.let { viewModel.fetchMovies(page, it) }
         }
         adapter = MoviesAdapter() {
             viewModel.retry()
         }
+        setTypeOfMovieObserver()
     }
 
     override fun onCreateView(
@@ -76,7 +79,6 @@ class MovieFragment : Fragment() {
         loadMovies()
         setOnBackPressed()
         setHasOptionsMenu(true)
-
         return binding.root
     }
 
@@ -97,42 +99,27 @@ class MovieFragment : Fragment() {
         }
     }
 
-    fun fetchMovies(currentPage: Int) {
+    private fun fetchMovies(currentPage: Int) {
         movieType?.let { viewModel.fetchMovies(currentPage, it) }
-    }
-
-    fun scrollAndFetch(currentPage: Int) {
-        movieType?.let { viewModel.fetchMovies(currentPage, it) }
-        binding.recyclerView.post {
-            binding.recyclerView.scrollToPosition(adapter.itemCount - 1)
-        }
     }
 
     private fun setPagesLoadingObserver() {
         viewModel.getNetworkStatus()?.observe(this, Observer {
-            adapter.setNetworkState(it)
+                adapter.setNetworkState(it)
         })
     }
 
-    fun loadMovies() {
+    private fun loadMovies() {
         binding.itemProgressBar.visibility = View.INVISIBLE
         swipeRefreshLayout.isRefreshing = false
         initAdapter()
         setSpanLookUp()
-        setTypeOfMovieObserver()
     }
 
     private fun setTypeOfMovieObserver() {
         movieType?.let {
-            viewModel.movies.observe(this, Observer { data ->
+            viewModel.movies.observe(activity!!, Observer { data ->
                 adapter.submitList(data)
-                if (!MainActivity.firstTime) {
-                    coroutineScope.launch {
-                        delay(500)
-                        binding.recyclerView.scrollToPosition(0)
-                    }
-                    MainActivity.firstTime = true
-                }
             })
         }
     }
@@ -177,16 +164,20 @@ class MovieFragment : Fragment() {
             setOnMenuItemClickListener {
                 when (it.itemId) {
                     R.id.popular -> {
-                        sortMovie(page, "popular")
+                        movieType = getString(R.string.movie_popular)
+                        sortMovie(page, movieType)
                     }
                     R.id.up_coming -> {
-                        sortMovie(page, "upcoming")
+                        movieType = getString(R.string.movie_up_coming)
+                        sortMovie(page, movieType)
                     }
                     R.id.top_rated -> {
-                        sortMovie(page, "top_rated")
+                        movieType = getString(R.string.movie_top_rated)
+                        sortMovie(page, movieType)
                     }
                     R.id.menu_favorites -> {
-                        sortMovie(page, "favorites")
+                        movieType = getString(R.string.movie_favorites)
+                        navigateToFavorite()
                     }
                     else -> {
                         false
@@ -198,9 +189,13 @@ class MovieFragment : Fragment() {
         }
     }
 
+    private fun navigateToFavorite() {
+        val action = MovieFragmentDirections.actionMovieFragmentToMovieFavorite()
+        findNavController().navigate(action)
+    }
+
     private fun sortMovie(page: Int, movieType: String) {
         viewModel.fetchMovies(page, movieType!!)
-
     }
 
     override fun onAttach(context: Context) {
@@ -211,6 +206,8 @@ class MovieFragment : Fragment() {
     override fun onDestroyView() {
         layoutManager?.spanSizeLookup = null
         layoutManager = null
+        viewModel.movies.removeObservers(this)
         super.onDestroyView()
     }
+
 }

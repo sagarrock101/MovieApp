@@ -4,6 +4,7 @@ import android.app.Application
 import com.example.tmdb.di.modules.AppModule
 import com.example.tmdb.ui.activity.MainActivity
 import com.example.tmdb.ui.fragments.MovieDetailFragment
+import com.example.tmdb.ui.fragments.MovieFavorite
 import com.example.tmdb.ui.fragments.MovieFragment
 import dagger.BindsInstance
 import dagger.Component
@@ -21,4 +22,5 @@ interface AppComponent {
     fun inject(fragment: MovieFragment)
     fun inject(fragment: MovieDetailFragment)
     fun inject(activity: MainActivity)
+    fun inject(fragment: MovieFavorite)
 }

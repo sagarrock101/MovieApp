@@ -24,6 +24,9 @@
             app:destination="@id/movieDetailFragment"
             app:popUpTo="@+id/movieDetailFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_movieFragment_to_movieFavorite"
+            app:destination="@id/movieFavorite" />
     </fragment>
     <fragment
         android:id="@+id/movieDetailFragment"
@@ -39,5 +42,12 @@
             android:defaultValue="movie_title"
             app:argType="string"
             app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/movieFavorite"
+        android:name="com.example.tmdb.ui.fragments.MovieFavorite">
+        <action
+            android:id="@+id/action_movieFavorite_to_movieDetailFragment"
+            app:destination="@id/movieDetailFragment" />
     </fragment>
 </navigation>

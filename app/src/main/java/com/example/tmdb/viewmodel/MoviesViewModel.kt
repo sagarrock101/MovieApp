@@ -1,6 +1,7 @@
 package com.example.tmdb.viewmodel
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.*
 import androidx.paging.PagedList
 import com.example.tmdb.model.*
@@ -20,8 +21,8 @@ class MoviesViewModel @Inject constructor(application: Application) : AndroidVie
     lateinit var repository: MovieRepository
 //            = MovieRepository(ApiFactory.MOVIE_SERVICE, application)
 
-    private var moviesMutableLiveData = MutableLiveData<MovieSearch>()
-     var moviesLiveData : LiveData<PagedList<Movie>>
+//    private var moviesMutableLiveData = MutableLiveData<MovieSearch>()
+//     var moviesLiveData : LiveData<PagedList<Movie>>
 
     private  var trailersMutableLiveDataLiveData = MutableLiveData<TrailerSearch>()
      var trailersLiveData: LiveData<MovieTrailerResponse>
@@ -41,15 +42,13 @@ class MoviesViewModel @Inject constructor(application: Application) : AndroidVie
 
     init {
 
-//        outputWorkInfo = workManager.getWorkInfosByTagLiveData("check")
-
-        this.moviesLiveData = Transformations.switchMap(moviesMutableLiveData) { search ->
-            if(search.movieType == "favorites") {
-                repository.getFavoriteMovies(search)
-            } else {
-                repository.getMovies(search)
-            }
-        }
+//        this.moviesLiveData = Transformations.switchMap(moviesMutableLiveData) { search ->
+//            if (search.movieType == "favorites") {
+//                repository.getFavoriteMovies(search)
+//            } else {
+//                repository.getMovies(search)
+//            }
+//        }
 
         this.trailersLiveData = Transformations.switchMap(trailersMutableLiveDataLiveData) {search ->
             repository.getTrailersList(search)
@@ -66,9 +65,9 @@ class MoviesViewModel @Inject constructor(application: Application) : AndroidVie
 
     fun fetchMovies(page: Int, movieType: String){
             val movieSearch = MovieSearch(page, movieType)
-            moviesMutableLiveData.postValue(movieSearch)
+//            moviesMutableLiveData.postValue(movieSearch)
+        Log.e(TAG, "movieType: $movieType")
         movies.addSource(repository.getMovies(movieSearch), movies::setValue)
-
     }
 
     fun getMovie() : LiveData<PagedList<Movie>> {
@@ -104,5 +103,8 @@ class MoviesViewModel @Inject constructor(application: Application) : AndroidVie
         MovieDataSource.retryFailed()
     }
 
+    fun getFavorites(): LiveData<List<Movie>> {
+       return repository.getFavoriteMovies()
+    }
 
 }

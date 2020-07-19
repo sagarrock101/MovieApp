@@ -28,4 +28,12 @@
     <string name="added_to_favorites">Added to Favorites</string>
     <string name="removed_from_favorites">Removed from Favorites</string>
     <string name="share">Share</string>
+
+    //movie type
+    <string name="movie_popular">popular</string>
+    <string name="movie_up_coming">upcoming</string>
+    <string name="movie_top_rated">top_rated</string>
+    <string name="movie_favorites">favorites</string>
+    <string name="title_favorite">Favorite</string>
+    <string name="title_favorites">Favorites</string>
 </resources>

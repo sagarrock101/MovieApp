@@ -6,6 +6,9 @@
         <variable
             name="movieItem"
             type="com.example.tmdb.model.Movie" />
+
+        <import type="android.view.View"/>
+
     </data>
     
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -52,6 +55,7 @@
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:textSize="16sp"
+            android:visibility="@{movieItem.vote_average > 0.0 ? View.VISIBLE : View.GONE}"
             android:fontFamily="@font/cairo_regular"
             android:text="@{movieItem.vote_average.toString()}"
             app:layout_constraintBottom_toBottomOf="parent"

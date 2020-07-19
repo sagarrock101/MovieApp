@@ -21,6 +21,6 @@ interface MovieDao {
     fun getMovie(id: Int): LiveData<Movie>
 
     @Query("SELECT * FROM movie_table")
-    fun getMovieList(): DataSource.Factory<Int, Movie>
+    fun getMovieList(): LiveData<List<Movie>>
 
 }
