@@ -22,6 +22,7 @@ import com.example.tmdb.adapter.TrailerAdapter
 import com.example.tmdb.databinding.FragmentMovieDetailBinding
 import com.example.tmdb.model.Movie
 import com.example.tmdb.model.MovieTrailer
+import com.example.tmdb.model.Review
 import com.example.tmdb.ui.interfaces.OnTrailerClickListener
 import com.example.tmdb.viewmodel.MoviesViewModel
 import com.google.android.material.appbar.AppBarLayout
@@ -101,7 +102,7 @@ class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener,
         adapter.setTrailerListener(this)
         viewModel.trailersLiveData.observe(this, Observer { response ->
             if(!response.results.isNullOrEmpty()) {
-                adapter.setItems(response.results)
+                adapter.setItems(response.results as MutableList<MovieTrailer>)
                 binding.trailerAdapter = adapter
             }
         })
@@ -112,7 +113,7 @@ class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener,
         viewModel.reviewsLD.observe(this, Observer {reviewListResponse ->
             if (reviewListResponse != null) {
                 if(!reviewListResponse.results.isNullOrEmpty()) {
-                    adapter.setItems(reviewListResponse.results)
+                    adapter.setItems(reviewListResponse.results as MutableList<Review>)
                     binding.reviewAdapter = adapter
                 }
             }

@@ -36,4 +36,5 @@
     <string name="movie_favorites">favorites</string>
     <string name="title_favorite">Favorite</string>
     <string name="title_favorites">Favorites</string>
+    <string name="no_favorites">No Favorites</string>
 </resources>

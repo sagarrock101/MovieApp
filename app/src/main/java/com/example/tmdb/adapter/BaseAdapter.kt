@@ -6,17 +6,17 @@ import com.example.tmdb.viewholders.BaseViewHolder
 
 abstract class BaseAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    var listItems: List<T>
+    var listItems: MutableList<T>
 
-    constructor(listItems: List<T>) {
+    constructor(listItems: MutableList<T>) {
         this.listItems = listItems
     }
 
     constructor() {
-        listItems = emptyList()
+        listItems = emptyList<T>().toMutableList()
     }
 
-    fun setItems(listItems: List<T>) {
+    fun setItems(listItems: MutableList<T>) {
         this.listItems = listItems
         notifyDataSetChanged()
     }

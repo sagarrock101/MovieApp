@@ -4,6 +4,8 @@ import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -23,10 +25,12 @@ import javax.inject.Inject
 class MovieFavorite : Fragment(), OnFavoriteClick {
 
     lateinit var binding: FragmentFavoritesBinding
-    lateinit var adapter: FavoriteAdapter
+    private var adapter: FavoriteAdapter? = null
 
     @Inject
     lateinit var viewModel: MoviesViewModel
+
+    val TAG = this.javaClass.name
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,14 +41,16 @@ class MovieFavorite : Fragment(), OnFavoriteClick {
     private fun setFavoriteObserver() {
         viewModel.getFavorites().observe(this, Observer { favoriteList ->
             if (!favoriteList.isNullOrEmpty()) {
-                adapter.setItems(favoriteList)
+                adapter?.setItems(favoriteList as MutableList<Movie>)
+            } else {
+                adapter?.listItems?.clear()
             }
         })
     }
 
     private fun initAdapter() {
         adapter = FavoriteAdapter()
-        adapter.setClickListener(this)
+        adapter?.setClickListener(this)
     }
 
     override fun onCreateView(
@@ -56,11 +62,28 @@ class MovieFavorite : Fragment(), OnFavoriteClick {
         binding.adapter = adapter
         setUpNavController()
         setToolBarTitle()
+//        showNoFavoriteText()
         return binding.root
     }
 
+    private fun showNoFavoriteText() {
+        if(adapter?.listItems!!.size == 0)
+            viewVisiblitiy(true)
+        else viewVisiblitiy(false)
+    }
+
+    private fun viewVisiblitiy(gone: Boolean) {
+        if(gone) {
+            binding.tvNoFavorites.visibility = GONE
+            binding.rvFavorites.visibility = VISIBLE
+        } else {
+            binding.tvNoFavorites.visibility = VISIBLE
+            binding.rvFavorites.visibility = GONE
+        }
+    }
+
     private fun setToolBarTitle() {
-        if(adapter.listItems.size > 1)
+        if(adapter?.listItems!!.isNotEmpty())
             binding.toolbar.title = getString(R.string.title_favorite)
         else binding.toolbar.title = getString(R.string.title_favorites)
     }
