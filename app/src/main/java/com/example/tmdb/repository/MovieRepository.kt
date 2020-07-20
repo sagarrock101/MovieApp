@@ -22,7 +22,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import javax.inject.Inject
 
-class MovieRepository @Inject constructor( val service : TmdbService,  var context: Context)  {
+class MovieRepository @Inject constructor(val service: TmdbService, var context: Context) {
 
     val TAG = "MovieRepository"
     var config = PagedList.Config.Builder()
@@ -39,30 +39,29 @@ class MovieRepository @Inject constructor( val service : TmdbService,  var conte
     var database = MovieDatabase.getInstance(context)
     lateinit var popularMoviesDataSourceFactory: PopularMoviesDataSourceFactory
 
-     var networkStatusLiveData: LiveData<NetworkState>? =null
+    var networkStatusLiveData: LiveData<NetworkState>? = null
 
     fun getMovies(search: MovieSearch): LiveData<PagedList<Movie>> {
-        Log.e(TAG, "type: ${search.movieType}")
-//        if(search.movieType == "favorites") {
-//            return LivePagedListBuilder(database.movieDao.getMovieList(), config).build()
-//        }
-            popularMoviesDataSourceFactory = PopularMoviesDataSourceFactory(service,
-                search)
-            networkStatusLiveData = Transformations
-                .switchMap(popularMoviesDataSourceFactory.moviesDataSource) {
-                    it.networkState
-                }
-            return LivePagedListBuilder<Int, Movie>(popularMoviesDataSourceFactory, config).build()
+        popularMoviesDataSourceFactory = PopularMoviesDataSourceFactory(
+            service,
+            search
+        )
+        networkStatusLiveData = Transformations
+            .switchMap(popularMoviesDataSourceFactory.moviesDataSource) {
+                it.networkState
+            }
+        return LivePagedListBuilder<Int, Movie>(popularMoviesDataSourceFactory, config).build()
 
     }
 
-    fun getTrailersList(trailerSearch: TrailerSearch) : MutableLiveData<MovieTrailerResponse> {
+    fun getTrailersList(trailerSearch: TrailerSearch): MutableLiveData<MovieTrailerResponse> {
         var liveData: MutableLiveData<MovieTrailerResponse> = MutableLiveData()
         service.getTrailerList(trailerSearch.movieId!!)
-            .enqueue(object : Callback<MovieTrailerResponse>{
+            .enqueue(object : Callback<MovieTrailerResponse> {
                 override fun onFailure(call: Call<MovieTrailerResponse>, t: Throwable) {
 
                 }
+
                 override fun onResponse(
                     call: Call<MovieTrailerResponse>,
                     response: Response<MovieTrailerResponse>
@@ -76,10 +75,10 @@ class MovieRepository @Inject constructor( val service : TmdbService,  var conte
 
     }
 
-    fun getReviews(movieId: Int) : MutableLiveData<ReviewListResponse> {
+    fun getReviews(movieId: Int): MutableLiveData<ReviewListResponse> {
         var liveData: MutableLiveData<ReviewListResponse> = MutableLiveData()
         service.getReviews(movieId)
-            .enqueue(object : Callback<ReviewListResponse>{
+            .enqueue(object : Callback<ReviewListResponse> {
                 override fun onFailure(call: Call<ReviewListResponse>, t: Throwable) {
 
                 }
@@ -98,25 +97,25 @@ class MovieRepository @Inject constructor( val service : TmdbService,  var conte
     }
 
     private val _movie = MutableLiveData<Movie>()
-     lateinit var currentMovie: LiveData<Movie>
+    lateinit var currentMovie: LiveData<Movie>
 
     fun getMovieFromDb(id: Int) {
         currentMovie = (database.movieDao.getMovie(id))
     }
 
-    fun insertMovieToDb(movie: Movie) {
+    suspend fun insertMovieToDb(movie: Movie) {
         uiScope.launch {
             database.movieDao.insert(movie)
         }
     }
 
-    fun deleteMovieInDb(id: Int) {
+    suspend fun deleteMovieInDb(id: Int) {
         uiScope.launch {
             database.movieDao.deleteMovie(id)
         }
     }
 
-    fun getFavoriteMovies() : LiveData<List<Movie>>  {
+    fun getFavoriteMovies(): LiveData<List<Movie>> {
         return database.movieDao.getMovieList()
     }
 
