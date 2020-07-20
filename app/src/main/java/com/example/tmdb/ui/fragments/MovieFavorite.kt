@@ -35,17 +35,31 @@ class MovieFavorite : Fragment(), OnFavoriteClick {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initAdapter()
-        setFavoriteObserver()
     }
 
     private fun setFavoriteObserver() {
         viewModel.getFavorites().observe(this, Observer { favoriteList ->
             if (!favoriteList.isNullOrEmpty()) {
                 adapter?.setItems(favoriteList as MutableList<Movie>)
+                viewVisiblitiy(true)
+                if (adapter?.listItems?.size!! == 1)
+                    binding.toolbar.title = getString(R.string.title_favorite)
+                else
+                    binding.toolbar.title = getString(R.string.title_favorites)
+
             } else {
                 adapter?.listItems?.clear()
+                viewVisiblitiy(false)
             }
         })
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        if (viewModel.listState != null) {
+            binding.rvFavorites.layoutManager?.onRestoreInstanceState(viewModel.listState)
+            viewModel.listState = null
+        }
     }
 
     private fun initAdapter() {
@@ -61,31 +75,18 @@ class MovieFavorite : Fragment(), OnFavoriteClick {
         binding = FragmentFavoritesBinding.inflate(inflater)
         binding.adapter = adapter
         setUpNavController()
-        setToolBarTitle()
-//        showNoFavoriteText()
+        setFavoriteObserver()
         return binding.root
     }
 
-    private fun showNoFavoriteText() {
-        if(adapter?.listItems!!.size == 0)
-            viewVisiblitiy(true)
-        else viewVisiblitiy(false)
-    }
-
     private fun viewVisiblitiy(gone: Boolean) {
-        if(gone) {
+        if (gone) {
             binding.tvNoFavorites.visibility = GONE
             binding.rvFavorites.visibility = VISIBLE
         } else {
             binding.tvNoFavorites.visibility = VISIBLE
             binding.rvFavorites.visibility = GONE
         }
-    }
-
-    private fun setToolBarTitle() {
-        if(adapter?.listItems!!.isNotEmpty())
-            binding.toolbar.title = getString(R.string.title_favorite)
-        else binding.toolbar.title = getString(R.string.title_favorites)
     }
 
     private fun setUpNavController() {
@@ -109,6 +110,12 @@ class MovieFavorite : Fragment(), OnFavoriteClick {
             item.title
         )
         findNavController().navigate(action)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewModel.getFavorites().removeObservers(this)
+        viewModel.listState = binding.rvFavorites.layoutManager?.onSaveInstanceState()
     }
 
 }

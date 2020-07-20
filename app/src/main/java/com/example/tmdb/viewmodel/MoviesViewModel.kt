@@ -1,6 +1,7 @@
 package com.example.tmdb.viewmodel
 
 import android.app.Application
+import android.os.Parcelable
 import android.util.Log
 import androidx.lifecycle.*
 import androidx.paging.PagedList
@@ -17,12 +18,15 @@ class MoviesViewModel @Inject constructor(application: Application) : AndroidVie
 
     var favoritesSelected: MutableLiveData<Boolean> = MutableLiveData()
 
+
     @Inject
     lateinit var repository: MovieRepository
 //            = MovieRepository(ApiFactory.MOVIE_SERVICE, application)
 
 //    private var moviesMutableLiveData = MutableLiveData<MovieSearch>()
 //     var moviesLiveData : LiveData<PagedList<Movie>>
+
+    var listState: Parcelable? = null
 
     private  var trailersMutableLiveDataLiveData = MutableLiveData<TrailerSearch>()
      var trailersLiveData: LiveData<MovieTrailerResponse>
