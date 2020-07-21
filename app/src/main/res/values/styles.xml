@@ -12,6 +12,7 @@
 
     <style name="PopUpMenu" parent="Theme.AppCompat.Light">
         <item name="android:background">@color/colorBlack</item>
+        <item name="android:colorControlHighlight">@color/colorDarkSilver</item>
     </style>
     
     <style name="LightThemeDialog" parent="Theme.AppCompat.Dialog.Alert">
@@ -33,8 +34,8 @@
         <item name="colorPrimary">@color/colorAccent</item>
         <item name="colorPrimaryDark">@color/colorAccent</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:colorControlHighlight">@color/colorAccent</item>
         <item name="android:itemBackground">@color/colorWhite</item>
+        <item name="android:colorControlHighlight">@color/colorAccent</item>
     </style>
 
     <style name="DarkTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -45,10 +46,14 @@
         <item name="colorPrimary">@color/colorAccent</item>
         <item name="colorPrimaryDark">@color/colorAccent</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:colorControlHighlight">@color/colorAccent</item>
         <item name="android:itemBackground">@color/colorBlack</item>
+        <item name="android:colorControlHighlight">@color/colorAccent</item>
     </style>
 
+    <style name="MyTheme" parent="@style/ThemeOverlay.AppCompat.Light">
+        <item name="colorControlHighlight">@color/colorDarkSilver</item>
+        <item name="selectableItemBackground">@color/colorDarkSilver</item>
+    </style>
 
     <style name="TextAppearance.MyApp.Title.Expanded" parent="android:TextAppearance">
         <item name="android:textColor">@android:color/white</item>

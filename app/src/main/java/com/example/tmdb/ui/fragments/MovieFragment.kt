@@ -2,7 +2,6 @@ package com.example.tmdb.ui.fragments
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.PopupMenu
 import androidx.activity.OnBackPressedCallback
@@ -16,16 +15,12 @@ import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.tmdb.MyApplication
 import com.example.tmdb.R
-import com.example.tmdb.Utils.showToast
 import com.example.tmdb.adapter.MoviesAdapter
 import com.example.tmdb.databinding.FragmentMovieBinding
-import com.example.tmdb.ui.activity.MainActivity
 import com.example.tmdb.viewmodel.MoviesViewModel
 import com.example.tmdb.viewmodel.ViewModelFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -42,7 +37,6 @@ class MovieFragment : Fragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
-
     private val coroutineScope: CoroutineScope by lazy {
         CoroutineScope(Dispatchers.Main)
     }
@@ -50,7 +44,6 @@ class MovieFragment : Fragment() {
     var page = 1
     var movieType = "popular"
     val TAG = this.javaClass.name
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,6 +67,7 @@ class MovieFragment : Fragment() {
             false
         )
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.toolbar)
+        binding.ivSearch.setImageResource(R.drawable.ic_baseline_search_24)
         setPagesLoadingObserver()
         setupSwipeToRefresh()
         loadMovies()
@@ -105,7 +99,7 @@ class MovieFragment : Fragment() {
 
     private fun setPagesLoadingObserver() {
         viewModel.getNetworkStatus()?.observe(this, Observer {
-                adapter.setNetworkState(it)
+            adapter.setNetworkState(it)
         })
     }
 

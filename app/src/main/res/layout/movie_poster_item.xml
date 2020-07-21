@@ -23,7 +23,6 @@
             android:layout_margin="1dp"
             android:contentDescription="@string/check"
             android:foreground="?attr/selectableItemBackground"
-            app:srcCompat="@drawable/ic_launcher_foreground"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

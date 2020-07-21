@@ -7,6 +7,7 @@ import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.os.Handler
+import android.speech.SpeechRecognizer
 import android.util.Log
 import android.view.MenuItem
 import android.widget.RadioButton
@@ -15,7 +16,10 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.DataBindingUtil
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.tmdb.MyApplication
 import com.example.tmdb.R
 import com.example.tmdb.Utils.showToast
@@ -47,6 +51,8 @@ class MainActivity : AppCompatActivity(), InternetChecker, OnPageLoading {
     private var themeSelected = LIGHT_THEME
 
     private var currentPage = 1
+
+    private lateinit var appBarConfiguration: AppBarConfiguration
 
     @Inject
     lateinit var viewModel: MoviesViewModel

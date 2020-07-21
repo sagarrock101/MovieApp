@@ -20,7 +20,7 @@ class MovieDataSource(private val apiService: TmdbService, private val search: M
     val networkState: MutableLiveData<NetworkState> = MutableLiveData()
 
     val TAG = "MovieDataSource"
-    
+
     override fun loadInitial(
         params: LoadInitialParams<Int>,
         callback: LoadInitialCallback<Int, Movie>
