@@ -30,8 +30,6 @@
 
             </com.google.android.material.appbar.AppBarLayout>
 
-
-
             <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
                 android:id="@+id/swipe_to_refresh"
                 android:layout_width="match_parent"

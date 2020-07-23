@@ -4,16 +4,14 @@ import android.animation.Animator
 import android.content.Context
 import android.os.Bundle
 import android.view.*
+import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.PopupMenu
-import android.widget.Toolbar
-import android.widget.ViewAnimator
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.menu.ActionMenuItemView
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintSet
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -33,7 +31,7 @@ import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 
 
-class MovieFragment : Fragment() {
+class MovieFragment : Fragment(), View.OnClickListener {
 
     private var searchItem: ActionMenuItemView? = null
 
@@ -100,6 +98,7 @@ class MovieFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         searchViewBinding = LayoutSearchBinding.inflate(layoutInflater)
         container = view.findViewById(R.id.fl_parent)
+        searchViewBinding?.ibBack?.setOnClickListener(this)
     }
 
     private fun setupSwipeToRefresh() {
@@ -178,27 +177,44 @@ class MovieFragment : Fragment() {
         searchItem = binding.toolbar.findViewById(R.id.menu_search)
         searchItem!!.getLocationOnScreen(point)
         val (x, y) = point
+        if (searchViewBinding != null) {
+            container!!.addView(searchViewBinding!!.root)
+            var params = searchViewBinding?.clSearchView?.layoutParams
+            params?.width = binding.toolbar.width - 20
+            params?.height = binding.toolbar.height
+            var marginLayoutParams =
+                searchViewBinding?.clSearchView?.layoutParams as ViewGroup.MarginLayoutParams
+            marginLayoutParams.leftMargin = 10
+            searchViewBinding?.clSearchView?.requestLayout()
+            searchViewBinding?.clSearchView?.visibility = VISIBLE
+            var animator = ViewAnimationUtils.createCircularReveal(
+                searchViewBinding!!.root,
+                x + 32,
+                y - 16,
+                start,
+                endRadius.toFloat()
+            )
+            animator?.duration = 800
+            animator?.start()
+            animator?.addListener(object : Animator.AnimatorListener {
+                override fun onAnimationRepeat(animation: Animator?) {
+                }
 
-        var searchBinding = LayoutSearchBinding.inflate(layoutInflater)
-        container!!.addView(searchBinding!!.root)
-        var params = searchBinding.clSearchView.layoutParams
-        params.width = binding.toolbar.width - 20
-        params.height = binding.toolbar.height
-        var marginLayoutParams =
-            searchBinding.clSearchView.layoutParams as ViewGroup.MarginLayoutParams
-        marginLayoutParams.leftMargin = 10
+                override fun onAnimationEnd(animation: Animator?) {
+                    searchViewBinding?.etSearch?.requestFocus()
+                    var imm =
+                        activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.showSoftInput(searchViewBinding?.etSearch, InputMethodManager.SHOW_IMPLICIT)
+                }
 
-        searchBinding.clSearchView.requestLayout()
-        searchBinding.clSearchView.visibility = VISIBLE
-        var animator = ViewAnimationUtils.createCircularReveal(
-            searchBinding!!.root,
-            x + 32,
-            y - 16,
-            start,
-            endRadius.toFloat()
-        )
-        animator?.duration = 800
-        animator?.start()
+                override fun onAnimationCancel(animation: Animator?) {
+                }
+
+                override fun onAnimationStart(animation: Animator?) {
+                }
+
+            })
+        }
 
     }
 
@@ -254,6 +270,60 @@ class MovieFragment : Fragment() {
         layoutManager = null
         viewModel.movies.removeObservers(this)
         super.onDestroyView()
+    }
+
+    override fun onClick(view: View?) {
+        when (view) {
+            searchViewBinding?.ibBack -> {
+                hideSearchBox()
+            }
+        }
+    }
+
+    private fun hideSearchBox() {
+        var start = binding.toolbar.width.coerceAtLeast(binding.toolbar.height)
+        var endRadius = 16f
+        val point = IntArray(2)
+        searchItem = binding.toolbar.findViewById(R.id.menu_search)
+        searchItem!!.getLocationOnScreen(point)
+        val (x, y) = point
+        var animator: Animator? = null
+        if (searchViewBinding != null) {
+            var params = searchViewBinding?.clSearchView?.layoutParams
+            params?.width = binding.toolbar.width - 20
+            params?.height = binding.toolbar.height
+            var marginLayoutParams =
+                searchViewBinding?.clSearchView?.layoutParams as ViewGroup.MarginLayoutParams
+            marginLayoutParams.leftMargin = 10
+            searchViewBinding?.clSearchView?.requestLayout()
+            animator = ViewAnimationUtils.createCircularReveal(
+                searchViewBinding!!.root,
+                x + 32,
+                y - 16,
+                start.toFloat(),
+                endRadius.toFloat()
+            )
+            animator?.duration = 800
+            animator?.start()
+        }
+
+        animator?.addListener(object : Animator.AnimatorListener {
+            override fun onAnimationRepeat(animation: Animator?) {
+            }
+
+            override fun onAnimationEnd(animation: Animator?) {
+                searchViewBinding?.clSearchView?.visibility = GONE
+                container!!.removeView(searchViewBinding!!.root)
+            }
+
+            override fun onAnimationCancel(animation: Animator?) {
+            }
+
+            override fun onAnimationStart(animation: Animator?) {
+            }
+
+        })
+
     }
 
 }
