@@ -10,11 +10,14 @@ import android.os.Handler
 import android.speech.SpeechRecognizer
 import android.util.Log
 import android.view.MenuItem
+import android.view.View
+import android.view.ViewAnimationUtils
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.view.menu.ActionMenuItemView
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
@@ -25,6 +28,7 @@ import com.example.tmdb.R
 import com.example.tmdb.Utils.showToast
 import com.example.tmdb.broadcastReciever.NetworkBroadcastReceiver
 import com.example.tmdb.databinding.ActivityMainBinding
+import com.example.tmdb.databinding.LayoutSearchBinding
 import com.example.tmdb.paging.MovieDataSource
 import com.example.tmdb.ui.activity.MainActivity.Values.DARK_THEME
 import com.example.tmdb.ui.activity.MainActivity.Values.LIGHT_THEME
@@ -120,6 +124,7 @@ class MainActivity : AppCompatActivity(), InternetChecker, OnPageLoading {
             R.id.menu_theme -> {
                setDialog()
             }
+
         }
         return super.onOptionsItemSelected(item)
     }
@@ -134,6 +139,8 @@ class MainActivity : AppCompatActivity(), InternetChecker, OnPageLoading {
         setThemeClickListener(themeRadioGroup)
         dialog.show()
     }
+
+
 
     private fun getDialog(): AlertDialog.Builder {
         return if(themeSelected == DARK_THEME) {

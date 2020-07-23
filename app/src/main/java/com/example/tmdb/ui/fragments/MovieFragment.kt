@@ -1,11 +1,19 @@
 package com.example.tmdb.ui.fragments
 
+import android.animation.Animator
 import android.content.Context
 import android.os.Bundle
 import android.view.*
+import android.view.View.VISIBLE
+import android.widget.FrameLayout
 import android.widget.PopupMenu
+import android.widget.Toolbar
+import android.widget.ViewAnimator
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.menu.ActionMenuItemView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -17,6 +25,7 @@ import com.example.tmdb.MyApplication
 import com.example.tmdb.R
 import com.example.tmdb.adapter.MoviesAdapter
 import com.example.tmdb.databinding.FragmentMovieBinding
+import com.example.tmdb.databinding.LayoutSearchBinding
 import com.example.tmdb.viewmodel.MoviesViewModel
 import com.example.tmdb.viewmodel.ViewModelFactory
 import kotlinx.coroutines.CoroutineScope
@@ -26,13 +35,16 @@ import javax.inject.Inject
 
 class MovieFragment : Fragment() {
 
+    private var searchItem: ActionMenuItemView? = null
+
     @Inject
     lateinit var viewModel: MoviesViewModel
     private lateinit var binding: FragmentMovieBinding
     private lateinit var adapter: MoviesAdapter
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private var layoutManager: GridLayoutManager? = null
-
+    private var searchViewBinding: LayoutSearchBinding? = null
+    private var container: FrameLayout? = null
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -67,7 +79,6 @@ class MovieFragment : Fragment() {
             false
         )
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.toolbar)
-        binding.ivSearch.setImageResource(R.drawable.ic_baseline_search_24)
         setPagesLoadingObserver()
         setupSwipeToRefresh()
         loadMovies()
@@ -83,6 +94,12 @@ class MovieFragment : Fragment() {
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(this, callback);
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        searchViewBinding = LayoutSearchBinding.inflate(layoutInflater)
+        container = view.findViewById(R.id.fl_parent)
     }
 
     private fun setupSwipeToRefresh() {
@@ -147,9 +164,44 @@ class MovieFragment : Fragment() {
             R.id.menu_sort -> {
                 showFilterPopUpMenu()
             }
+            R.id.menu_search -> {
+                animateSearchBox()
+            }
         }
         return super.onOptionsItemSelected(item)
     }
+
+    private fun animateSearchBox() {
+        var start = 16f
+        var endRadius = binding.toolbar.width.coerceAtLeast(binding.toolbar.height)
+        val point = IntArray(2)
+        searchItem = binding.toolbar.findViewById(R.id.menu_search)
+        searchItem!!.getLocationOnScreen(point)
+        val (x, y) = point
+
+        var searchBinding = LayoutSearchBinding.inflate(layoutInflater)
+        container!!.addView(searchBinding!!.root)
+        var params = searchBinding.clSearchView.layoutParams
+        params.width = binding.toolbar.width - 20
+        params.height = binding.toolbar.height
+        var marginLayoutParams =
+            searchBinding.clSearchView.layoutParams as ViewGroup.MarginLayoutParams
+        marginLayoutParams.leftMargin = 10
+
+        searchBinding.clSearchView.requestLayout()
+        searchBinding.clSearchView.visibility = VISIBLE
+        var animator = ViewAnimationUtils.createCircularReveal(
+            searchBinding!!.root,
+            x + 32,
+            y - 16,
+            start,
+            endRadius.toFloat()
+        )
+        animator?.duration = 800
+        animator?.start()
+
+    }
+
 
     private fun showFilterPopUpMenu() {
         val view = activity?.findViewById<View>(R.id.menu_sort) ?: return
