@@ -144,6 +144,7 @@ class MovieFragment : Fragment(), View.OnClickListener {
                         binding.rvSearch.visibility = VISIBLE
                         binding.recyclerView.visibility = GONE
                         hideSoftKey()
+                        setSearchNetworkObserver()
                         return@OnEditorActionListener true // consume.
                     }
                 }
@@ -151,6 +152,12 @@ class MovieFragment : Fragment(), View.OnClickListener {
             }
         )
 
+    }
+
+    private fun setSearchNetworkObserver() {
+        viewModel.getSearchNetworkStatus()?.observe(viewLifecycleOwner, Observer {
+            searchAdapter.setNetworkState(it)
+        })
     }
 
     private fun setupSwipeToRefresh() {
@@ -168,10 +175,6 @@ class MovieFragment : Fragment(), View.OnClickListener {
     private fun setPagesLoadingObserver() {
         viewModel.getNetworkStatus()?.observe(this, Observer {
             adapter.setNetworkState(it)
-        })
-
-        viewModel.getSearchNetworkStatus()?.observe(this, Observer {
-            searchAdapter.setNetworkState(it)
         })
     }
 
