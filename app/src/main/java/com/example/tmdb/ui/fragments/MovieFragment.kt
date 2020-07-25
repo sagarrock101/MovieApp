@@ -3,6 +3,7 @@ package com.example.tmdb.ui.fragments
 import android.animation.Animator
 import android.content.Context
 import android.os.Bundle
+import android.text.Editable
 import android.view.*
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -15,6 +16,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.menu.ActionMenuItemView
 import androidx.core.view.contains
+import androidx.core.widget.doAfterTextChanged
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -151,6 +153,10 @@ class MovieFragment : Fragment(), View.OnClickListener {
                 false // pass on to other listeners.
             }
         )
+
+        searchViewBinding?.etSearch?.doAfterTextChanged {text ->
+
+        }
 
     }
 
