@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/splashFragment"
-        android:name="com.example.tmdb.ui.fragments.SplashFragment"
+        android:name="com.sagaRock101.tmdb.ui.fragments.SplashFragment"
         android:label="SplashFragment" >
         <action
             android:id="@+id/action_splashFragment_to_movieFragment"
@@ -17,7 +17,7 @@
     </fragment>
     <fragment
         android:id="@+id/movieFragment"
-        android:name="com.example.tmdb.ui.fragments.MovieFragment"
+        android:name="com.sagaRock101.tmdb.ui.fragments.MovieFragment"
         android:label="MovieFragment" >
         <action
             android:id="@+id/action_movieFragment_to_movieDetailFragment"
@@ -33,12 +33,12 @@
     </fragment>
     <fragment
         android:id="@+id/movieDetailFragment"
-        android:name="com.example.tmdb.ui.fragments.MovieDetailFragment"
+        android:name="com.sagaRock101.tmdb.ui.fragments.MovieDetailFragment"
         android:label="{movie_title}">
         <argument
             android:name="movieData"
             android:defaultValue="@null"
-            app:argType="com.example.tmdb.model.Movie"
+            app:argType="com.sagaRock101.tmdb.model.Movie"
             app:nullable="true" />
         <argument
             android:name="movie_title"
@@ -48,14 +48,14 @@
     </fragment>
     <fragment
         android:id="@+id/movieFavorite"
-        android:name="com.example.tmdb.ui.fragments.MovieFavorite">
+        android:name="com.sagaRock101.tmdb.ui.fragments.MovieFavorite">
         <action
             android:id="@+id/action_movieFavorite_to_movieDetailFragment"
             app:destination="@id/movieDetailFragment" />
     </fragment>
     <fragment
         android:id="@+id/movieSearchFragment"
-        android:name="com.example.tmdb.ui.fragments.MovieSearchFragment"
+        android:name="com.sagaRock101.tmdb.ui.fragments.MovieSearchFragment"
         android:label="MovieSearchFragment" >
         <action
             android:id="@+id/action_movieSearchFragment_to_movieDetailFragment"

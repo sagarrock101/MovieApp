@@ -2,7 +2,7 @@
     <data>
         <variable
             name="trailerItem"
-            type="com.example.tmdb.model.MovieTrailer" />
+            type="com.sagaRock101.tmdb.model.MovieTrailer" />
     </data>
     <FrameLayout
         xmlns:android="http://schemas.android.com/apk/res/android"

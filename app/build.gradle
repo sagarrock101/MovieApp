@@ -52,6 +52,7 @@ android {
     dataBinding {
         enabled = true
     }
+
     kotlinOptions {
         jvmTarget = '1.8'
     }

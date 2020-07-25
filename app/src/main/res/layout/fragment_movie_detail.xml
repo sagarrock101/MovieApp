@@ -4,17 +4,17 @@
     <data>
         <variable
             name="movieItem"
-            type="com.example.tmdb.model.Movie" />
+            type="com.sagaRock101.tmdb.model.Movie" />
 
         <import type="android.view.View"/>
 
         <variable
             name="reviewAdapter"
-            type="com.example.tmdb.adapter.ReviewAdapter" />
+            type="com.sagaRock101.tmdb.adapter.ReviewAdapter" />
 
         <variable
             name="trailerAdapter"
-            type="com.example.tmdb.adapter.TrailerAdapter" />
+            type="com.sagaRock101.tmdb.adapter.TrailerAdapter" />
     </data>
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
