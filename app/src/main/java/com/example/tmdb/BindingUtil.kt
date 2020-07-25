@@ -1,6 +1,7 @@
 package com.example.tmdb
 
 import android.graphics.drawable.Drawable
+import android.media.Image
 import android.widget.ImageView
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.databinding.BindingAdapter
@@ -26,7 +27,7 @@ fun ImageView.loadImageMovie(
     isCacheSource: Boolean = false, animation: Boolean = false, isLarge: Boolean = false
 ) {
     if (url.isNullOrBlank()) {
-        setImageDrawable(placeHolder)
+        setImageDrawable(this.context.resources.getDrawable(R.mipmap.ic_launcher))
         return
     }
     var requestOptions = RequestOptions()
@@ -51,6 +52,8 @@ fun ImageView.loadImageMovie(
     }
     requestBuilder.apply(requestOptions).into(this)
 }
+
+
 
 @BindingAdapter("adapter")
 fun RecyclerView.bindAdapter(baseAdapter: BaseAdapter<Any>) {

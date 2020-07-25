@@ -7,28 +7,21 @@ import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.os.Handler
-import android.speech.SpeechRecognizer
 import android.util.Log
 import android.view.MenuItem
-import android.view.View
-import android.view.ViewAnimationUtils
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.view.menu.ActionMenuItemView
 import androidx.databinding.DataBindingUtil
-import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.tmdb.MyApplication
 import com.example.tmdb.R
 import com.example.tmdb.Utils.showToast
 import com.example.tmdb.broadcastReciever.NetworkBroadcastReceiver
 import com.example.tmdb.databinding.ActivityMainBinding
-import com.example.tmdb.databinding.LayoutSearchBinding
 import com.example.tmdb.paging.MovieDataSource
 import com.example.tmdb.ui.activity.MainActivity.Values.DARK_THEME
 import com.example.tmdb.ui.activity.MainActivity.Values.LIGHT_THEME
@@ -37,9 +30,7 @@ import com.example.tmdb.ui.fragments.MovieFragment
 import com.example.tmdb.ui.interfaces.InternetChecker
 import com.example.tmdb.ui.interfaces.OnPageLoading
 import com.example.tmdb.viewmodel.MoviesViewModel
-import java.lang.Exception
 import javax.inject.Inject
-import kotlin.properties.Delegates
 
 
 class MainActivity : AppCompatActivity(), InternetChecker, OnPageLoading {
@@ -231,4 +222,5 @@ class MainActivity : AppCompatActivity(), InternetChecker, OnPageLoading {
     override fun getPageLoading(page: Int) {
         currentPage = page
     }
+
 }

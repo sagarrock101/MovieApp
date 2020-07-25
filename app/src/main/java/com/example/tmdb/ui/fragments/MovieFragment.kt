@@ -3,13 +3,11 @@ package com.example.tmdb.ui.fragments
 import android.animation.Animator
 import android.content.Context
 import android.os.Bundle
-import android.os.Handler
 import android.view.*
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.PopupMenu
 import android.widget.TextView.OnEditorActionListener
@@ -38,6 +36,7 @@ import javax.inject.Inject
 
 class MovieFragment : Fragment(), View.OnClickListener {
 
+    private var searchLayoutManager: GridLayoutManager? = null
     private var isSearchBackPressed: Boolean = false
     private var searchItem: ActionMenuItemView? = null
 
@@ -65,6 +64,7 @@ class MovieFragment : Fragment(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
+            if(viewModel.rvSearchVisibility != VISIBLE)
             movieType.let { viewModel.fetchMovies(page, it) }
         }
         adapter = MoviesAdapter() {
@@ -110,12 +110,23 @@ class MovieFragment : Fragment(), View.OnClickListener {
         if (viewModel.getSearchBinding() == null)
             searchViewBinding = LayoutSearchBinding.inflate(layoutInflater)
         else {
-            searchViewBinding = viewModel.getSearchBinding()
-            if(searchViewBinding?.clSearchView?.visibility == VISIBLE) {
+            searchViewBinding = viewModel.searchViewBinding
+            if (searchViewBinding?.clSearchView?.visibility == VISIBLE) {
                 searchViewBinding?.clSearchView?.visibility = VISIBLE
                 container?.addView(searchViewBinding!!.root)
                 searchViewBinding?.etSearch?.requestFocus()
                 isSearchBackPressed = false
+                if (viewModel.rvSearchVisibility == VISIBLE) {
+                    binding.recyclerView.visibility = GONE
+                }
+
+                if (viewModel.rvSearchVisibility != null)
+                    binding.rvSearch.visibility = viewModel.rvSearchVisibility!!
+
+                if (viewModel.searchListState != null) {
+                    binding.rvSearch.layoutManager?.onRestoreInstanceState(viewModel.searchListState)
+                    viewModel.listState = null
+                }
 //                showSoftKey()
             }
         }
@@ -124,14 +135,15 @@ class MovieFragment : Fragment(), View.OnClickListener {
             OnEditorActionListener { v, actionId, event ->
                 if (actionId == EditorInfo.IME_ACTION_SEARCH ||
                     actionId == EditorInfo.IME_ACTION_DONE || event != null &&
-                    event.action === KeyEvent.ACTION_DOWN
-                    && event.keyCode === KeyEvent.KEYCODE_ENTER
+                    event.action == KeyEvent.ACTION_DOWN
+                    && event.keyCode == KeyEvent.KEYCODE_ENTER
                 ) {
                     if (event == null || !event.isShiftPressed) {
                         // the user is done typing.
                         viewModel.searchMovie(searchViewBinding?.etSearch?.text.toString())
                         binding.rvSearch.visibility = VISIBLE
                         binding.recyclerView.visibility = GONE
+                        hideSoftKey()
                         return@OnEditorActionListener true // consume.
                     }
                 }
@@ -157,29 +169,33 @@ class MovieFragment : Fragment(), View.OnClickListener {
         viewModel.getNetworkStatus()?.observe(this, Observer {
             adapter.setNetworkState(it)
         })
+
+        viewModel.getSearchNetworkStatus()?.observe(this, Observer {
+            searchAdapter.setNetworkState(it)
+        })
     }
 
     private fun loadMovies() {
         swipeRefreshLayout.isRefreshing = false
         initAdapter()
-        setSpanLookUp()
     }
 
     private fun setTypeOfMovieObserver() {
         movieType?.let {
             viewModel.movies.observe(activity!!, Observer { data ->
-                if (searchViewBinding != null
-                    && searchViewBinding?.etSearch?.text?.isNotEmpty()!!
-                    && !isSearchBackPressed
-                )
-                    searchAdapter.submitList(data)
-                else
                     adapter.submitList(data)
             })
         }
+
+        viewModel.searchMovies.observe(activity!!, Observer {data ->
+            searchAdapter.submitList(data)
+        })
     }
 
-    private fun setSpanLookUp() {
+    private fun setSpanLookUp(
+        layoutManager: GridLayoutManager?,
+        adapter: MoviesAdapter
+    ) {
         layoutManager?.spanSizeLookup = object : SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
                 val type: Int = adapter.getItemViewType(position)
@@ -194,9 +210,11 @@ class MovieFragment : Fragment(), View.OnClickListener {
         layoutManager = GridLayoutManager(activity, 2)
         binding.recyclerView.layoutManager = layoutManager
         binding.recyclerView.adapter = adapter
-
-        binding.rvSearch.layoutManager = GridLayoutManager(activity, 2)
+        setSpanLookUp(layoutManager, adapter)
+        searchLayoutManager = GridLayoutManager(activity, 2)
+        binding.rvSearch.layoutManager = searchLayoutManager
         binding.rvSearch.adapter = searchAdapter
+        setSpanLookUp(searchLayoutManager, searchAdapter)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -228,7 +246,7 @@ class MovieFragment : Fragment(), View.OnClickListener {
         searchItem!!.getLocationOnScreen(point)
         val (x, y) = point
         if (searchViewBinding != null) {
-            if(!container!!.contains(searchViewBinding!!.root))
+            if (!container!!.contains(searchViewBinding!!.root))
                 container!!.addView(searchViewBinding!!.root)
             var params = searchViewBinding?.clSearchView?.layoutParams
             params?.width = binding.toolbar.width - 20
@@ -334,8 +352,11 @@ class MovieFragment : Fragment(), View.OnClickListener {
         layoutManager?.spanSizeLookup = null
         layoutManager = null
         viewModel.movies.removeObservers(this)
+        viewModel.searchMovies.removeObservers(this)
         if (searchViewBinding != null)
             viewModel.setSearchBinding(searchViewBinding!!)
+        viewModel.searchListState = binding.rvSearch.layoutManager?.onSaveInstanceState()
+        viewModel.rvSearchVisibility = binding.rvSearch.visibility
         container!!.removeView(searchViewBinding!!.root)
         super.onDestroyView()
     }
@@ -343,8 +364,10 @@ class MovieFragment : Fragment(), View.OnClickListener {
     private fun hideSoftKey() {
         var imm =
             activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.showSoftInput(viewModel.getSearchBinding()?.etSearch,
-            InputMethodManager.SHOW_IMPLICIT)
+        imm.hideSoftInputFromWindow(
+            searchViewBinding?.etSearch?.rootView!!.windowToken,
+            0
+        )
     }
 
     override fun onClick(view: View?) {
@@ -392,6 +415,7 @@ class MovieFragment : Fragment(), View.OnClickListener {
                 binding.rvSearch.visibility = GONE
                 binding.recyclerView.visibility = VISIBLE
                 isSearchBackPressed = true
+                viewModel.rvSearchVisibility = binding.rvSearch.visibility
             }
 
             override fun onAnimationCancel(animation: Animator?) {

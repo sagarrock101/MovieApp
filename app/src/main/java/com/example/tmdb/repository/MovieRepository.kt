@@ -45,6 +45,8 @@ class MovieRepository @Inject constructor(val service: TmdbService, var context:
 
     var networkStatusLiveData: LiveData<NetworkState>? = null
 
+    var searchNetworkStatusLiveData: LiveData<NetworkState>? = null
+
     fun getMovies(search: MovieSearch): LiveData<PagedList<Movie>> {
         popularMoviesDataSourceFactory = PopularMoviesDataSourceFactory(
             service,
@@ -63,6 +65,10 @@ class MovieRepository @Inject constructor(val service: TmdbService, var context:
             service,
             search
         )
+        searchNetworkStatusLiveData =
+            Transformations.switchMap(searchMovieDataSourceFactory.moviesDataSource) {
+                it.networkState
+            }
 
         return LivePagedListBuilder<Int, Movie>(searchMovieDataSourceFactory, config).build()
     }

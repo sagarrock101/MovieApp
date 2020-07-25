@@ -24,7 +24,11 @@ class MoviesViewModel @Inject constructor(application: Application) :
 
     var listState: Parcelable? = null
 
+    var searchListState: Parcelable? = null
+
     var searchViewBinding: LayoutSearchBinding? = null
+
+    var rvSearchVisibility: Int? = null
 
     private var trailersMutableLiveDataLiveData = MutableLiveData<TrailerSearch>()
     var trailersLiveData: LiveData<MovieTrailerResponse>
@@ -32,8 +36,9 @@ class MoviesViewModel @Inject constructor(application: Application) :
     private var reviewsMLD = MutableLiveData<Int>()
     var reviewsLD: LiveData<ReviewListResponse>
 
-
     var movies: MediatorLiveData<PagedList<Movie>> = MediatorLiveData()
+
+    var searchMovies: MediatorLiveData<PagedList<Movie>> = MediatorLiveData()
 
     init {
         this.trailersLiveData =
@@ -50,6 +55,8 @@ class MoviesViewModel @Inject constructor(application: Application) :
         searchViewBinding = binding
     }
 
+
+
     fun getSearchBinding() = searchViewBinding
 
     fun fetchReviews(movieId: Int) {
@@ -63,6 +70,10 @@ class MoviesViewModel @Inject constructor(application: Application) :
 
     fun getNetworkStatus(): LiveData<NetworkState>? {
         return repository.networkStatusLiveData
+    }
+
+    fun getSearchNetworkStatus(): LiveData<NetworkState>? {
+        return repository.searchNetworkStatusLiveData
     }
 
     fun getTrailers(id: Int) {
@@ -103,7 +114,9 @@ class MoviesViewModel @Inject constructor(application: Application) :
     }
 
     fun searchMovie(query: String?) {
-        movies.addSource(repository.searchMovie(query!!), movies::setValue )
+        searchMovies.addSource(repository.searchMovie(query!!), searchMovies::setValue )
     }
+
+
 
 }

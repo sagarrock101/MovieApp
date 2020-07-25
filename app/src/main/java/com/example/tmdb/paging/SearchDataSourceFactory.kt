@@ -13,6 +13,7 @@ class SearchDataSourceFactory(movieApi: TmdbService, private val search: String)
     override fun create(): DataSource<Int?, Movie?> {
         val dataSource = SearchDataSource(movieApi, search)
         moviesDataSource.postValue(dataSource)
-        return dataSource    }
+        return dataSource
+    }
 
 }
