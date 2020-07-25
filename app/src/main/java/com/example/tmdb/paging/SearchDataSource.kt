@@ -6,15 +6,12 @@ import androidx.paging.PageKeyedDataSource
 import com.example.tmdb.api.TmdbService
 import com.example.tmdb.model.Movie
 import com.example.tmdb.model.MovieResponse
-import com.example.tmdb.model.MovieSearch
 import com.example.tmdb.model.NetworkState
-import com.example.tmdb.ui.interfaces.OnPageLoading
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-
-class MovieDataSource(private val apiService: TmdbService, private val search: MovieSearch) :
+class SearchDataSource(private val apiService: TmdbService, private val search: String) :
     PageKeyedDataSource<Int, Movie>() {
 
     val networkState: MutableLiveData<NetworkState> = MutableLiveData()
@@ -26,7 +23,7 @@ class MovieDataSource(private val apiService: TmdbService, private val search: M
         callback: LoadInitialCallback<Int, Movie>
     ) {
         networkState.postValue(NetworkState.LOADING)
-        apiService.getMovies(search.movieType, FIRST_PAGE)
+        apiService.searchMovies(search, FIRST_PAGE)
             .enqueue(object : Callback<MovieResponse> {
                 override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
                     Log.e(TAG, "onFailure: " + t.message)
@@ -65,7 +62,7 @@ class MovieDataSource(private val apiService: TmdbService, private val search: M
         callback: LoadCallback<Int, Movie>
     ) {
         networkState.postValue(NetworkState.LOADING)
-        apiService.getMovies(search.movieType, params.key)
+        apiService.searchMovies(search, params.key)
             .enqueue(object : Callback<MovieResponse> {
                 override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
                     networkState.postValue(NetworkState.error(t.message ?: "unknown err"))
@@ -84,7 +81,7 @@ class MovieDataSource(private val apiService: TmdbService, private val search: M
                         var totalPages = response.body()!!.totalPages
                         var key = if (totalPages > nextPageNumber) nextPageNumber else null
                         if (key != null) {
-                            onPageLoading.getPageLoading(key)
+//                            onPageLoading.getPageLoading(key)
                         }
                         retry = null
                         callback.onResult(response.body()!!.results, key)
@@ -105,7 +102,7 @@ class MovieDataSource(private val apiService: TmdbService, private val search: M
         params: LoadParams<Int>,
         callback: LoadCallback<Int, Movie>
     ) {
-        apiService.getMovies(search.movieType, params.key)
+        apiService.searchMovies(search, params.key)
             .enqueue(object : Callback<MovieResponse> {
                 override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
                     retry = {
@@ -137,11 +134,11 @@ class MovieDataSource(private val apiService: TmdbService, private val search: M
 
     companion object {
         const val FIRST_PAGE = 1
-        lateinit var onPageLoading: OnPageLoading
+//        lateinit var onPageLoading: OnPageLoading
 
-        fun setPageListener(listener: OnPageLoading) {
-            this.onPageLoading = listener
-        }
+//        fun setPageListener(listener: OnPageLoading) {
+//            this.onPageLoading = listener
+//        }
 
         private var retry: (() -> Any)? = null
 

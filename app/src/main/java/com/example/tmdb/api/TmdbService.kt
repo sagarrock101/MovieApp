@@ -19,4 +19,10 @@ interface TmdbService {
 
     @GET("movie/{movie_id}/reviews")
     fun getReviews(@Path("movie_id") movieId: Int) : Call<ReviewListResponse>
+
+    @GET("search/movie")
+    fun searchMovies(
+        @Query("query") query: String,
+        @Query("page") page: Int
+    ): Call<MovieResponse>
 }

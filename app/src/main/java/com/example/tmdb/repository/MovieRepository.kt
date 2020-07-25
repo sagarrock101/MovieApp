@@ -13,6 +13,8 @@ import com.example.tmdb.database.MovieDao
 import com.example.tmdb.database.MovieDatabase
 import com.example.tmdb.model.*
 import com.example.tmdb.paging.PopularMoviesDataSourceFactory
+import com.example.tmdb.paging.SearchDataSource
+import com.example.tmdb.paging.SearchDataSourceFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -39,6 +41,8 @@ class MovieRepository @Inject constructor(val service: TmdbService, var context:
     var database = MovieDatabase.getInstance(context)
     lateinit var popularMoviesDataSourceFactory: PopularMoviesDataSourceFactory
 
+    lateinit var searchMovieDataSourceFactory: SearchDataSourceFactory
+
     var networkStatusLiveData: LiveData<NetworkState>? = null
 
     fun getMovies(search: MovieSearch): LiveData<PagedList<Movie>> {
@@ -52,6 +56,15 @@ class MovieRepository @Inject constructor(val service: TmdbService, var context:
             }
         return LivePagedListBuilder<Int, Movie>(popularMoviesDataSourceFactory, config).build()
 
+    }
+
+    fun searchMovie(search: String): LiveData<PagedList<Movie>> {
+        searchMovieDataSourceFactory = SearchDataSourceFactory(
+            service,
+            search
+        )
+
+        return LivePagedListBuilder<Int, Movie>(searchMovieDataSourceFactory, config).build()
     }
 
     fun getTrailersList(trailerSearch: TrailerSearch): MutableLiveData<MovieTrailerResponse> {
@@ -95,6 +108,21 @@ class MovieRepository @Inject constructor(val service: TmdbService, var context:
         return liveData
 
     }
+
+//    fun searchMovie(query: String): MutableLiveData<MovieResponse> {
+//        var liveData: MutableLiveData<MovieResponse> = MutableLiveData()
+//        service.searchMovies(query,1).enqueue(object : Callback<MovieResponse> {
+//            override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
+//
+//            }
+//
+//            override fun onResponse(call: Call<MovieResponse>, response: Response<MovieResponse>) {
+//                liveData.postValue(response.body())
+//            }
+//        })
+//
+//        return liveData
+//    }
 
     private val _movie = MutableLiveData<Movie>()
     lateinit var currentMovie: LiveData<Movie>

@@ -4,8 +4,10 @@ import android.app.Application
 import android.os.Parcelable
 import androidx.lifecycle.*
 import androidx.paging.PagedList
+import com.example.tmdb.databinding.LayoutSearchBinding
 import com.example.tmdb.model.*
 import com.example.tmdb.paging.MovieDataSource
+import com.example.tmdb.paging.SearchDataSource
 import com.example.tmdb.repository.MovieRepository
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -22,11 +24,14 @@ class MoviesViewModel @Inject constructor(application: Application) :
 
     var listState: Parcelable? = null
 
+    var searchViewBinding: LayoutSearchBinding? = null
+
     private var trailersMutableLiveDataLiveData = MutableLiveData<TrailerSearch>()
     var trailersLiveData: LiveData<MovieTrailerResponse>
 
     private var reviewsMLD = MutableLiveData<Int>()
     var reviewsLD: LiveData<ReviewListResponse>
+
 
     var movies: MediatorLiveData<PagedList<Movie>> = MediatorLiveData()
 
@@ -40,6 +45,12 @@ class MoviesViewModel @Inject constructor(application: Application) :
             repository.getReviews(movieId)
         }
     }
+
+    fun setSearchBinding(binding: LayoutSearchBinding) {
+        searchViewBinding = binding
+    }
+
+    fun getSearchBinding() = searchViewBinding
 
     fun fetchReviews(movieId: Int) {
         reviewsMLD.postValue(movieId)
@@ -83,8 +94,16 @@ class MoviesViewModel @Inject constructor(application: Application) :
         MovieDataSource.retryFailed()
     }
 
+    fun retrySearch() {
+        SearchDataSource.retryFailed()
+    }
+
     fun getFavorites(): LiveData<List<Movie>> = runBlocking {
         repository.getFavoriteMovies()
+    }
+
+    fun searchMovie(query: String?) {
+        movies.addSource(repository.searchMovie(query!!), movies::setValue )
     }
 
 }

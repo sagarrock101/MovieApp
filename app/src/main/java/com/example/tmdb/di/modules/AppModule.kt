@@ -47,7 +47,7 @@ class AppModule {
     fun retrofitService() : Retrofit {
         return Retrofit.Builder()
             .client(provideTmdbClient())
-            .baseUrl("https://api.themoviedb.org/3/")
+            .baseUrl(AppConstants.BASE_URL)
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
     }

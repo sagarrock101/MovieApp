@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
+import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -58,6 +59,12 @@ class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener,
         setTrailerObserver()
         checkForFavorite()
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        if(viewModel.getSearchBinding() != null)
+            hideSoftKey()
     }
 
     private fun setUpNavController() {
@@ -195,5 +202,12 @@ class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener,
         intent.putExtra(Intent.EXTRA_TEXT, movie.title)
         intent.type = "text/string"
         startActivity(Intent.createChooser(intent, "Share the movie via"))
+    }
+
+    private fun hideSoftKey() {
+        var imm =
+            activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(viewModel.getSearchBinding()?.etSearch?.rootView!!.windowToken,
+            0)
     }
 }
