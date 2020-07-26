@@ -11,17 +11,19 @@
         android:id="@+id/cl_search_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_margin="1dp"
         android:background="@drawable/bg_semi_capsule"
         >
 
         <TextView
             android:id="@+id/tv_search_text"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@{item}"
             android:hint="@string/search"
-            android:textSize="16sp"
+            android:gravity="center_horizontal"
+            android:background="?selectableItemBackgroundBorderless"
+            android:textSize="20sp"
             android:textColor="@android:color/black"
             android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Title"
             android:layout_margin="6dp"

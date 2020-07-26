@@ -9,10 +9,15 @@ import com.sagaRock101.tmdb.viewholders.SearchSuggestionViewHolder
 
 class SearchSuggestionAdapter : BaseAdapter<String>() {
 
+    val TYPE_RESULT = "result"
+    val TYPE_CLOSE = "close"
+
     override fun getLayoutId(position: Int, obj: String) = R.layout.item_search_result
 
     override fun getViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<String> {
         val binding = Utils.binder<ItemSearchResultBinding>(R.layout.item_search_result, parent)
         return SearchSuggestionViewHolder(binding)
     }
+
+
 }

@@ -1,11 +1,14 @@
 package com.sagaRock101.tmdb.ui.fragments
 
 import android.animation.Animator
+import android.animation.AnimatorSet
 import android.content.Context
 import android.os.Bundle
 import android.view.*
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
@@ -22,16 +25,20 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
+import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.sagaRock101.tmdb.MyApplication
 import com.sagaRock101.tmdb.R
 import com.sagaRock101.tmdb.adapter.MoviesAdapter
+import com.sagaRock101.tmdb.adapter.SearchSuggestionAdapter
 import com.sagaRock101.tmdb.databinding.FragmentMovieBinding
 import com.sagaRock101.tmdb.databinding.LayoutSearchBinding
 import com.sagaRock101.tmdb.viewmodel.MoviesViewModel
 import com.sagaRock101.tmdb.viewmodel.ViewModelFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -46,6 +53,7 @@ class MovieFragment : Fragment(), View.OnClickListener {
     private lateinit var binding: FragmentMovieBinding
     private lateinit var adapter: MoviesAdapter
     private lateinit var searchAdapter: MoviesAdapter
+    private lateinit var searchSuggestionAdapter: SearchSuggestionAdapter
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private var layoutManager: GridLayoutManager? = null
     private var searchViewBinding: LayoutSearchBinding? = null
@@ -62,11 +70,15 @@ class MovieFragment : Fragment(), View.OnClickListener {
     var movieType = "popular"
     val TAG = this.javaClass.name
 
+    var list = ArrayList<String>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        for (i in 0..5)
+            list.add("$i")
         if (savedInstanceState == null) {
-            if(viewModel.rvSearchVisibility != VISIBLE)
-            movieType.let { viewModel.fetchMovies(page, it) }
+            if (viewModel.rvSearchVisibility != VISIBLE)
+                movieType.let { viewModel.fetchMovies(page, it) }
         }
         adapter = MoviesAdapter() {
             viewModel.retry()
@@ -74,6 +86,8 @@ class MovieFragment : Fragment(), View.OnClickListener {
         searchAdapter = MoviesAdapter() {
             viewModel.retrySearch()
         }
+        searchSuggestionAdapter = SearchSuggestionAdapter()
+        searchSuggestionAdapter.setItems(list)
         setTypeOfMovieObserver()
     }
 
@@ -153,10 +167,24 @@ class MovieFragment : Fragment(), View.OnClickListener {
             }
         )
 
-        searchViewBinding?.etSearch?.doAfterTextChanged {text ->
-
+        searchViewBinding?.etSearch?.doAfterTextChanged { text ->
+            addLayoutAnimationToRv(binding.rvSearchSuggestion, R.anim.layout_animation_fall_down)
+            coroutineScope.launch {
+                delay(300)
+                binding.rvSearchSuggestion.translationY = 0f
+            }
+            binding.rvSearchSuggestion.visibility = VISIBLE
+            binding.rvSearchSuggestion.scheduleLayoutAnimation()
         }
 
+    }
+
+    private fun addLayoutAnimationToRv(
+        rv: RecyclerView,
+        layoutAnimation: Int
+    ) {
+        var controller = AnimationUtils.loadLayoutAnimation(rv.context, layoutAnimation)
+        rv.layoutAnimation = controller
     }
 
     private fun setSearchNetworkObserver() {
@@ -185,17 +213,17 @@ class MovieFragment : Fragment(), View.OnClickListener {
 
     private fun loadMovies() {
         swipeRefreshLayout.isRefreshing = false
-        initAdapter()
+        initRv()
     }
 
     private fun setTypeOfMovieObserver() {
         movieType?.let {
             viewModel.movies.observe(activity!!, Observer { data ->
-                    adapter.submitList(data)
+                adapter.submitList(data)
             })
         }
 
-        viewModel.searchMovies.observe(activity!!, Observer {data ->
+        viewModel.searchMovies.observe(activity!!, Observer { data ->
             searchAdapter.submitList(data)
         })
     }
@@ -214,7 +242,7 @@ class MovieFragment : Fragment(), View.OnClickListener {
 
     }
 
-    private fun initAdapter() {
+    private fun initRv() {
         layoutManager = GridLayoutManager(activity, 2)
         binding.recyclerView.layoutManager = layoutManager
         binding.recyclerView.adapter = adapter
@@ -223,6 +251,8 @@ class MovieFragment : Fragment(), View.OnClickListener {
         binding.rvSearch.layoutManager = searchLayoutManager
         binding.rvSearch.adapter = searchAdapter
         setSpanLookUp(searchLayoutManager, searchAdapter)
+
+        binding.rvSearchSuggestion.adapter = searchSuggestionAdapter
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -273,6 +303,7 @@ class MovieFragment : Fragment(), View.OnClickListener {
             )
             animator?.duration = 800
             animator?.start()
+
             animator?.addListener(object : Animator.AnimatorListener {
                 override fun onAnimationRepeat(animation: Animator?) {
                 }
@@ -293,6 +324,7 @@ class MovieFragment : Fragment(), View.OnClickListener {
         }
 
     }
+
 
     private fun showSoftKey() {
 
@@ -394,6 +426,7 @@ class MovieFragment : Fragment(), View.OnClickListener {
         searchItem!!.getLocationOnScreen(point)
         val (x, y) = point
         var animator: Animator? = null
+        var animatorSet = AnimatorSet()
         if (searchViewBinding != null) {
             var params = searchViewBinding?.clSearchView?.layoutParams
             params?.width = binding.toolbar.width - 20
@@ -409,8 +442,26 @@ class MovieFragment : Fragment(), View.OnClickListener {
                 start.toFloat(),
                 endRadius.toFloat()
             )
-            animator?.duration = 800
-            animator?.start()
+            hideSuggestionRv()
+
+
+            animator.duration = 800
+            animator.start()
+
+
+        }
+
+        binding.rvSearchSuggestion.layoutAnimationListener = object : Animation.AnimationListener {
+            override fun onAnimationRepeat(animation: Animation?) {
+
+            }
+
+            override fun onAnimationEnd(animation: Animation?) {
+            }
+
+            override fun onAnimationStart(animation: Animation?) {
+            }
+
         }
 
         animator?.addListener(object : Animator.AnimatorListener {
@@ -424,6 +475,8 @@ class MovieFragment : Fragment(), View.OnClickListener {
                 binding.recyclerView.visibility = VISIBLE
                 isSearchBackPressed = true
                 viewModel.rvSearchVisibility = binding.rvSearch.visibility
+                binding.rvSearchSuggestion.visibility = GONE
+
             }
 
             override fun onAnimationCancel(animation: Animator?) {
@@ -433,6 +486,12 @@ class MovieFragment : Fragment(), View.OnClickListener {
             }
 
         })
+    }
+
+    private fun hideSuggestionRv() {
+        var slideUpAnimation = AnimationUtils.loadAnimation(context, R.anim.slide_up)
+        binding.rvSearchSuggestion.startAnimation(slideUpAnimation)
+        addLayoutAnimationToRv(binding.rvSearchSuggestion, R.anim.layout_animation_go_up)
     }
 
 }
