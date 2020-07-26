@@ -69,6 +69,16 @@ class MovieRepository @Inject constructor(val service: TmdbService, var context:
         return LivePagedListBuilder<Int, Movie>(searchMovieDataSourceFactory, config).build()
     }
 
+//    fun searchSuggestions(search: String) = flow{
+//        emit(Result.loading(null))
+//        try {
+//            val result = service.searchSuggestion(search)
+//            emit(Result.success(result))
+//        } catch (e: Exception) {
+//            emit(Result.error(e.message!!))
+//        }
+//    }
+
     fun getTrailersList(trailerSearch: TrailerSearch): MutableLiveData<MovieTrailerResponse> {
         var liveData: MutableLiveData<MovieTrailerResponse> = MutableLiveData()
         service.getTrailerList(trailerSearch.movieId!!)
@@ -111,20 +121,20 @@ class MovieRepository @Inject constructor(val service: TmdbService, var context:
 
     }
 
-//    fun searchMovie(query: String): MutableLiveData<MovieResponse> {
-//        var liveData: MutableLiveData<MovieResponse> = MutableLiveData()
-//        service.searchMovies(query,1).enqueue(object : Callback<MovieResponse> {
-//            override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
-//
-//            }
-//
-//            override fun onResponse(call: Call<MovieResponse>, response: Response<MovieResponse>) {
-//                liveData.postValue(response.body())
-//            }
-//        })
-//
-//        return liveData
-//    }
+    fun searchSuggestion(query: String): MutableLiveData<MovieResponse> {
+        var liveData: MutableLiveData<MovieResponse> = MutableLiveData()
+        service.searchSuggestion(query).enqueue(object : Callback<MovieResponse> {
+            override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
+
+            }
+
+            override fun onResponse(call: Call<MovieResponse>, response: Response<MovieResponse>) {
+                liveData.postValue(response.body())
+            }
+        })
+
+        return liveData
+    }
 
     private val _movie = MutableLiveData<Movie>()
     lateinit var currentMovie: LiveData<Movie>

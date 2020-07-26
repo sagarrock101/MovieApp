@@ -9,15 +9,29 @@ import com.sagaRock101.tmdb.model.*
 import com.sagaRock101.tmdb.paging.MovieDataSource
 import com.sagaRock101.tmdb.paging.SearchDataSource
 import com.sagaRock101.tmdb.repository.MovieRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.sagaRock101.tmdb.Result
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.map
 
 @Singleton
 class MoviesViewModel @Inject constructor(application: Application) :
     AndroidViewModel(application) {
     val TAG = "ViewModel"
+
+    sealed class SearchResult {
+        class ValidResult(val matches: MovieResponse) : SearchResult()
+        class Error(e: Exception) : SearchResult()
+    }
 
     @Inject
     lateinit var repository: MovieRepository
@@ -40,6 +54,29 @@ class MoviesViewModel @Inject constructor(application: Application) :
 
     var searchMovies: MediatorLiveData<PagedList<Movie>> = MediatorLiveData()
 
+    private var searchSuggestionMLD = MutableLiveData<String>()
+
+//    @ExperimentalCoroutinesApi
+//    var queryChannel = BroadcastChannel<String>(Channel.CONFLATED)
+//
+//    @ExperimentalCoroutinesApi
+//    val searchResult = queryChannel
+//        .asFlow()
+//        .debounce(500)
+//        .map {
+//            try {
+//            } catch (e: Throwable) {
+//                if (e is CancellationException) {
+//                    throw e
+//                } else {
+////                    SearchResult.Error(e)
+//                }
+//            }
+//        }
+
+     val searchSuggestionLD: LiveData<MovieResponse>
+
+
     init {
         this.trailersLiveData =
             Transformations.switchMap(trailersMutableLiveDataLiveData) { search ->
@@ -48,6 +85,10 @@ class MoviesViewModel @Inject constructor(application: Application) :
 
         this.reviewsLD = Transformations.switchMap(reviewsMLD) { movieId ->
             repository.getReviews(movieId)
+        }
+
+        this.searchSuggestionLD = Transformations.switchMap(searchSuggestionMLD) {
+            repository.searchSuggestion(it)
         }
     }
 
@@ -116,7 +157,6 @@ class MoviesViewModel @Inject constructor(application: Application) :
     fun searchMovie(query: String?) {
         searchMovies.addSource(repository.searchMovie(query!!), searchMovies::setValue )
     }
-
 
 
 }

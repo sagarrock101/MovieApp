@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorSet
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -22,6 +23,7 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
@@ -29,20 +31,22 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.sagaRock101.tmdb.MyApplication
 import com.sagaRock101.tmdb.R
+import com.sagaRock101.tmdb.Result
 import com.sagaRock101.tmdb.adapter.MoviesAdapter
 import com.sagaRock101.tmdb.adapter.SearchSuggestionAdapter
 import com.sagaRock101.tmdb.databinding.FragmentMovieBinding
 import com.sagaRock101.tmdb.databinding.LayoutSearchBinding
+import com.sagaRock101.tmdb.model.MovieResponse
+import com.sagaRock101.tmdb.ui.interfaces.CloseBtnClickListener
 import com.sagaRock101.tmdb.viewmodel.MoviesViewModel
 import com.sagaRock101.tmdb.viewmodel.ViewModelFactory
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.consume
+import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 
 
-class MovieFragment : Fragment(), View.OnClickListener {
+class MovieFragment : Fragment(), View.OnClickListener, CloseBtnClickListener {
 
     private var searchLayoutManager: GridLayoutManager? = null
     private var isSearchBackPressed: Boolean = false
@@ -74,7 +78,7 @@ class MovieFragment : Fragment(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        for (i in 0..5)
+        for (i in 0..6)
             list.add("$i")
         if (savedInstanceState == null) {
             if (viewModel.rvSearchVisibility != VISIBLE)
@@ -88,6 +92,7 @@ class MovieFragment : Fragment(), View.OnClickListener {
         }
         searchSuggestionAdapter = SearchSuggestionAdapter()
         searchSuggestionAdapter.setItems(list)
+        searchSuggestionAdapter.setCloseListener(this)
         setTypeOfMovieObserver()
     }
 
@@ -119,6 +124,7 @@ class MovieFragment : Fragment(), View.OnClickListener {
         requireActivity().onBackPressedDispatcher.addCallback(this, callback);
     }
 
+    @ExperimentalCoroutinesApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         container = view.findViewById(R.id.fl_parent)
@@ -168,15 +174,33 @@ class MovieFragment : Fragment(), View.OnClickListener {
         )
 
         searchViewBinding?.etSearch?.doAfterTextChanged { text ->
-            addLayoutAnimationToRv(binding.rvSearchSuggestion, R.anim.layout_animation_fall_down)
-            coroutineScope.launch {
-                delay(300)
-                binding.rvSearchSuggestion.translationY = 0f
-            }
-            binding.rvSearchSuggestion.visibility = VISIBLE
-            binding.rvSearchSuggestion.scheduleLayoutAnimation()
+            showSuggestionRv()
+//            lifecycleScope.launch {
+//                viewModel.queryChannel.send(text.toString())
+//            }
         }
 
+       viewModel.searchSuggestionLD.observe(this, Observer { data ->
+           if(!data.results.isNullOrEmpty()) {
+               data.results.forEachIndexed { index, movie ->
+                   if(index != data.results.size - 1)
+                       list.add(movie.title!!)
+                   else list.add("")
+               }
+               searchSuggestionAdapter.setItems(list)
+               showSuggestionRv()
+           }
+       })
+    }
+
+    private fun showSuggestionRv() {
+        addLayoutAnimationToRv(binding.rvSearchSuggestion, R.anim.layout_animation_fall_down)
+        coroutineScope.launch {
+            delay(300)
+            binding.rvSearchSuggestion.translationY = 0f
+        }
+        binding.rvSearchSuggestion.visibility = VISIBLE
+        binding.rvSearchSuggestion.scheduleLayoutAnimation()
     }
 
     private fun addLayoutAnimationToRv(
@@ -442,9 +466,8 @@ class MovieFragment : Fragment(), View.OnClickListener {
                 start.toFloat(),
                 endRadius.toFloat()
             )
-            hideSuggestionRv()
-
-
+            if (binding.rvSearchSuggestion.visibility == VISIBLE)
+                hideSuggestionRv()
             animator.duration = 800
             animator.start()
 
@@ -475,7 +498,7 @@ class MovieFragment : Fragment(), View.OnClickListener {
                 binding.recyclerView.visibility = VISIBLE
                 isSearchBackPressed = true
                 viewModel.rvSearchVisibility = binding.rvSearch.visibility
-                binding.rvSearchSuggestion.visibility = GONE
+//                binding.rvSearchSuggestion.visibility = GONE
 
             }
 
@@ -492,6 +515,22 @@ class MovieFragment : Fragment(), View.OnClickListener {
         var slideUpAnimation = AnimationUtils.loadAnimation(context, R.anim.slide_up)
         binding.rvSearchSuggestion.startAnimation(slideUpAnimation)
         addLayoutAnimationToRv(binding.rvSearchSuggestion, R.anim.layout_animation_go_up)
+        slideUpAnimation.setAnimationListener(object : Animation.AnimationListener {
+            override fun onAnimationRepeat(animation: Animation?) {
+            }
+
+            override fun onAnimationEnd(animation: Animation?) {
+                binding.rvSearchSuggestion.visibility = GONE
+            }
+
+            override fun onAnimationStart(animation: Animation?) {
+            }
+
+        })
+    }
+
+    override fun onCloseClick() {
+        hideSuggestionRv()
     }
 
 }

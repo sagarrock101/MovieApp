@@ -25,4 +25,9 @@ interface TmdbService {
         @Query("query") query: String,
         @Query("page") page: Int
     ): Call<MovieResponse>
+
+    @GET("search/movie")
+    fun searchSuggestion(
+        @Query("query") query: String
+    ): Call<MovieResponse>
 }
