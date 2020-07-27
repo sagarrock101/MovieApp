@@ -91,6 +91,7 @@ class MovieFragment : Fragment(), View.OnClickListener, OnViewClickListener {
         searchSuggestionAdapter.setItems(list)
         searchSuggestionAdapter.setCloseListener(this)
         setTypeOfMovieObserver()
+        suggestionObserver()
     }
 
     override fun onCreateView(
@@ -103,6 +104,7 @@ class MovieFragment : Fragment(), View.OnClickListener, OnViewClickListener {
             inflater, R.layout.fragment_movie, container,
             false
         )
+        binding.lifecycleOwner = this
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.toolbar)
         setPagesLoadingObserver()
         setupSwipeToRefresh()
@@ -197,7 +199,7 @@ class MovieFragment : Fragment(), View.OnClickListener, OnViewClickListener {
         }.debounce(500, TimeUnit.MILLISECONDS)
             .distinct()
             .filter { text ->
-                text.isNotEmpty() || text.isNotBlank()
+                text.isNotEmpty() && text.isNotBlank()
             }
             .subscribe { query ->
                 if (query.length >= 3) {
@@ -205,8 +207,9 @@ class MovieFragment : Fragment(), View.OnClickListener, OnViewClickListener {
                     viewModel.searchSuggestion(query)
                 }
             }
+    }
 
-
+    private fun suggestionObserver() {
         viewModel.searchSuggestionLD.observe(activity!!, Observer { data ->
             list.clear()
             if (!data.results.isNullOrEmpty()) {
@@ -215,7 +218,7 @@ class MovieFragment : Fragment(), View.OnClickListener, OnViewClickListener {
                 }
                 list.add("")
                 searchSuggestionAdapter.setItems(list)
-
+                if(::binding.isInitialized)
                 showSuggestionRv()
             }
         })
@@ -453,7 +456,6 @@ class MovieFragment : Fragment(), View.OnClickListener, OnViewClickListener {
         layoutManager = null
         viewModel.movies.removeObservers(this)
         viewModel.searchMovies.removeObservers(this)
-        viewModel.searchSuggestionLD.removeObservers(this)
         if (searchViewBinding != null)
             viewModel.setSearchBinding(searchViewBinding!!)
         viewModel.searchListState = binding.rvSearch.layoutManager?.onSaveInstanceState()
@@ -478,6 +480,7 @@ class MovieFragment : Fragment(), View.OnClickListener, OnViewClickListener {
         when (view) {
             searchViewBinding?.ibBack -> {
                 hideSearchBox()
+                searchViewBinding?.etSearch?.setText("")
                 list.clear()
             }
             searchViewBinding?.ibClose -> {
