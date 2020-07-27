@@ -40,9 +40,13 @@ class MoviesViewModel @Inject constructor(application: Application) :
 
     var searchListState: Parcelable? = null
 
+    var suggestionListState: Parcelable? = null
+
     var searchViewBinding: LayoutSearchBinding? = null
 
     var rvSearchVisibility: Int? = null
+
+    var rvSuggestionVisibility: Int? = null
 
     private var trailersMutableLiveDataLiveData = MutableLiveData<TrailerSearch>()
     var trailersLiveData: LiveData<MovieTrailerResponse>

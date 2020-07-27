@@ -138,6 +138,21 @@ class MovieFragment : Fragment(), View.OnClickListener, OnViewClickListener {
                     binding.recyclerView.visibility = GONE
                 }
 
+                if (viewModel.rvSuggestionVisibility != null) {
+                    binding.rvSearchSuggestion.visibility = viewModel.rvSuggestionVisibility!!
+                    if(binding.rvSearchSuggestion.visibility == GONE)
+                        hideSuggestionRv()
+                }
+
+                if(viewModel.rvSuggestionVisibility == null) {
+                    hideSuggestionRv()
+                }
+
+                if (viewModel.suggestionListState != null) {
+                    binding.rvSearchSuggestion.layoutManager?.onRestoreInstanceState(viewModel.suggestionListState)
+                    viewModel.suggestionListState = null
+                }
+
                 if (viewModel.rvSearchVisibility != null)
                     binding.rvSearch.visibility = viewModel.rvSearchVisibility!!
 
@@ -181,10 +196,10 @@ class MovieFragment : Fragment(), View.OnClickListener, OnViewClickListener {
             text.toLowerCase()
         }.debounce(500, TimeUnit.MILLISECONDS)
             .distinct()
-            .filter {
-                text -> text.isNotEmpty() || text.isNotBlank()
+            .filter { text ->
+                text.isNotEmpty() || text.isNotBlank()
             }
-            .subscribe {query ->
+            .subscribe { query ->
                 if (query.length >= 3) {
                     isQueryFromSuggestion = false
                     viewModel.searchSuggestion(query)
@@ -192,7 +207,7 @@ class MovieFragment : Fragment(), View.OnClickListener, OnViewClickListener {
             }
 
 
-        viewModel.searchSuggestionLD.observe(this, Observer { data ->
+        viewModel.searchSuggestionLD.observe(activity!!, Observer { data ->
             list.clear()
             if (!data.results.isNullOrEmpty()) {
                 data.results.forEachIndexed { index, movie ->
@@ -200,6 +215,7 @@ class MovieFragment : Fragment(), View.OnClickListener, OnViewClickListener {
                 }
                 list.add("")
                 searchSuggestionAdapter.setItems(list)
+
                 showSuggestionRv()
             }
         })
@@ -266,7 +282,10 @@ class MovieFragment : Fragment(), View.OnClickListener, OnViewClickListener {
 
         viewModel.searchMovies.observe(activity!!, Observer { data ->
             searchAdapter.submitList(data)
-            hideSuggestionRv()
+            coroutineScope.launch {
+                delay(600)
+                hideSuggestionRv()
+            }
         })
     }
 
@@ -434,10 +453,14 @@ class MovieFragment : Fragment(), View.OnClickListener, OnViewClickListener {
         layoutManager = null
         viewModel.movies.removeObservers(this)
         viewModel.searchMovies.removeObservers(this)
+        viewModel.searchSuggestionLD.removeObservers(this)
         if (searchViewBinding != null)
             viewModel.setSearchBinding(searchViewBinding!!)
         viewModel.searchListState = binding.rvSearch.layoutManager?.onSaveInstanceState()
+        viewModel.suggestionListState =
+            binding.rvSearchSuggestion.layoutManager?.onSaveInstanceState()
         viewModel.rvSearchVisibility = binding.rvSearch.visibility
+        viewModel.rvSuggestionVisibility = binding.rvSearchSuggestion.visibility
         container!!.removeView(searchViewBinding!!.root)
         super.onDestroyView()
     }
@@ -458,6 +481,8 @@ class MovieFragment : Fragment(), View.OnClickListener, OnViewClickListener {
                 list.clear()
             }
             searchViewBinding?.ibClose -> {
+                searchViewBinding?.etSearch?.requestFocus()
+                showSoftKey()
                 clearEditText(searchViewBinding?.etSearch)
             }
         }
