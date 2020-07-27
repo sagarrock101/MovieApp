@@ -158,5 +158,9 @@ class MoviesViewModel @Inject constructor(application: Application) :
         searchMovies.addSource(repository.searchMovie(query!!), searchMovies::setValue )
     }
 
+    fun searchSuggestion(query: String) {
+        searchSuggestionMLD.postValue(query)
+    }
+
 
 }

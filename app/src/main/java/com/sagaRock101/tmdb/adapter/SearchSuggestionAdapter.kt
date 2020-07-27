@@ -5,7 +5,7 @@ import com.sagaRock101.tmdb.R
 import com.sagaRock101.tmdb.Utils
 import com.sagaRock101.tmdb.databinding.ItemSearchResultBinding
 import com.sagaRock101.tmdb.databinding.ItemSuggestionCloseBinding
-import com.sagaRock101.tmdb.ui.interfaces.CloseBtnClickListener
+import com.sagaRock101.tmdb.ui.interfaces.OnViewClickListener
 import com.sagaRock101.tmdb.viewholders.BaseViewHolder
 import com.sagaRock101.tmdb.viewholders.CloseViewHolder
 import com.sagaRock101.tmdb.viewholders.SearchSuggestionViewHolder
@@ -15,7 +15,7 @@ private const val TYPE_CLOSE = 1
 
 class SearchSuggestionAdapter : BaseAdapter<String>() {
 
-    private var listener: CloseBtnClickListener? = null
+    private var listener: OnViewClickListener? = null
 
     override fun getLayoutId(position: Int, obj: String) = R.layout.item_search_result
 
@@ -24,7 +24,7 @@ class SearchSuggestionAdapter : BaseAdapter<String>() {
             TYPE_RESULT -> {
                 val binding =
                     Utils.binder<ItemSearchResultBinding>(R.layout.item_search_result, parent)
-                SearchSuggestionViewHolder(binding)
+                SearchSuggestionViewHolder(binding, listener)
             }
             else -> {
                 val binding =
@@ -41,7 +41,7 @@ class SearchSuggestionAdapter : BaseAdapter<String>() {
         }
     }
 
-    fun setCloseListener(listener: CloseBtnClickListener) {
+    fun setCloseListener(listener: OnViewClickListener) {
         this.listener = listener
     }
 

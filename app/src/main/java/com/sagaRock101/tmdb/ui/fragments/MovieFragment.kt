@@ -4,7 +4,6 @@ import android.animation.Animator
 import android.animation.AnimatorSet
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -23,7 +22,6 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
@@ -31,22 +29,18 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.sagaRock101.tmdb.MyApplication
 import com.sagaRock101.tmdb.R
-import com.sagaRock101.tmdb.Result
 import com.sagaRock101.tmdb.adapter.MoviesAdapter
 import com.sagaRock101.tmdb.adapter.SearchSuggestionAdapter
 import com.sagaRock101.tmdb.databinding.FragmentMovieBinding
 import com.sagaRock101.tmdb.databinding.LayoutSearchBinding
-import com.sagaRock101.tmdb.model.MovieResponse
-import com.sagaRock101.tmdb.ui.interfaces.CloseBtnClickListener
+import com.sagaRock101.tmdb.ui.interfaces.OnViewClickListener
 import com.sagaRock101.tmdb.viewmodel.MoviesViewModel
 import com.sagaRock101.tmdb.viewmodel.ViewModelFactory
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.consume
-import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 
 
-class MovieFragment : Fragment(), View.OnClickListener, CloseBtnClickListener {
+class MovieFragment : Fragment(), View.OnClickListener, OnViewClickListener {
 
     private var searchLayoutManager: GridLayoutManager? = null
     private var isSearchBackPressed: Boolean = false
@@ -78,8 +72,6 @@ class MovieFragment : Fragment(), View.OnClickListener, CloseBtnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        for (i in 0..6)
-            list.add("$i")
         if (savedInstanceState == null) {
             if (viewModel.rvSearchVisibility != VISIBLE)
                 movieType.let { viewModel.fetchMovies(page, it) }
@@ -174,23 +166,29 @@ class MovieFragment : Fragment(), View.OnClickListener, CloseBtnClickListener {
         )
 
         searchViewBinding?.etSearch?.doAfterTextChanged { text ->
+            var query = text.toString()
             showSuggestionRv()
-//            lifecycleScope.launch {
-//                viewModel.queryChannel.send(text.toString())
-//            }
+            searchQuery(query)
         }
 
        viewModel.searchSuggestionLD.observe(this, Observer { data ->
            if(!data.results.isNullOrEmpty()) {
                data.results.forEachIndexed { index, movie ->
-                   if(index != data.results.size - 1)
-                       list.add(movie.title!!)
-                   else list.add("")
+                   list.add(movie.title!!)
                }
+               list.add("")
                searchSuggestionAdapter.setItems(list)
                showSuggestionRv()
            }
        })
+    }
+
+    private fun searchQuery(query: String) {
+        coroutineScope.launch {
+            delay(500)
+            if(query.length >= 3)
+                viewModel.searchSuggestion(query)
+        }
     }
 
     private fun showSuggestionRv() {
@@ -529,8 +527,25 @@ class MovieFragment : Fragment(), View.OnClickListener, CloseBtnClickListener {
         })
     }
 
-    override fun onCloseClick() {
+
+
+    override fun onClickView(view: Int?, data: Any?) {
+        when(view) {
+            R.id.cl_search_item -> {
+                if(data is String) {
+                    setSearchTextToEditText(data)
+                }
+            }
+            R.id.iv_close -> {
+                hideSuggestionRv()
+            }
+        }
+    }
+
+    private fun setSearchTextToEditText(query: String) {
+        searchQuery(query)
         hideSuggestionRv()
+        searchViewBinding?.etSearch?.setText(query)
     }
 
 }
