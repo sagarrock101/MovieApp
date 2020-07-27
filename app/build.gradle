@@ -147,4 +147,7 @@ dependencies {
     implementation "androidx.work:work-runtime-ktx:$work"
 
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.0-alpha06"
+
+    implementation "io.reactivex.rxjava3:rxkotlin:3.0.0"
+
 }

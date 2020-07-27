@@ -17,6 +17,7 @@ import android.widget.TextView.OnEditorActionListener
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.menu.ActionMenuItemView
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.view.contains
 import androidx.core.widget.doAfterTextChanged
 import androidx.databinding.DataBindingUtil
@@ -36,7 +37,9 @@ import com.sagaRock101.tmdb.databinding.LayoutSearchBinding
 import com.sagaRock101.tmdb.ui.interfaces.OnViewClickListener
 import com.sagaRock101.tmdb.viewmodel.MoviesViewModel
 import com.sagaRock101.tmdb.viewmodel.ViewModelFactory
+import io.reactivex.rxjava3.core.Observable
 import kotlinx.coroutines.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
@@ -69,6 +72,8 @@ class MovieFragment : Fragment(), View.OnClickListener, OnViewClickListener {
     val TAG = this.javaClass.name
 
     var list = ArrayList<String>()
+
+    var isQueryFromSuggestion = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -144,8 +149,11 @@ class MovieFragment : Fragment(), View.OnClickListener, OnViewClickListener {
             }
         }
         searchViewBinding?.ibBack?.setOnClickListener(this)
+        searchViewBinding?.ibClose?.setOnClickListener(this)
         searchViewBinding?.etSearch?.setOnEditorActionListener(
             OnEditorActionListener { v, actionId, event ->
+                isQueryFromSuggestion = false
+
                 if (actionId == EditorInfo.IME_ACTION_SEARCH ||
                     actionId == EditorInfo.IME_ACTION_DONE || event != null &&
                     event.action == KeyEvent.ACTION_DOWN
@@ -154,8 +162,7 @@ class MovieFragment : Fragment(), View.OnClickListener, OnViewClickListener {
                     if (event == null || !event.isShiftPressed) {
                         // the user is done typing.
                         viewModel.searchMovie(searchViewBinding?.etSearch?.text.toString())
-                        binding.rvSearch.visibility = VISIBLE
-                        binding.recyclerView.visibility = GONE
+                        searchRvsVisibility(VISIBLE, GONE)
                         hideSoftKey()
                         setSearchNetworkObserver()
                         return@OnEditorActionListener true // consume.
@@ -165,30 +172,42 @@ class MovieFragment : Fragment(), View.OnClickListener, OnViewClickListener {
             }
         )
 
-        searchViewBinding?.etSearch?.doAfterTextChanged { text ->
-            var query = text.toString()
-            showSuggestionRv()
-            searchQuery(query)
-        }
+        Observable.create<String> { subscriber ->
+            searchViewBinding?.etSearch?.doAfterTextChanged { text ->
+                var query = text.toString()
+                subscriber.onNext(query)
+            }
+        }.map { text ->
+            text.toLowerCase()
+        }.debounce(500, TimeUnit.MILLISECONDS)
+            .distinct()
+            .filter {
+                text -> text.isNotEmpty() || text.isNotBlank()
+            }
+            .subscribe {query ->
+                if (query.length >= 3) {
+                    isQueryFromSuggestion = false
+                    viewModel.searchSuggestion(query)
+                }
+            }
 
-       viewModel.searchSuggestionLD.observe(this, Observer { data ->
-           if(!data.results.isNullOrEmpty()) {
-               data.results.forEachIndexed { index, movie ->
-                   list.add(movie.title!!)
-               }
-               list.add("")
-               searchSuggestionAdapter.setItems(list)
-               showSuggestionRv()
-           }
-       })
+
+        viewModel.searchSuggestionLD.observe(this, Observer { data ->
+            list.clear()
+            if (!data.results.isNullOrEmpty()) {
+                data.results.forEachIndexed { index, movie ->
+                    list.add(movie.title!!)
+                }
+                list.add("")
+                searchSuggestionAdapter.setItems(list)
+                showSuggestionRv()
+            }
+        })
     }
 
-    private fun searchQuery(query: String) {
-        coroutineScope.launch {
-            delay(500)
-            if(query.length >= 3)
-                viewModel.searchSuggestion(query)
-        }
+    private fun searchRvsVisibility(searchResRvVisibility: Int, mainRvVisibiltiy: Int) {
+        binding.rvSearch.visibility = searchResRvVisibility
+        binding.recyclerView.visibility = mainRvVisibiltiy
     }
 
     private fun showSuggestionRv() {
@@ -247,6 +266,7 @@ class MovieFragment : Fragment(), View.OnClickListener, OnViewClickListener {
 
         viewModel.searchMovies.observe(activity!!, Observer { data ->
             searchAdapter.submitList(data)
+            hideSuggestionRv()
         })
     }
 
@@ -349,7 +369,6 @@ class MovieFragment : Fragment(), View.OnClickListener, OnViewClickListener {
 
 
     private fun showSoftKey() {
-
         var imm =
             activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.showSoftInput(searchViewBinding?.etSearch, InputMethodManager.SHOW_IMPLICIT)
@@ -436,8 +455,16 @@ class MovieFragment : Fragment(), View.OnClickListener, OnViewClickListener {
         when (view) {
             searchViewBinding?.ibBack -> {
                 hideSearchBox()
+                list.clear()
+            }
+            searchViewBinding?.ibClose -> {
+                clearEditText(searchViewBinding?.etSearch)
             }
         }
+    }
+
+    private fun clearEditText(et: AppCompatEditText?) {
+        et?.setText("")
     }
 
     private fun hideSearchBox() {
@@ -528,24 +555,32 @@ class MovieFragment : Fragment(), View.OnClickListener, OnViewClickListener {
     }
 
 
-
     override fun onClickView(view: Int?, data: Any?) {
-        when(view) {
+        when (view) {
             R.id.cl_search_item -> {
-                if(data is String) {
+                if (data is String) {
                     setSearchTextToEditText(data)
                 }
             }
             R.id.iv_close -> {
                 hideSuggestionRv()
+                coroutineScope.launch {
+                    delay(100)
+                    searchViewBinding?.etSearch?.requestFocus()
+                }
+                showSoftKey()
             }
         }
     }
 
     private fun setSearchTextToEditText(query: String) {
-        searchQuery(query)
-        hideSuggestionRv()
+        isQueryFromSuggestion = true
         searchViewBinding?.etSearch?.setText(query)
+        searchViewBinding?.etSearch?.setSelection(query.length)
+        viewModel.searchMovie(query)
+        hideSuggestionRv()
+        searchRvsVisibility(VISIBLE, GONE)
+        hideSoftKey()
     }
 
 }
