@@ -50,6 +50,23 @@
                     backdrop="@{movieItem}"
                     app:layout_collapseMode="parallax" />
 
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/iv_no_preview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="?attr/bgColor"
+                    android:visibility="@{movieItem.backDropPath != null? View.GONE : View.VISIBLE}"
+                    />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_no_preview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/no_preview"
+                    android:textColor="?attr/textColor"
+                    android:visibility="@{movieItem.backDropPath != null? View.GONE : View.VISIBLE}"
+                    />
                 <com.google.android.material.appbar.MaterialToolbar
                     android:id="@+id/toolbar"
                     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
@@ -153,6 +170,7 @@
                     android:layout_height="100dp"
                     android:layout_marginTop="4dp"
                     adapter="@{trailerAdapter}"
+                    android:visibility="gone"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     android:orientation="horizontal"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -182,6 +200,7 @@
                     android:layout_marginTop="8dp"
                     tools:listitem="@layout/item_review"
                     adapter="@{reviewAdapter}"
+                    android:visibility="gone"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     android:orientation="vertical"
                     app:layout_constraintTop_toBottomOf="@id/tv_reviews"
