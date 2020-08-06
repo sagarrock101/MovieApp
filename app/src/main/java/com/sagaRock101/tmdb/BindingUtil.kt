@@ -26,7 +26,7 @@ fun ImageView.loadImageMovie(
     isCacheSource: Boolean = false, animation: Boolean = false, isLarge: Boolean = false
 ) {
     if (url.isNullOrBlank()) {
-        setImageDrawable(this.context.resources.getDrawable(R.mipmap.ic_launcher))
+//        setImageDrawable(this.context.resources.getDrawable(R.mipmap.ic_launcher))
         return
     }
     var requestOptions = RequestOptions()

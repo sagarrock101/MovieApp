@@ -136,6 +136,20 @@ class MovieRepository @Inject constructor(val service: TmdbService, var context:
         return liveData
     }
 
+    fun getTags(movieId: Int): MutableLiveData<MovieKeywords> {
+        var liveData: MutableLiveData<MovieKeywords> = MutableLiveData()
+        service.getKeywords(movieId).enqueue(object : Callback<MovieKeywords> {
+            override fun onFailure(call: Call<MovieKeywords>, t: Throwable) {
+            }
+
+            override fun onResponse(call: Call<MovieKeywords>, response: Response<MovieKeywords>) {
+                liveData.postValue(response.body())
+            }
+
+        })
+        return liveData
+    }
+
     private val _movie = MutableLiveData<Movie>()
     lateinit var currentMovie: LiveData<Movie>
 

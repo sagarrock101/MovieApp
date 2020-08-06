@@ -142,11 +142,11 @@ class MovieFragment : Fragment(), View.OnClickListener, OnViewClickListener {
 
                 if (viewModel.rvSuggestionVisibility != null) {
                     binding.rvSearchSuggestion.visibility = viewModel.rvSuggestionVisibility!!
-                    if(binding.rvSearchSuggestion.visibility == GONE)
+                    if (binding.rvSearchSuggestion.visibility == GONE)
                         hideSuggestionRv()
                 }
 
-                if(viewModel.rvSuggestionVisibility == null) {
+                if (viewModel.rvSuggestionVisibility == null) {
                     hideSuggestionRv()
                 }
 
@@ -218,8 +218,8 @@ class MovieFragment : Fragment(), View.OnClickListener, OnViewClickListener {
                 }
                 list.add("")
                 searchSuggestionAdapter.setItems(list)
-                if(::binding.isInitialized)
-                showSuggestionRv()
+                if (::binding.isInitialized)
+                    showSuggestionRv()
             }
         })
     }

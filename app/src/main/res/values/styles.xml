@@ -37,6 +37,7 @@
         <item name="android:itemBackground">@color/colorWhite</item>
         <item name="android:colorControlHighlight">@color/colorAccent</item>
         <item name="autoCompleteTextViewStyle">@style/cursorColor</item>
+        <item name="fontFamily">@font/cairo_semi_bold</item>
     </style>
 
     <!--DARK THEME-->
@@ -51,6 +52,7 @@
         <item name="android:itemBackground">@color/colorBlack</item>
         <item name="android:colorControlHighlight">@color/colorAccent</item>
         <item name="autoCompleteTextViewStyle">@style/cursorColor</item>
+        <item name="fontFamily">@font/cairo_semi_bold</item>
     </style>
 
     <style name="MyTheme" parent="@style/ThemeOverlay.AppCompat.Light">
@@ -93,6 +95,13 @@
 
     <style name="cursorColor" parent="Widget.AppCompat.AutoCompleteTextView">
         <item name="android:textCursorDrawable">@drawable/cursor</item>
+    </style>
+
+    <style name="ChipTextStyle" parent="@android:style/Widget.TextView">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">12sp</item>
     </style>
 
 </resources>

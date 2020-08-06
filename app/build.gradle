@@ -72,6 +72,9 @@ android {
         experimental = true
     }
 
+    testOptions.unitTests{
+        includeAndroidResources = true
+    }
 
 }
 
@@ -149,5 +152,15 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.0-alpha06"
 
     implementation "io.reactivex.rxjava3:rxkotlin:3.0.0"
+
+    testImplementation "androidx.test.ext:junit-ktx:$androidXTestExtKotlinRunnerVersion"
+
+    testImplementation "androidx.test:core-ktx:$androidXTestCoreVersion"
+
+    testImplementation 'org.robolectric:robolectric:4.3'
+
+    implementation 'com.google.android:flexbox:2.0.1'
+
+
 
 }

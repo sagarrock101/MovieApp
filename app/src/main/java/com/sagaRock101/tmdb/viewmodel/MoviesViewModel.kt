@@ -60,25 +60,10 @@ class MoviesViewModel @Inject constructor(application: Application) :
 
     private var searchSuggestionMLD = MutableLiveData<String>()
 
-//    @ExperimentalCoroutinesApi
-//    var queryChannel = BroadcastChannel<String>(Channel.CONFLATED)
-//
-//    @ExperimentalCoroutinesApi
-//    val searchResult = queryChannel
-//        .asFlow()
-//        .debounce(500)
-//        .map {
-//            try {
-//            } catch (e: Throwable) {
-//                if (e is CancellationException) {
-//                    throw e
-//                } else {
-////                    SearchResult.Error(e)
-//                }
-//            }
-//        }
+    private var tagsMLD = MutableLiveData<Int>()
+    var tagsLD: LiveData<MovieKeywords>
 
-     val searchSuggestionLD: LiveData<MovieResponse>
+    val searchSuggestionLD: LiveData<MovieResponse>
 
 
     init {
@@ -94,13 +79,15 @@ class MoviesViewModel @Inject constructor(application: Application) :
         this.searchSuggestionLD = Transformations.switchMap(searchSuggestionMLD) {
             repository.searchSuggestion(it)
         }
+
+        this.tagsLD = Transformations.switchMap(tagsMLD) {movieId ->
+            repository.getTags(movieId)
+        }
     }
 
     fun setSearchBinding(binding: LayoutSearchBinding) {
         searchViewBinding = binding
     }
-
-
 
     fun getSearchBinding() = searchViewBinding
 
@@ -166,5 +153,8 @@ class MoviesViewModel @Inject constructor(application: Application) :
         searchSuggestionMLD.postValue(query)
     }
 
+    fun getTags(movieId: Int) {
+        tagsMLD.postValue(movieId)
+    }
 
 }

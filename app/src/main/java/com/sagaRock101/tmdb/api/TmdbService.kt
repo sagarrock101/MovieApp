@@ -30,4 +30,9 @@ interface TmdbService {
     fun searchSuggestion(
         @Query("query") query: String
     ): Call<MovieResponse>
+
+    @GET("movie/{movie_id}/keywords")
+    fun getKeywords(
+        @Path("movie_id") movieId: Int
+    ): Call<MovieKeywords>
 }

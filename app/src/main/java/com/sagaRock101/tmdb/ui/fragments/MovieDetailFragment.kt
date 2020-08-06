@@ -5,6 +5,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
+import android.view.View.VISIBLE
+import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -15,6 +17,11 @@ import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.ui.NavigationUI
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.google.android.flexbox.FlexDirection
+import com.google.android.flexbox.FlexboxLayoutManager
+import com.google.android.flexbox.JustifyContent
 import com.sagaRock101.tmdb.Constants
 import com.sagaRock101.tmdb.MyApplication
 import com.sagaRock101.tmdb.R
@@ -27,7 +34,11 @@ import com.sagaRock101.tmdb.model.Review
 import com.sagaRock101.tmdb.ui.interfaces.OnTrailerClickListener
 import com.sagaRock101.tmdb.viewmodel.MoviesViewModel
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
+import com.sagaRock101.tmdb.adapter.TagAdapter
+import com.sagaRock101.tmdb.model.Keyword
+import com.sagaRock101.tmdb.ui.visible
 import javax.inject.Inject
 
 
@@ -39,7 +50,7 @@ class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener,
     private val args: MovieDetailFragmentArgs by navArgs()
 
     @Inject
-    lateinit var viewModel : MoviesViewModel
+    lateinit var viewModel: MoviesViewModel
     private var heartFlag = false
     lateinit var movie: Movie
 
@@ -50,20 +61,40 @@ class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_movie_detail, container,
-            false)
+        binding = DataBindingUtil.inflate(
+            inflater, R.layout.fragment_movie_detail, container,
+            false
+        )
         setUpNavController()
         setViewClickListeners()
         callApi()
         setReviewObserver()
         setTrailerObserver()
         checkForFavorite()
+        setMovieTagObserver()
+        addLayoutAnimationToRv(binding.rvReviews, R.anim.layout_animation_fall_down)
+        addLayoutAnimationToRv(binding.rvTrailerThumbnail, R.anim.layout_animation_fall_down)
         return binding.root
+    }
+
+    private fun setMovieTagObserver() {
+        viewModel.tagsLD.observe(this, Observer { keywords ->
+            if (!keywords.keywords.isNullOrEmpty()) {
+                for (keyword in keywords.keywords) {
+                    var adapter = TagAdapter()
+                    adapter.setItems(keywords.keywords as MutableList<Keyword>)
+                    var layoutManager = StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.HORIZONTAL)
+                    binding.rvTag.layoutManager = layoutManager
+                    binding.tagAdapter = adapter
+                }
+            }
+        })
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if(viewModel.getSearchBinding() != null)
+        if (viewModel.getSearchBinding() != null)
             hideSoftKey()
     }
 
@@ -79,9 +110,19 @@ class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener,
             viewModel.getTrailers(it)
             viewModel.fetchReviews(it)
             viewModel.getMovieCheck(it)
+            viewModel.getTags(it)
             binding.movieItem = movie
-            binding.detailStars.rating = movie.vote_average!!/2
+            binding.detailStars.rating = movie.vote_average!! / 2
         }
+    }
+
+    private fun addLayoutAnimationToRv(
+        rv: RecyclerView,
+        layoutAnimation: Int
+    ) {
+        var controller = AnimationUtils.loadLayoutAnimation(rv.context, layoutAnimation)
+        rv.layoutAnimation = controller
+        rv.visibility = VISIBLE
     }
 
     private fun setViewClickListeners() {
@@ -92,8 +133,8 @@ class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener,
 
     private fun checkForFavorite() {
         viewModel.getMovieFromDb().observe(this, Observer { liveData ->
-            if(liveData != null) {
-                heartFlag = if(movie.id == liveData.id) {
+            if (liveData != null) {
+                heartFlag = if (movie.id == liveData.id) {
                     binding.fab.setImageResource(R.drawable.ic_like)
                     true
                 } else {
@@ -108,7 +149,7 @@ class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener,
         var adapter = TrailerAdapter()
         adapter.setTrailerListener(this)
         viewModel.trailersLiveData.observe(this, Observer { response ->
-            if(!response.results.isNullOrEmpty()) {
+            if (!response.results.isNullOrEmpty()) {
                 adapter.setItems(response.results as MutableList<MovieTrailer>)
                 binding.trailerAdapter = adapter
             }
@@ -117,9 +158,9 @@ class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener,
 
     private fun setReviewObserver() {
         var adapter = ReviewAdapter()
-        viewModel.reviewsLD.observe(this, Observer {reviewListResponse ->
+        viewModel.reviewsLD.observe(this, Observer { reviewListResponse ->
             if (reviewListResponse != null) {
-                if(!reviewListResponse.results.isNullOrEmpty()) {
+                if (!reviewListResponse.results.isNullOrEmpty()) {
                     adapter.setItems(reviewListResponse.results as MutableList<Review>)
                     binding.reviewAdapter = adapter
                 }
@@ -137,7 +178,7 @@ class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener,
     }
 
     override fun onOffsetChanged(appBarLayout: AppBarLayout?, verticalOffset: Int) {
-        if(verticalOffset == 0) {
+        if (verticalOffset == 0) {
             binding.fab.animate(View.VISIBLE, 1.0f)
             binding.fabShare.animate(View.VISIBLE, 1.0f)
         } else {
@@ -164,9 +205,9 @@ class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener,
     }
 
     override fun onClick(view: View?) {
-        when(view) {
+        when (view) {
             binding.fab -> {
-               setHeart()
+                setHeart()
             }
             binding.fabShare -> {
                 share()
@@ -175,7 +216,7 @@ class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener,
     }
 
     private fun setHeart() {
-        heartFlag = if(heartFlag) {
+        heartFlag = if (heartFlag) {
             binding.fab.setImageResource(R.drawable.ic_heart)
             viewModel.deleteFromDb(movie.id!!)
             showSnack(R.string.removed_from_favorites)
@@ -207,7 +248,19 @@ class MovieDetailFragment : Fragment(), AppBarLayout.OnOffsetChangedListener,
     private fun hideSoftKey() {
         var imm =
             activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(viewModel.getSearchBinding()?.etSearch?.rootView!!.windowToken,
-            0)
+        imm.hideSoftInputFromWindow(
+            viewModel.getSearchBinding()?.etSearch?.rootView!!.windowToken,
+            0
+        )
+    }
+
+    override fun onDestroyView() {
+        if (!binding.reviewAdapter?.listItems.isNullOrEmpty())
+            binding.reviewAdapter?.listItems?.clear()
+        if (!binding.trailerAdapter?.listItems.isNullOrEmpty())
+            binding.trailerAdapter?.listItems?.clear()
+        if(!binding.tagAdapter?.listItems.isNullOrEmpty())
+            binding.tagAdapter?.listItems?.clear()
+        super.onDestroyView()
     }
 }
