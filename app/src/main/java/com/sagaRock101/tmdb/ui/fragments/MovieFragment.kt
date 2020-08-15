@@ -27,7 +27,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.sagaRock101.tmdb.MyApplication
 import com.sagaRock101.tmdb.R
 import com.sagaRock101.tmdb.adapter.MoviesAdapter
@@ -55,7 +54,6 @@ class MovieFragment : Fragment(), View.OnClickListener, OnViewClickListener {
     private lateinit var adapter: MoviesAdapter
     private lateinit var searchAdapter: MoviesAdapter
     private lateinit var searchSuggestionAdapter: SearchSuggestionAdapter
-    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private var layoutManager: GridLayoutManager? = null
     private var searchViewBinding: LayoutSearchBinding? = null
     private var container: FrameLayout? = null
@@ -107,7 +105,6 @@ class MovieFragment : Fragment(), View.OnClickListener, OnViewClickListener {
         binding.lifecycleOwner = this
         (activity as AppCompatActivity?)!!.setSupportActionBar(binding.toolbar)
         setPagesLoadingObserver()
-        setupSwipeToRefresh()
         loadMovies()
         setOnBackPressed()
         setHasOptionsMenu(true)
@@ -117,6 +114,12 @@ class MovieFragment : Fragment(), View.OnClickListener, OnViewClickListener {
     private fun setOnBackPressed() {
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
+                if(binding.rvSearch.visibility == VISIBLE
+                    || binding.rvSearchSuggestion.visibility == VISIBLE
+                    || searchViewBinding?.clSearchView?.visibility == VISIBLE
+                ) {
+                    hideSearchBox()
+                } else
                 (activity as AppCompatActivity).finish()
             }
         }
@@ -253,14 +256,6 @@ class MovieFragment : Fragment(), View.OnClickListener, OnViewClickListener {
         })
     }
 
-    private fun setupSwipeToRefresh() {
-        swipeRefreshLayout = binding.swipeToRefresh
-        swipeRefreshLayout.setOnRefreshListener {
-            fetchMovies(page)
-            loadMovies()
-        }
-    }
-
     private fun fetchMovies(currentPage: Int) {
         movieType?.let { viewModel.fetchMovies(currentPage, it) }
     }
@@ -272,7 +267,6 @@ class MovieFragment : Fragment(), View.OnClickListener, OnViewClickListener {
     }
 
     private fun loadMovies() {
-        swipeRefreshLayout.isRefreshing = false
         initRv()
     }
 
@@ -327,7 +321,6 @@ class MovieFragment : Fragment(), View.OnClickListener, OnViewClickListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_refresh -> {
-                swipeRefreshLayout.isRefreshing = true
                 loadMovies()
             }
             R.id.menu_sort -> {

@@ -55,6 +55,11 @@
         <item name="fontFamily">@font/cairo_semi_bold</item>
     </style>
 
+    <style name="MyDarkMenu" parent="Theme.AppCompat.Light">
+        <item name="colorControlNormal">@color/colorAccent</item>
+        <item name="android:actionModeBackground">@color/colorBlack</item>
+    </style>
+
     <style name="MyTheme" parent="@style/ThemeOverlay.AppCompat.Light">
         <item name="colorControlHighlight">@color/colorDarkSilver</item>
         <item name="selectableItemBackground">@color/colorDarkSilver</item>

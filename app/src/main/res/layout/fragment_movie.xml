@@ -31,23 +31,17 @@
 
             </com.google.android.material.appbar.AppBarLayout>
 
-            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-                android:id="@+id/swipe_to_refresh"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                tools:listitem="@layout/movie_poster_item"
                 app:layout_constraintTop_toBottomOf="@id/app_bar"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                >
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    tools:listitem="@layout/movie_poster_item"
-                    />
+                />
 
-            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_search"
                 android:layout_width="match_parent"
