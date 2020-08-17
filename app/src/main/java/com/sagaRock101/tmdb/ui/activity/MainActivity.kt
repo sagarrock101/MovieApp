@@ -49,6 +49,8 @@ class MainActivity : AppCompatActivity(), InternetChecker, OnPageLoading {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
 
+    private lateinit var dialog: AlertDialog.Builder
+
     @Inject
     lateinit var viewModel: MoviesViewModel
 
@@ -70,8 +72,13 @@ class MainActivity : AppCompatActivity(), InternetChecker, OnPageLoading {
         setupTheme()
         (this.application as MyApplication).appComponent.inject(this)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        initBroadcastReceiver()
         MovieDataSource.setPageListener(this)
+        dialog = getDialog()
+    }
+
+    override fun onResume() {
+        initBroadcastReceiver()
+        super.onResume()
     }
 
     private fun initBroadcastReceiver() {
@@ -113,16 +120,14 @@ class MainActivity : AppCompatActivity(), InternetChecker, OnPageLoading {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.menu_theme -> {
-               setDialog()
+                showDialog()
             }
 
         }
         return super.onOptionsItemSelected(item)
     }
 
-    private fun setDialog() {
-        var dialog: AlertDialog.Builder?
-        dialog = getDialog()
+    private fun showDialog() {
         var view = getView(R.layout.dilaog_thems)
         dialog.setView(view)
         var themeRadioGroup = view.findViewById<RadioGroup>(R.id.rg_themes)
