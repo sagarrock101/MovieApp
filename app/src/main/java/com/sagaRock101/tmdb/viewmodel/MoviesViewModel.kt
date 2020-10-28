@@ -80,7 +80,7 @@ class MoviesViewModel @Inject constructor(application: Application) :
             repository.searchSuggestion(it)
         }
 
-        this.tagsLD = Transformations.switchMap(tagsMLD) {movieId ->
+        this.tagsLD = Transformations.switchMap(tagsMLD) { movieId ->
             repository.getTags(movieId)
         }
     }
@@ -146,7 +146,7 @@ class MoviesViewModel @Inject constructor(application: Application) :
     }
 
     fun searchMovie(query: String?) {
-        searchMovies.addSource(repository.searchMovie(query!!), searchMovies::setValue )
+        searchMovies.addSource(repository.searchMovie(query!!), searchMovies::setValue)
     }
 
     fun searchSuggestion(query: String) {
