@@ -12,6 +12,7 @@ import com.sagaRock101.tmdb.ui.interfaces.OnPageLoading
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.lang.Exception
 
 
 class MovieDataSource(private val apiService: TmdbService, private val search: MovieSearch) :
@@ -42,10 +43,14 @@ class MovieDataSource(private val apiService: TmdbService, private val search: M
                 ) {
                     if (response.isSuccessful) {
                         if (response.body()?.results?.isNotEmpty()!!) {
-                            callback.onResult(
-                                response.body()?.results!!, null,
-                                FIRST_PAGE + 1
-                            )
+                          try {
+                              callback.onResult(
+                                  response.body()?.results!!, null,
+                                  FIRST_PAGE + 1
+                              )
+                          } catch (e: Exception) {
+
+                          }
                         } else {
                             retry = {
                                 loadInitial(params, callback)
