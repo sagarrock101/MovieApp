@@ -20,7 +20,7 @@ It is a demo application made using [TheMovieDB](https://www.themoviedb.org/) wi
 <img src = "https://github.com/sagarrock101/MovieApp/blob/master/app/src/main/java/com/sagaRock101/images/search_start.jpeg" width = 300 height = 500 /> <img src = "https://github.com/sagarrock101/MovieApp/blob/master/app/src/main/java/com/sagaRock101/images/search_end.jpeg" width = 300 height = 500 />  
 
 ## API key to run the app
-Get a API key from [TheMovieDB](https://www.themoviedb.org/) API key and add in `local.properties` file as
+Get a API key from [TheMovieDB](https://www.themoviedb.org/) and add the key in `local.properties` file as
 `tmdb_api_key = ""`
 
 ## Tech Stack and libraries used
