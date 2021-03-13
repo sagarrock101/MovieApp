@@ -1,0 +1,166 @@
+apply plugin: 'com.android.application'
+
+apply plugin: 'kotlin-android'
+
+apply plugin: 'kotlin-android-extensions'
+
+apply plugin: 'kotlin-kapt'
+
+apply plugin: "androidx.navigation.safeargs.kotlin"
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion "29.0.2"
+    defaultConfig {
+        applicationId "com.sagaRock101.tmdb"
+        minSdkVersion 23
+        targetSdkVersion 29
+        versionCode 3
+        versionName "3.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        javaCompileOptions.annotationProcessorOptions.includeCompileClasspath = true
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    buildTypes.each {
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file("local.properties").newDataInputStream())
+        def tmdbApiKey = properties.getProperty("tmdb_api_key", "")
+
+        it.buildConfigField 'String', "TMDB_API_KEY", tmdbApiKey
+
+        it.resValue 'string', "api_key", tmdbApiKey
+
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+        kotlinOptions {
+            jvmTarget = "1.8"
+        }
+    }
+
+    dataBinding {
+        enabled = true
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    applicationVariants.all {
+        buildConfigField("String", "SMALL_IMAGE_URL", "\"https://image.tmdb.org/t/p/w200\"")
+        buildConfigField("String", "LARGE_IMAGE_URL", "\"https://image.tmdb.org/t/p/w500\"")
+        buildConfigField("String", "ORIGINAL_IMAGE_URL", "\"https://image.tmdb.org/t/p/original\"")
+
+    }
+
+    defaultConfig {
+        multiDexEnabled true
+    }
+
+    androidExtensions {
+        experimental = true
+    }
+
+    testOptions.unitTests{
+        includeAndroidResources = true
+    }
+
+}
+
+dependencies {
+
+    implementation "com.google.android.material:material:$materialVersion"
+
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.core:core-ktx:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.1.0'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.1.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
+    //Moshi
+    implementation "com.squareup.moshi:moshi-kotlin:$moshiVersion"
+    kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion"
+
+
+    //Retrofit2
+    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-moshi:$retrofitVersion"
+    implementation "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2"
+
+    //Okhttp3
+    implementation "com.squareup.okhttp3:okhttp:$okHttpVersion"
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.11.0'
+
+    implementation "com.squareup.picasso:picasso:$picassoVersion"
+
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.8"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.7"
+
+    // ViewModel and LiveData
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
+
+    implementation "androidx.recyclerview:recyclerview:1.1.0"
+
+    implementation "androidx.cardview:cardview:1.0.0"
+
+    implementation 'androidx.paging:paging-runtime:2.1.2'
+
+    implementation("com.github.bumptech.glide:glide:4.9.0")
+    kapt("com.github.bumptech.glide:compiler:4.9.0")
+
+    implementation"android.arch.navigation:navigation-fragment-ktx:$navigationVersion"
+    implementation "android.arch.navigation:navigation-ui-ktx:$navigationVersion"
+
+    //Room
+    implementation "androidx.room:room-runtime:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
+    kapt 'androidx.room:room-compiler:2.2.1'
+
+    //stetho
+    implementation 'com.facebook.stetho:stetho:1.5.1'
+
+    //okhttp stetho
+    implementation 'com.facebook.stetho:stetho-okhttp3:1.5.1' // for OkHttp library
+
+    //dagger android
+    implementation "com.google.dagger:dagger:$dagger_version"
+    kapt "com.google.dagger:dagger-compiler:$dagger_version"
+
+    //expandable textview
+    implementation "com.ms-square:expandableTextView:$expandableTextViewVersion"
+
+    implementation "androidx.work:work-runtime-ktx:$work"
+
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.0-alpha06"
+
+    implementation "io.reactivex.rxjava3:rxkotlin:3.0.0"
+
+    testImplementation "androidx.test.ext:junit-ktx:$androidXTestExtKotlinRunnerVersion"
+
+    testImplementation "androidx.test:core-ktx:$androidXTestCoreVersion"
+
+    testImplementation 'org.robolectric:robolectric:4.3'
+
+    implementation 'com.google.android:flexbox:2.0.1'
+
+
+
+}

@@ -1,0 +1,42 @@
+<resources>
+    <string name="app_name">TMDB</string>
+    <string name="refresh">Refresh</string>
+    <string name="top_rated">Top Rated</string>
+    <string name="up_coming">Up Coming</string>
+    <string name="popular">Popular</string>
+    <string name="favorties">Favorties</string>
+    <string name="check">check</string>
+    <string name="settings">Settings</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="change_theme">Change Theme</string>
+    <string name="light_theme">Light Theme</string>
+    <string name="dark_theme">Dark Theme</string>
+    <string name="choose_theme">Choose Theme</string>
+    <string name="retry">Retry</string>
+    <string name="filter">filter</string>
+    <string name="reviews">Reviews</string>
+    <string name="trailer">Trailer</string>
+    <string name="release_data">Release Date:</string>
+    <string name="added_to_favorites">Added to Favorites</string>
+    <string name="removed_from_favorites">Removed from Favorites</string>
+    <string name="share">Share</string>
+
+    //movie type
+    <string name="movie_popular">popular</string>
+    <string name="movie_up_coming">upcoming</string>
+    <string name="movie_top_rated">top_rated</string>
+    <string name="movie_favorites">favorites</string>
+    <string name="title_favorite">Favorite</string>
+    <string name="title_favorites">Favorites</string>
+    <string name="no_favorites">No Favorites</string>
+    <string name="search">Search</string>
+    <string name="no_preview">No Preview</string>
+</resources>

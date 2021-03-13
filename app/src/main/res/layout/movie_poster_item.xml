@@ -1,0 +1,98 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="movieItem"
+            type="com.sagaRock101.tmdb.model.Movie" />
+
+        <import type="android.view.View" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="280dp"
+        android:layout_margin="2dp">
+
+
+        <ImageView
+            android:id="@+id/posterImageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="1dp"
+            android:contentDescription="@string/check"
+            android:foreground="?attr/selectableItemBackground"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:loadImageMovie="@{movieItem.posterPath}"
+            tools:ignore="VectorDrawableCompat" />
+
+        <ImageView
+            android:id="@+id/iv_bg_transparent"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:alpha="0.4"
+            android:background="@drawable/bg_transparent"
+            app:layout_constraintBottom_toBottomOf="@id/tv_imbd_rating"
+            app:layout_constraintEnd_toEndOf="@id/tv_imbd_rating"
+            app:layout_constraintStart_toStartOf="@id/tv_imbd_rating"
+            app:layout_constraintTop_toTopOf="@id/tv_imbd_rating" />
+
+        <TextView
+            android:id="@+id/tv_imbd_rating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:fontFamily="@font/cairo_regular"
+            android:paddingLeft="10dp"
+            android:paddingTop="4dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="4dp"
+            android:text="@{movieItem.vote_average.toString()}"
+            android:textColor="@color/colorWhite"
+            android:textSize="16sp"
+            android:visibility="@{movieItem.vote_average > 0.0 ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <ImageView
+            android:id="@+id/iv_no_movie_poster"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="?attr/bgColor"
+            android:foreground="?attr/selectableItemBackground"
+            android:visibility="@{movieItem.posterPath != null? View.GONE : View.VISIBLE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+        <TextView
+            android:id="@+id/tv_no_preview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/no_preview"
+            android:textColor="?attr/textColor"
+            android:textSize="32sp"
+            android:visibility="@{movieItem.posterPath != null? View.GONE : View.VISIBLE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

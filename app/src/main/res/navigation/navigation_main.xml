@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/navigation_main"
+    app:startDestination="@id/splashFragment">
+
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="com.sagaRock101.tmdb.ui.fragments.SplashFragment"
+        android:label="SplashFragment" >
+        <action
+            android:id="@+id/action_splashFragment_to_movieFragment"
+            app:destination="@id/movieFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/movieFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/movieFragment"
+        android:name="com.sagaRock101.tmdb.ui.fragments.MovieFragment"
+        android:label="MovieFragment" >
+        <action
+            android:id="@+id/action_movieFragment_to_movieDetailFragment"
+            app:destination="@id/movieDetailFragment"
+            app:popUpTo="@+id/movieDetailFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_movieFragment_to_movieFavorite"
+            app:destination="@id/movieFavorite" />
+        <action
+            android:id="@+id/action_movieFragment_to_movieSearchFragment"
+            app:destination="@id/movieSearchFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/movieDetailFragment"
+        android:name="com.sagaRock101.tmdb.ui.fragments.MovieDetailFragment"
+        android:label="{movie_title}">
+        <argument
+            android:name="movieData"
+            android:defaultValue="@null"
+            app:argType="com.sagaRock101.tmdb.model.Movie"
+            app:nullable="true" />
+        <argument
+            android:name="movie_title"
+            android:defaultValue="movie_title"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/movieFavorite"
+        android:name="com.sagaRock101.tmdb.ui.fragments.MovieFavorite">
+        <action
+            android:id="@+id/action_movieFavorite_to_movieDetailFragment"
+            app:destination="@id/movieDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/movieSearchFragment"
+        android:name="com.sagaRock101.tmdb.ui.fragments.MovieSearchFragment"
+        android:label="MovieSearchFragment" >
+        <action
+            android:id="@+id/action_movieSearchFragment_to_movieDetailFragment"
+            app:destination="@id/movieDetailFragment" />
+    </fragment>
+</navigation>
