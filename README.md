@@ -32,7 +32,7 @@ Get a API key from [TheMovieDB](https://www.themoviedb.org/) and add the key in 
   - Room Persistence - construct database.
 - Architecture
   - MVVM (Model View ViewModel) using Databinding
-  - Repository Pattern   
+  - Repository Pattern
   - Dagger 2 for managing Dependencies
 - Retrofit2 - constructing the REST API
 - Room Database - for storing favorite movie titles 
