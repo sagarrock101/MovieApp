@@ -43,3 +43,5 @@ Get a API key from [TheMovieDB](https://www.themoviedb.org/) and add the key in 
 - Stetho - debugging persistence data & network packets
 - Expandable Text View for expand/collapsing longer texts
 - Circurlar Reveal Animation for search
+
+ <a href="https://play.google.com/store/apps/details?id=com.sagaRock101.tmdb" ><img src="https://github.com/sagarrock101/MovieApp/blob/master/app/src/main/java/com/sagaRock101/images/google-play-badge-small.png" width = 300 height = 100 /></a>
