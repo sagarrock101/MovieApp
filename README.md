@@ -26,6 +26,7 @@ Get a API key from [TheMovieDB](https://www.themoviedb.org/) API key add in `loc
   - Repository Pattern
   - Dagger 2 for managing Dependencies
 - Retrofit2 - constructing the REST API
+- Room Database - for storing favorite movie titles 
 - Moshi - is a modern JSON library for Android and Java. It makes it easy to parse JSON into Java objects
 - OkHttp3 - implementing interceptor, logging
 - Glide - loading images from url 
