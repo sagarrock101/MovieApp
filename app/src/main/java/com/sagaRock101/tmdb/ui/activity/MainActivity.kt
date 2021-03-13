@@ -141,6 +141,7 @@ class MainActivity : AppCompatActivity(), InternetChecker, OnPageLoading {
     private fun getDialog(): AlertDialog.Builder {
         return if(themeSelected == DARK_THEME) {
             AlertDialog.Builder(this, R.style.DarkThemeDialog)
+
         } else {
             AlertDialog.Builder(this, R.style.LightThemeDialog)
         }
@@ -190,7 +191,7 @@ class MainActivity : AppCompatActivity(), InternetChecker, OnPageLoading {
     private fun changeTheme(themeId: Int) {
         Handler().postDelayed(
             {AppCompatDelegate.setDefaultNightMode(themeId)
-            recreate()}, Values.RIPPLE_DELAY)
+      recreate()}, Values.RIPPLE_DELAY)
     }
     
     override fun isInternetAvailable(boolean: Boolean) {
