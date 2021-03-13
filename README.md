@@ -13,16 +13,14 @@ It is a demo application made using [TheMovieDB](https://www.themoviedb.org/) wi
 <img src = "https://github.com/sagarrock101/MovieApp/blob/master/app/src/main/java/com/sagaRock101/images/movie_list.jpeg" width = 300 height = 500 /> <img src = "https://github.com/sagarrock101/MovieApp/blob/master/app/src/main/java/com/sagaRock101/images/movie_detail_light.jpeg" width = 300 height = 500 /> 
 
 ### Dark Theme
-
-<img src = "https://github.com/sagarrock101/MovieApp/blob/master/app/src/main/java/com/sagaRock101/images/movie_detail_dark.jpeg" width = 300 height = 500 /> 
+<img src = "https://github.com/sagarrock101/MovieApp/blob/master/app/src/main/java/com/sagaRock101/images/movie_list_dark.jpeg" width = 300 height = 500 /> <img src = "https://github.com/sagarrock101/MovieApp/blob/master/app/src/main/java/com/sagaRock101/images/movie_detail_dark.jpeg" width = 300 height = 500 />
 
 ### Search
 
-<img src = "https://github.com/sagarrock101/MovieApp/blob/master/app/src/main/java/com/sagaRock101/images/search_start.jpeg" width = 300 height = 500 /> <img src = "https://github.com/sagarrock101/MovieApp/blob/master/app/src/main/java/com/sagaRock101/images/search_end.jpeg" width = 300 height = 500 /> 
+<img src = "https://github.com/sagarrock101/MovieApp/blob/master/app/src/main/java/com/sagaRock101/images/search_start.jpeg" width = 300 height = 500 /> <img src = "https://github.com/sagarrock101/MovieApp/blob/master/app/src/main/java/com/sagaRock101/images/search_end.jpeg" width = 300 height = 500 />  
 
-
-## Needs API key to run the app
-Get a API key from [TheMovieDB](https://www.themoviedb.org/) API key and add in `local.properties` file as
+## API key to run the app
+Get a API key from [TheMovieDB](https://www.themoviedb.org/) and add the key in `local.properties` file as
 `tmdb_api_key = ""`
 
 ## Tech Stack and libraries used
@@ -45,4 +43,3 @@ Get a API key from [TheMovieDB](https://www.themoviedb.org/) API key and add in 
 - Stetho - debugging persistence data & network packets
 - Expandable Text View for expand/collapsing longer texts
 - Circurlar Reveal Animation for search
-
