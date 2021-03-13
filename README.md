@@ -8,11 +8,22 @@ It is a demo application made using [TheMovieDB](https://www.themoviedb.org/) wi
 - Movie titles can be shared
 - Movie titles can be searched with suggestions 
 
- ![ezgif com-gif-maker (1)](https://user-images.githubusercontent.com/37874000/111022447-d72b4f80-83f8-11eb-9248-e46f64b2dbd9.gif)
+## ScreenShots
+### Light Theme
+<img src = "https://github.com/sagarrock101/MovieApp/blob/master/app/src/main/java/com/sagaRock101/images/movie_list.jpeg" width = 300 height = 500 /> <img src = "https://github.com/sagarrock101/MovieApp/blob/master/app/src/main/java/com/sagaRock101/images/movie_detail_light.jpeg" width = 300 height = 500 /> 
+
+### Dark Theme
+
+<img src = "https://github.com/sagarrock101/MovieApp/blob/master/app/src/main/java/com/sagaRock101/images/movie_detail_dark.jpeg" width = 300 height = 500 /> 
+
+### Search
+
+<img src = "https://github.com/sagarrock101/MovieApp/blob/master/app/src/main/java/com/sagaRock101/images/search_start.jpeg" width = 300 height = 500 /> <img src = "https://github.com/sagarrock101/MovieApp/blob/master/app/src/main/java/com/sagaRock101/images/search_end.jpeg" width = 300 height = 500 /> 
+
 
 ## Needs API key to run the app
-Get a API key from [TheMovieDB](https://www.themoviedb.org/) API key add in `local.properties` file as
-`tmdb_api_key = "9a154e08fc629a156ad3f4dc651b706c"`
+Get a API key from [TheMovieDB](https://www.themoviedb.org/) API key and add in `local.properties` file as
+`tmdb_api_key = ""`
 
 ## Tech Stack and libraries used
 - 100% kotlin
