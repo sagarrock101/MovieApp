@@ -21,6 +21,7 @@
             type="com.sagaRock101.tmdb.adapter.TagAdapter" />
     </data>
     <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/col_movie_detail_parent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
